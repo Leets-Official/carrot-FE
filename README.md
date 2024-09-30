@@ -31,7 +31,7 @@
 | `styles`     | 스타일 관련 폴더                                         |
 | `utils`      | util함수들이 담긴 폴더                                   |
 
-## ✉️ Git Commit Message Conversion
+## ✉️ Git Commit Message Convention
 
 Commit을 할 때 다음과 같은 규칙을 따릅니다.
 
