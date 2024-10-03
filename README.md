@@ -6,12 +6,32 @@
 
 가천대학교 교내 IT동아리인 Leets 4조에서 진행하는 당근알바 서비스 구축 클론코딩 프로젝트 프론트엔드.
 
+## Feature
+
+- 로그인, 회원가입, 주변 알바 리스트, 알바 지원하기, 구인글 등록 etc.
+
 ## ⚙️ Develop Environment
 
 - Framework : React
 - Node : v18.xx.x
 
-## ✉️ Git Commit Message Convension
+## 🗂️ Project Structure
+
+| 폴더명       | 설명                                                     |
+| ------------ | -------------------------------------------------------- |
+| `public`     | 정적 파일들이 담긴 폴더                                  |
+| `src`        | 대부분의 파일을 넣는 폴더 (index.js, js파일, css파일 등) |
+| `assets`     | 프로젝트의 자산들을 관리하는 폴더                        |
+| `font`       | font 파일들이 담긴 폴더                                  |
+| `images`     | image 파일들이 담긴 폴더                                 |
+| `api`        | 서버와 데이터 통신하는 CRUD Axios가 담긴 폴더            |
+| `components` | pages에 들어가는 부분마다의 components가 담긴 폴더       |
+| `constants`  | 자주 사용되는 상수가 담긴 폴더                           |
+| `pages`      | DOM에 라우팅되어 렌더링되는 페이지들이 담긴 폴더         |
+| `styles`     | 스타일 관련 폴더                                         |
+| `utils`      | util함수들이 담긴 폴더                                   |
+
+## ✉️ Git Commit Message Convention
 
 Commit을 할 때 다음과 같은 규칙을 따릅니다.
 
