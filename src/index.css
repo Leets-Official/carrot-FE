@@ -1,3 +1,8 @@
+:root {
+  --color-carrot: #ff8a3d;
+  --color-green: #339f46;
+}
+
 body {
   margin: 0;
   padding: 0;
