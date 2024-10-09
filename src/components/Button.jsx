@@ -11,7 +11,7 @@ const BasicButton = styled.button`
   justify-content: center;
 
   width: 90%;
-  padding: 20px 30px;
+  padding: 10% 20%;
   font-family: "NanumSquareNeo";
   font-size: ${({ size }) => size};
   cursor: pointer;

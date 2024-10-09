@@ -1,6 +1,15 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  LogoContainer,
+  LogoCaptions,
+  CaptionMain,
+  CaptionSub,
+  ButtonContainer,
+  LoginButtons,
+} from "../styles/Landing.styles";
 import styled from "styled-components";
+import theme from "../styles/theme/theme";
 import Button from "../components/Button";
 import Logo from "../assets/images/carrot.svg";
 
@@ -20,38 +29,38 @@ function Landing() {
 
   return (
     <Container>
-      <div className="logo-container">
+      <LogoContainer>
         <img src={Logo} />
-        <div className="logo-captions">
-          <div className="logo-caption caption-main">당신 근처의 당근알바</div>
-          <div className="logo-caption caption-sub">
+        <LogoCaptions>
+          <CaptionMain>당신 근처의 당근알바</CaptionMain>
+          <CaptionSub>
             누구나 필요한 사람을 찾고, <br />
             원하는 일자리를 구할 수 있어요.
-          </div>
-        </div>
-      </div>
-      <div className="button-container">
+          </CaptionSub>
+        </LogoCaptions>
+      </LogoContainer>
+      <ButtonContainer>
         <Button
-          color="#ff8a3d"
+          color={theme.color.carrot}
           textcolor="white"
           size="24px"
           onClick={() => {
-            navigate("./signup");
+            navigate("/signup");
           }}
         >
           시작하기
         </Button>
-        <div className="login-buttons">
+        <LoginButtons>
           <span>이미 계정이 있나요?</span>
-          <span
+          <button
             onClick={() => {
-              navigate("./login");
+              navigate("/login");
             }}
           >
             로그인
-          </span>
-        </div>
-      </div>
+          </button>
+        </LoginButtons>
+      </ButtonContainer>
     </Container>
   );
 }
