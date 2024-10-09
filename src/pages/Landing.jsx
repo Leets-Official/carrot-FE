@@ -13,8 +13,6 @@ import theme from "../styles/theme/theme";
 import Button from "../components/Button";
 import Logo from "../assets/images/carrot.svg";
 
-import "../styles/Landing.css";
-
 const Container = styled.div`
   border: 1px solid black;
   display: flex;
