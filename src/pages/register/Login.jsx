@@ -140,7 +140,7 @@ function Login() {
   return (
     <Container>
       <HeaderContainer>
-        <IconChevronLeft size={24} onClick={() => navigate("/")} />
+        <IconChevronLeft size={30} onClick={() => navigate("/")} />
       </HeaderContainer>
       <BodyContainer>
         <BodyTitle>
@@ -157,6 +157,7 @@ function Login() {
             color="white"
             border="grey"
             textcolor="black"
+            size="20px"
             onChange={handleChangeEmail}
             disabled={
               emailState.emailRequest === REQUEST_STATUS.PENDING ||
@@ -203,6 +204,7 @@ function Login() {
               color="white"
               border="grey"
               textcolor="black"
+              size="20px"
               onChange={handleChangeEmailAuthCode}
             >
               인증번호 입력

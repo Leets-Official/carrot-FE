@@ -11,7 +11,7 @@ const BasicInput = styled.input`
   justify-content: center;
 
   width: 90%;
-  padding: 13px 20px;
+  padding: 5%;
   font-family: "NanumSquareNeo";
   font-size: ${({ size }) => size};
   cursor: pointer;
