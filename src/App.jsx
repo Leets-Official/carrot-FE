@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Landing from "./pages/Landing";
 import Login from "./pages/register/Login";
-import SignUp from "./pages/register/SignUp";
+import SignUpRoute from "./pages/register/SignUp";
 import { ThemeProvider } from "styled-components";
 import theme from "./styles/theme/theme";
 
@@ -12,7 +12,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/signup/*" element={<SignUp />} />
+          <Route path="/signup/*" element={<SignUpRoute />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
