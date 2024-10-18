@@ -16,7 +16,11 @@ const BasicButton = styled.button`
   font-size: ${({ size }) => size};
   cursor: pointer;
 
-  &:active:hover {
+  &:active {
+    opacity: 0.8;
+    transition: 0.5s;
+  }
+  &:hover {
     opacity: 0.8;
     transition: 0.5s;
   }

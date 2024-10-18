@@ -6,11 +6,11 @@ const Container = styled.div`
   align-items: center;
   width: 440px;
   height: 810px;
-  padding: 10px 0;
 `;
 
 const HeaderContainer = styled.div`
   width: 100%;
+  padding: 10px;
   display: flex;
   justify-content: flex-start;
 `;
