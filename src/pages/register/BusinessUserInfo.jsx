@@ -6,6 +6,7 @@ import { SelectBox, SelectOptions, Option } from "../../components/SelectBox";
 import Button from "../../components/Button";
 import Input from "../../components/Input";
 import theme from "../../styles/theme/theme";
+import { verifyCEOAPI } from "../../api/signupAPI";
 
 function BusinessUserInfo() {
   const navigate = useNavigate();
@@ -66,12 +67,39 @@ function BusinessUserInfo() {
     return phoneRule.test(user.phone);
   };
 
-  /*-------사업자 인증 함수-------*/
-  const certifyBusiness = () => {
-    // (추가) 사업자 인증 API
-    setIsCEO(true); // (추가) redux user상태
-    alert("사업자 인증이 완료되었습니다.");
-    return true;
+  /*-------사업자 인증 관련 함수-------*/
+  const handleCEONumber = (e) => {
+    let number = e.target.value;
+    setCEOInfo((prevState) => ({
+      ...prevState,
+      number: number,
+    }));
+  };
+
+  const handleCEOName = (e) => {
+    let name = e.target.value;
+    setCEOInfo((prevState) => ({
+      ...prevState,
+      exponent: name,
+    }));
+  };
+  const certifyBusiness = async () => {
+    // 사업자 인증 API
+    try {
+      // 1192243829,김태래,2014-07-07
+      const data = await verifyCEOAPI(CEOInfo);
+      if (data.valid == "01") {
+        // 👀 응답코드가 01인 경우에만 인증 (그 외 인증 X)
+        setIsCEO(true);
+        alert("사업자 인증이 완료되었습니다");
+      } else {
+        setIsCEO(false);
+        alert("사업자 인증을 다시 진행해주세요.");
+      }
+    } catch (err) {
+      console.log(err);
+      setIsCEO(false);
+    }
   };
 
   /*-----다음단계 이동가능 여부 확인 함수------*/
@@ -112,8 +140,13 @@ function BusinessUserInfo() {
           </Input>
         </UserInfoStyle.Form>
         <UserInfoStyle.Form>
-          <Input label="사업자 등록번호" border="grey">
-            사업자등록번호 입력
+          <Input
+            label="사업자 등록번호"
+            border="grey"
+            value={CEOInfo.number}
+            onChange={handleCEONumber}
+          >
+            사업자등록번호 입력(- 없이 숫자만 입력)
           </Input>
           <div className="opening-date-form">
             <span>개업일자</span>
@@ -195,7 +228,12 @@ function BusinessUserInfo() {
               </SelectBox>
             </div>
           </div>
-          <Input label="대표자명" border="grey">
+          <Input
+            label="대표자명"
+            border="grey"
+            value={CEOInfo.exponent}
+            onChange={handleCEOName}
+          >
             대표자명
           </Input>
           <Button
