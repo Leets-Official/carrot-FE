@@ -158,6 +158,7 @@ function Login() {
             border="grey"
             textcolor="black"
             size="20px"
+            value={emailState.email}
             onChange={handleChangeEmail}
             disabled={
               emailState.emailRequest === REQUEST_STATUS.PENDING ||
@@ -205,6 +206,7 @@ function Login() {
               border="grey"
               textcolor="black"
               size="20px"
+              value={emailState.emailAuthCode}
               onChange={handleChangeEmailAuthCode}
             >
               인증번호 입력

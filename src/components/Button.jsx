@@ -26,13 +26,22 @@ const BasicButton = styled.button`
   }
 `;
 
-const Button = ({ children, color, textcolor, size, border, onClick }) => (
+const Button = ({
+  children,
+  color,
+  textcolor,
+  size,
+  border,
+  onClick,
+  disabled,
+}) => (
   <BasicButton
     color={color}
     textcolor={textcolor}
     size={size}
     border={border || "transparent"}
     onClick={onClick}
+    disabled={disabled}
   >
     {children}
   </BasicButton>

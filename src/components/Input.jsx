@@ -29,12 +29,14 @@ const Input = ({
   textcolor,
   border,
   size,
+  value,
   onChange,
 }) => {
   return (
     <>
       {label ? <BasicLabel>{label}</BasicLabel> : null}
       <BasicInput
+        value={value}
         color={color}
         textcolor={textcolor}
         size={size}
