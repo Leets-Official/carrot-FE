@@ -52,23 +52,23 @@ function InitLocation() {
   const dispatch = useDispatch();
   const { signupType, signupEmail } = useSelector((state) => state.signupInfo);
   const [locationData, setLocationData] = useState({
-    fullLoc: "",
-    shortLoc: "",
+    primaryAddress: "",
+    subAddress: "",
   }); // 주소 정보 데이터
   const [openPostcode, setOpenPostcode] = useState(false); // 주소 검색 모달창
   const handleOnComplete = (data) => {
     setLocationData({
-      fullLoc: data.address,
-      shortLoc: data.bname,
+      primaryAddress: data.address,
+      subAddress: data.bname,
     }); // address(전체 주소), data.bname(동 주소)
     setOpenPostcode(false);
   };
 
   const handleSignupForm = () => {
-    if (locationData.fullLoc == "") {
+    if (locationData.primaryAddress == "") {
       alert("주소는 필수입력사항입니다.");
     } else {
-      dispatch(SET_ADDRESS(locationData.shortLoc));
+      dispatch(SET_ADDRESS(locationData.subAddress));
       // 회원가입 정보 ALL 제출(axios)
       alert("회원가입이 완료되었습니다");
       console.log(signupEmail);
@@ -105,8 +105,8 @@ function InitLocation() {
         <LocationForm>
           <div className="location-label">주소</div>
           <div className="location-input">
-            {locationData.fullLoc !== ""
-              ? locationData.fullLoc
+            {locationData.primaryAddress !== ""
+              ? locationData.primaryAddress
               : "주소를 검색해주세요."}
           </div>
           <LocationBtn onClick={() => setOpenPostcode(true)}>
