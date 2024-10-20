@@ -6,10 +6,14 @@ import { SelectBox, SelectOptions, Option } from "../../components/SelectBox";
 import Button from "../../components/Button";
 import Input from "../../components/Input";
 import theme from "../../styles/theme/theme";
+import { useSignupRouter } from "../../hooks/useSignupRouter";
 import { verifyCEOAPI } from "../../api/signupAPI";
+import { SET_USER_INFO, VERIFY_CEO } from "../../store/signupInfo";
+import { useDispatch } from "react-redux";
 
 function BusinessUserInfo() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   // 일반유저정보(공통)
   const [user, setUser] = useState({ nickname: "", phone: "" });
@@ -74,13 +78,14 @@ function BusinessUserInfo() {
       ...prevState,
       number: number,
     }));
+    setIsCEO(false); // 값 변경 시, 인증 초기화
   };
 
   const handleCEOName = (e) => {
     let name = e.target.value;
     setCEOInfo((prevState) => ({
       ...prevState,
-      exponent: name,
+      exponent: name, // 값 변경 시, 인증 초기화
     }));
   };
   const certifyBusiness = async () => {
@@ -109,6 +114,19 @@ function BusinessUserInfo() {
       if (validatePhoneFormat()) {
         if (isCEO) {
           console.log(user, CEOInfo, isCEO);
+          // 날짜 포맷 변환
+          let fullDate = `${CEOInfo.date.year}${String(
+            CEOInfo.date.month
+          ).padStart(2, "0")}${String(CEOInfo.date.day).padStart(2, "0")}`;
+
+          dispatch(SET_USER_INFO({ name: user.nickname, phone: user.phone }));
+          dispatch(
+            VERIFY_CEO({
+              number: CEOInfo.number,
+              date: fullDate,
+              exponent: CEOInfo.exponent,
+            })
+          );
           navigate("/signup/info/location");
         } else {
           alert("사업자 인증을 진행해주세요.");
@@ -121,10 +139,12 @@ function BusinessUserInfo() {
     }
   };
 
+  useSignupRouter(3, navigate);
+
   return (
     <UserInfoStyle.Container>
       <UserInfoStyle.HeaderContainer>
-        <IconChevronLeft size={30} onClick={() => navigate(-1)} />
+        <IconChevronLeft size={30} onClick={() => navigate("/signup/info")} />
         <span>기본정보 입력</span>
       </UserInfoStyle.HeaderContainer>
       <UserInfoStyle.BodyContainer>
@@ -164,12 +184,13 @@ function BusinessUserInfo() {
                   {years.map((year) => (
                     <Option
                       key={year}
-                      onClick={() =>
+                      onClick={() => {
                         setCEOInfo((prev) => ({
                           ...prev,
                           date: { ...prev.date, year },
-                        }))
-                      }
+                        }));
+                        setIsCEO(false);
+                      }}
                     >
                       {year}
                     </Option>
@@ -189,12 +210,13 @@ function BusinessUserInfo() {
                   {months.map((month) => (
                     <Option
                       key={month}
-                      onClick={() =>
+                      onClick={() => {
                         setCEOInfo((prev) => ({
                           ...prev,
                           date: { ...prev.date, month },
-                        }))
-                      }
+                        }));
+                        setIsCEO(false);
+                      }}
                     >
                       {month}
                     </Option>
@@ -214,12 +236,13 @@ function BusinessUserInfo() {
                   {days.map((day) => (
                     <Option
                       key={day}
-                      onClick={() =>
+                      onClick={() => {
                         setCEOInfo((prev) => ({
                           ...prev,
                           date: { ...prev.date, day },
-                        }))
-                      }
+                        }));
+                        setIsCEO(false);
+                      }}
                     >
                       {day}
                     </Option>

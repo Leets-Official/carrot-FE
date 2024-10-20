@@ -15,6 +15,8 @@ import ChoiceType from "./ChoiceType";
 import UserInfo from "./UserInfo";
 import BusinessUserInfo from "./BusinessUserInfo";
 import InitLocation from "./InitLocation";
+import { useDispatch, useSelector } from "react-redux";
+import { VERIFY_EMAIL } from "../../store/signupInfo";
 
 const EMAIL_VALIDITY = {
   INITIAL: -1,
@@ -31,7 +33,10 @@ const REQUEST_STATUS = {
 
 function SignUp() {
   const navigate = useNavigate();
-
+  const dispatch = useDispatch(); // action을 reducer한테 보내서 state를 update시키는 함수
+  const { signupEmail, signupEmailIsVerify, currentStep } = useSelector(
+    (state) => state.signupInfo
+  );
   const [emailState, setEmailState] = useState({
     email: "",
     emailAuthCode: "",
@@ -118,6 +123,8 @@ function SignUp() {
         ...prevState,
         emailAuth: REQUEST_STATUS.SUCCESS,
       }));
+      dispatch(VERIFY_EMAIL(emailState.email));
+      console.log(signupEmail, signupEmailIsVerify, currentStep);
       navigate("/signup/info");
     } else {
       setEmailState((prevState) => ({

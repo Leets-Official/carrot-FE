@@ -6,6 +6,9 @@ import Button from "../../components/Button";
 import theme from "../../styles/theme/theme";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { useSignupRouter } from "../../hooks/useSignupRouter";
+import { useDispatch, useSelector } from "react-redux";
+import { SET_ADDRESS, RESET_SIGNUP } from "../../store/signupInfo";
 
 const LocationForm = styled.div`
   display: flex;
@@ -46,6 +49,8 @@ const postCodeStyle = {
 
 function InitLocation() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { signupType, signupEmail } = useSelector((state) => state.signupInfo);
   const [locationData, setLocationData] = useState({
     fullLoc: "",
     shortLoc: "",
@@ -63,19 +68,32 @@ function InitLocation() {
     if (locationData.fullLoc == "") {
       alert("주소는 필수입력사항입니다.");
     } else {
+      dispatch(SET_ADDRESS(locationData.shortLoc));
       // 회원가입 정보 ALL 제출(axios)
-      // alert
       alert("회원가입이 완료되었습니다");
-      console.log(locationData.shortLoc);
+      console.log(signupEmail);
       // 로그인 이동
+      dispatch(RESET_SIGNUP());
       navigate("/", { replace: true });
     }
   };
 
+  useSignupRouter(4, navigate);
+
   return (
     <LocationStyle.Container>
       <LocationStyle.HeaderContainer>
-        <IconChevronLeft size={30} onClick={() => navigate(-1)} />
+        <IconChevronLeft
+          size={30}
+          onClick={() =>
+            navigate(
+              signupType == "USER"
+                ? "/signup/info/basic"
+                : "/signup/info/business",
+              { replace: true }
+            )
+          }
+        />
         <span>동네 설정하기</span>
       </LocationStyle.HeaderContainer>
       <LocationStyle.BodyContainer>

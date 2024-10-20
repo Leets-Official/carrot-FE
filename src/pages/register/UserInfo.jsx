@@ -5,9 +5,14 @@ import { useNavigate } from "react-router-dom";
 import Button from "../../components/Button";
 import Input from "../../components/Input";
 import theme from "../../styles/theme/theme";
+import { useDispatch } from "react-redux";
+import { SET_USER_INFO } from "../../store/signupInfo";
+import { useSignupRouter } from "../../hooks/useSignupRouter";
 
 function UserInfo() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const [user, setUser] = useState({ nickname: "", phone: "" });
   // 닉네임 입력 함수
   const onChangeNickName = (e) => {
@@ -38,6 +43,7 @@ function UserInfo() {
     if (user.nickname !== "" && user.nickname.length >= 2) {
       if (user.phone !== "" && validatePhoneFormat(user.phone)) {
         // (추가) redux에 유저정보 저장
+        dispatch(SET_USER_INFO({ name: user.nickname, phone: user.phone }));
         navigate("/signup/info/location");
       } else {
         alert("전화번호를 다시 입력해주세요.");
@@ -47,10 +53,15 @@ function UserInfo() {
     }
   };
 
+  useSignupRouter(3, navigate);
+
   return (
     <UserInfoStyle.Container>
       <UserInfoStyle.HeaderContainer>
-        <IconChevronLeft size={30} onClick={() => navigate(-1)} />
+        <IconChevronLeft
+          size={30}
+          onClick={() => navigate("/signup/info", { replace: true })}
+        />
         <span>기본정보 입력</span>
       </UserInfoStyle.HeaderContainer>
       <UserInfoStyle.BodyContainer>
