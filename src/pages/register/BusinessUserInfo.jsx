@@ -81,6 +81,14 @@ function BusinessUserInfo() {
     setIsCEO(false); // 값 변경 시, 인증 초기화
   };
 
+  const handleDateChange = (key, value) => {
+    setCEOInfo((prev) => ({
+      ...prev,
+      date: { ...prev.date, [key]: value },
+    }));
+    setIsCEO(false); // 값 변경 시, 인증 초기화
+  };
+
   const handleCEOName = (e) => {
     let name = e.target.value;
     setCEOInfo((prevState) => ({
@@ -184,13 +192,7 @@ function BusinessUserInfo() {
                   {years.map((year) => (
                     <Option
                       key={year}
-                      onClick={() => {
-                        setCEOInfo((prev) => ({
-                          ...prev,
-                          date: { ...prev.date, year },
-                        }));
-                        setIsCEO(false);
-                      }}
+                      onClick={() => handleDateChange("year", year)}
                     >
                       {year}
                     </Option>
@@ -210,13 +212,7 @@ function BusinessUserInfo() {
                   {months.map((month) => (
                     <Option
                       key={month}
-                      onClick={() => {
-                        setCEOInfo((prev) => ({
-                          ...prev,
-                          date: { ...prev.date, month },
-                        }));
-                        setIsCEO(false);
-                      }}
+                      onClick={() => handleDateChange("month", month)}
                     >
                       {month}
                     </Option>
@@ -236,13 +232,7 @@ function BusinessUserInfo() {
                   {days.map((day) => (
                     <Option
                       key={day}
-                      onClick={() => {
-                        setCEOInfo((prev) => ({
-                          ...prev,
-                          date: { ...prev.date, day },
-                        }));
-                        setIsCEO(false);
-                      }}
+                      onClick={() => handleDateChange("day", day)}
                     >
                       {day}
                     </Option>
