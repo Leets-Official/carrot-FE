@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import theme from "./theme/theme";
 
 /**
   상단 로고 스타일
@@ -48,6 +49,7 @@ const ButtonContainer = styled.div`
 
 const LoginButtons = styled.div`
   display: flex;
+  align-items: center;
   gap: 16px;
 
   font-weight: 400;
@@ -61,7 +63,9 @@ const LoginButtons = styled.div`
     padding: 0;
     overflow: visible;
     cursor: pointer;
-    color: var(--color-carrot);
+    font-family: "NanumSquareNeo";
+    font-size: 16px;
+    color: ${({ theme }) => theme.color.carrot};
   }
 `;
 

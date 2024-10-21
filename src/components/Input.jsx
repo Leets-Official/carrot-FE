@@ -1,6 +1,11 @@
 import React from "react";
 import styled from "styled-components";
 
+const BasicLabel = styled.label`
+  font-size: 16px;
+  font-weight: 400;
+`;
+
 const BasicInput = styled.input`
   background-color: ${({ color }) => color};
   color: ${({ textcolor }) => textcolor};
@@ -11,21 +16,36 @@ const BasicInput = styled.input`
   justify-content: center;
 
   width: 90%;
-  padding: 13px 20px;
+  padding: 5%;
   font-family: "NanumSquareNeo";
   font-size: ${({ size }) => size};
   cursor: pointer;
 `;
 
-const Input = ({ children, color, textcolor, border, size, onChange }) => (
-  <BasicInput
-    color={color}
-    textcolor={textcolor}
-    size={size}
-    placeholder={children}
-    border={border}
-    onChange={onChange}
-  />
-);
+const Input = ({
+  label,
+  children,
+  color,
+  textcolor,
+  border,
+  size,
+  value,
+  onChange,
+}) => {
+  return (
+    <>
+      {label ? <BasicLabel>{label}</BasicLabel> : null}
+      <BasicInput
+        value={value}
+        color={color}
+        textcolor={textcolor}
+        size={size}
+        placeholder={children}
+        border={border}
+        onChange={onChange}
+      />
+    </>
+  );
+};
 
 export default Input;

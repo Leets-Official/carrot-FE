@@ -6,29 +6,31 @@ const Container = styled.div`
   align-items: center;
   width: 440px;
   height: 810px;
-  padding: 10px 0;
 `;
 
 const HeaderContainer = styled.div`
   width: 100%;
+  padding: 10px;
   display: flex;
   justify-content: flex-start;
 `;
 
 const BodyContainer = styled.div`
   width: 100%;
+  padding: 10% 0;
 `;
 
 const BodyTitle = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
+  margin-bottom: 30px;
   span:first-child {
-    font-size: 40px;
+    font-size: 30px;
     font-weight: 700;
   }
   span:last-child {
-    font-size: 30px;
+    font-size: 20px;
     font-weight: 400;
   }
 `;
@@ -39,6 +41,7 @@ const Form = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 10px;
+  margin-bottom: 20px;
 
   .validEmailRequest .validEmailAuthCode {
     font-size: 12px;
