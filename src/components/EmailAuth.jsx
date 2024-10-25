@@ -101,7 +101,7 @@ const EmailAuth = ({ onSuccess }) => {
         ...prevState,
         emailAuth: REQUEST_STATUS.SUCCESS,
       }));
-      onSuccess();
+      onSuccess(emailState.email);
     } else {
       setEmailState((prevState) => ({
         ...prevState,
@@ -201,7 +201,9 @@ const EmailAuth = ({ onSuccess }) => {
             }
             textcolor={emailState.emailAuthCode === "" ? "gray" : "white"}
             onClick={checkEmailAuthCode}
-          ></Button>
+          >
+            인증하기
+          </Button>
         </Form>
       )}
     </Form>
