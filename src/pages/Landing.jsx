@@ -6,7 +6,7 @@ import Calendar from "../components/Calendar";
 import Button from "../components/Button";
 import upmuTags from "../constants/upmuTag";
 import eutTags from "../constants/eutTag";
-import WeekdayPicker from "../components/WeekdayPicker"; // 요일 선택 컴포넌트 import
+import WeekdayPicker from "../components/WeekdayPicker"; 
 import "../styles/Landing.css";
 
 function Landing() {
@@ -16,7 +16,7 @@ function Landing() {
   //업무 종류 선택 토글 핸들러
   const handleOptionChange = (option) => {
     setSelectedOption(option);
-    setPeriodOption(null); // 옵션이 바뀔 때 기간 초기화
+    setPeriodOption(null); 
   };
 
   //업무 기간 선택 토글 핸들러
