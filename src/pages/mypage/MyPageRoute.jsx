@@ -1,8 +1,8 @@
 import { Routes, Route } from "react-router-dom";
 import MyPage from "./MyPage";
 import MyPageInfo from "./MyPageInfo";
-import ApplicantList from "./applicanat/ApplicantList";
-import CoverLetter from "./applicanat/CoverLetter";
+import ApplicantList from "./applicant/ApplicantList";
+import CoverLetter from "./applicant/CoverLetter";
 import ModifyInfo from "./ModifyInfo";
 
 function MyPageRoute() {

@@ -5,29 +5,18 @@ import {
   BodyContainer,
 } from "../../styles/MyPage.styles";
 import { IconX } from "@tabler/icons-react";
-import { SelectBox, SelectOptions, Option } from "../SelectBox";
 import Input from "../Input";
 import Button from "../Button";
 import styled from "styled-components";
 import theme from "../../styles/theme/theme";
 import { MYPAGE_WORKED_TIME } from "../../constants";
 import TextArea from "../TextArea";
+import WorkedSelect from "./WorkedSelect";
 
 const AbContainer = styled(Container)`
   position: absolute;
   height: 810px;
   background-color: white;
-`;
-
-const WorkedSelectBox = styled(SelectBox)`
-  width: 100%;
-  border: 1px solid ${theme.color.lightgray};
-`;
-const WorkedSelectOptions = styled(SelectOptions)`
-  border: 1px solid ${theme.color.lightgray};
-`;
-const WorkedOption = styled(Option)`
-  border-bottom: 1px solid ${theme.color.lightgray};
 `;
 
 const AddButton = styled(Button)`
@@ -87,62 +76,30 @@ function AddWorked({ onClose, onAdd }) {
             setWorkedData((pre) => ({ ...pre, script: e.target.value }))
           }
         />
-        <div>
-          <div style={{ marginBottom: "20px" }}>일한 연도</div>
-          <WorkedSelectBox
-            onClick={() =>
-              setVisible((pre) => ({
-                ...pre,
-                year: !visible.year,
-              }))
-            }
-          >
-            <label>{workedData.year}</label>
-            <WorkedSelectOptions $visible={visible.year}>
-              {years.map((year) => (
-                <WorkedOption
-                  key={year}
-                  onClick={() =>
-                    setWorkedData((pre) => ({
-                      ...pre,
-                      year: year,
-                    }))
-                  }
-                >
-                  {year}
-                </WorkedOption>
-              ))}
-            </WorkedSelectOptions>
-          </WorkedSelectBox>
-        </div>
-        <div>
-          <div style={{ marginBottom: "20px" }}>일한 기간</div>
-          <WorkedSelectBox
-            onClick={() =>
-              setVisible((pre) => ({
-                ...pre,
-                time: !visible.time,
-              }))
-            }
-          >
-            <label>{workedData.time}</label>
-            <WorkedSelectOptions $visible={visible.time}>
-              {MYPAGE_WORKED_TIME.map((time, i) => (
-                <WorkedOption
-                  key={i}
-                  onClick={() =>
-                    setWorkedData((pre) => ({
-                      ...pre,
-                      time: time,
-                    }))
-                  }
-                >
-                  {time}
-                </WorkedOption>
-              ))}
-            </WorkedSelectOptions>
-          </WorkedSelectBox>
-        </div>
+
+        {/* 일한 연도 선택 */}
+        <WorkedSelect
+          label="일한 연도"
+          options={years}
+          selectedValue={workedData.year}
+          onSelect={(year) => setWorkedData((pre) => ({ ...pre, year }))}
+          visible={visible.year}
+          setVisible={(isVisible) =>
+            setVisible((prev) => ({ ...prev, year: isVisible }))
+          }
+        />
+
+        {/* 일한 기간 선택 */}
+        <WorkedSelect
+          label="일한 기간"
+          options={MYPAGE_WORKED_TIME}
+          selectedValue={workedData.time}
+          onSelect={(time) => setWorkedData((pre) => ({ ...pre, time }))}
+          visible={visible.time}
+          setVisible={(isVisible) =>
+            setVisible((prev) => ({ ...prev, time: isVisible }))
+          }
+        />
       </BodyContainer>
       <AddButton
         color={theme.color.carrot}

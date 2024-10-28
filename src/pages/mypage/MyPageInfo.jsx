@@ -115,7 +115,7 @@ function MyPageInfo() {
             navigate("/mypage");
           }}
         />
-        <span>{userType == "USER" ? "내 지원서 관리" : "내 정보 관리"}</span>
+        <span>{userType === "USER" ? "내 지원서 관리" : "내 정보 관리"}</span>
       </HeaderContainer>
       <BodyContainer>
         <DefaultInfo>

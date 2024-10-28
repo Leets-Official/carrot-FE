@@ -3,7 +3,7 @@ import { IconChevronLeft } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
 import ApplyList from "./ApplyList";
 import InterestList from "./InterestList";
-import RecruitList from "./applicanat/RecruitList";
+import RecruitList from "./applicant/RecruitList";
 import {
   Container,
   HeaderContainer,
