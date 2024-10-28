@@ -23,14 +23,21 @@ const TABS = [
 function MyPage() {
   const navigate = useNavigate();
 
-  const userType = "CEO"; // "userType(USER,CEO)"은 useSelector를 통해 userInfo reducer에서 가져올 예정
+  const userType = "USER"; // "userType(USER,CEO)"은 useSelector를 통해 userInfo reducer에서 가져올 예정
   const userIndex = userType === "USER" ? 0 : 1;
   const filteredTabs = TABS.filter((tab) => tab.type[userIndex] === 1);
 
   const [tabMenu] = useState(filteredTabs);
   const [currentTab, clickTab] = useState(0);
-  const name = "이름";
-  const location = "장현동";
+  const [data, setData] = useState({
+    img: "https://pbs.twimg.com/profile_images/1715217368455213056/lrIZCNs5_400x400.jpg",
+    name: "오수빈",
+    phone: "01049412984",
+    sex: "여성",
+    year: 2002,
+    location: "장현동",
+    self: "자기소개뭐라뭐라",
+  });
 
   const selectTabHandler = (index) => {
     clickTab(index);
@@ -51,12 +58,11 @@ function MyPage() {
         <ProfileContainer>
           <ProfileBox>
             <div className="profileImgBox">
-              <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FcGbz7k%2FbtsD1mY2YBd%2FLkWiVVFa4fwyHiCkSW0Ru0%2Fimg.png" />{" "}
-              {/**url 없다면 빈 박스이미지 */}
+              {data?.img && <img src={data.img} />}
             </div>
             <div className="captionBox">
-              <span>{name}</span>
-              <span>{location}</span>
+              <span>{data.name}</span>
+              <span>{data.location}</span>
             </div>
           </ProfileBox>
 

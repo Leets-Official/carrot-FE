@@ -118,6 +118,87 @@ const TabContent = styled.div`
   padding: 0 5px;
 `;
 
+/**
+ * 정보 수정 UI 스타일
+ */
+
+const DefaultInfo = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  .profileImgBox {
+    width: 100px;
+    height: 100px;
+    overflow: hidden;
+    border-radius: 50%;
+    background-color: ${theme.color.lightgray};
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+  }
+  .profileInfoBox {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  svg {
+    margin-bottom: auto;
+    margin-left: auto;
+  }
+`;
+
+const CoverLetter = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const Section = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px 0;
+  border-bottom: 1px solid ${theme.color.lightgray};
+  .title {
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    font-weight: 400;
+    svg {
+      margin-left: auto;
+    }
+  }
+  .job {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+  }
+  .self {
+    padding: 3%;
+    border-radius: 5px;
+    border: 1px solid ${theme.color.lightgray};
+    font-size: 14px;
+    color: gray;
+  }
+`;
+const WrapToggle = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+`;
+
+const Tag = styled.div`
+  padding: 5px;
+  border-radius: 5px;
+  font-size: 14px;
+
+  color: ${({ textcolor }) => textcolor || "gray"};
+  background-color: ${({ color }) => color || theme.color.lightgray};
+  border: 1px solid ${theme.color.lightgray};
+`;
+
 export {
   Container,
   HeaderContainer,
@@ -126,4 +207,10 @@ export {
   ProfileBox,
   TabMenuContainer,
   TabContent,
+  // MyPageInfo.jsx
+  DefaultInfo,
+  CoverLetter,
+  Section,
+  WrapToggle,
+  Tag,
 };
