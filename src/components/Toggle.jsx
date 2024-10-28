@@ -15,10 +15,8 @@ const StyledLabel = styled.label`
 const Toggle = ({ label, styleType, options, selectedOption, onChange }) => {
   return (
     <div>
-      {/* 라벨이 있을 경우 표시 */}
       {label && <StyledLabel>{label}</StyledLabel>}
 
-      {/* 스타일 타입에 따른 조건부 렌더링 */}
       {styleType === "card" ? (
         <div>
           {options.map((option, index) => (

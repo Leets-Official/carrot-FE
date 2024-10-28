@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 
-// StyledLabel 정의
 const StyledLabel = styled.label`
   display: block;
   margin-bottom: 20px;
@@ -11,13 +10,11 @@ const StyledLabel = styled.label`
   font-family: "NanumSquareNeo", sans-serif;
 `;
 
-// Calendar 컴포넌트 정의
 function Calendar({ label }) {
   const [date, setDate] = useState("");
 
   return (
     <div className="calendar">
-      {/* StyledLabel 사용 */}
       {label && <StyledLabel>{label}</StyledLabel>}
       <input
         type="date"

@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "styled-components";
 
-// 스타일 정의
 const InputWrapper = styled.div`
   width: 90%;
   margin-bottom: 20px;
@@ -33,9 +32,8 @@ const BasicInput = styled.input`
   }
 `;
 
-// 컴포넌트 정의
 const InputField = ({
-  label, // 새로운 label prop
+  label, 
   placeholder,
   color = "#ffffff",
   textColor = "#333",

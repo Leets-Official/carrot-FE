@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 
 const StyledLabel = styled.label`
@@ -24,15 +24,17 @@ const WeekdayButton = styled.button`
   cursor: pointer;
   transition: background-color 0.3s, color 0.3s;
 
-  &:hover {
-    background-color: ${({ selected }) =>
-      selected ? "#333333" : "#f0f0f0"};
-  }
+`;
+
+const SelectedDaysText = styled.span`
+  margin-left: 8px;
+  font-size: 12px;
+  color: #666;
 `;
 
 const WeekdayPicker = ({ label }) => {
   const weekdays = ["월", "화", "수", "목", "금", "토", "일"];
-  const [selectedDays, setSelectedDays] = React.useState([]);
+  const [selectedDays, setSelectedDays] = useState([]);
 
   const toggleDay = (day) => {
     if (selectedDays.includes(day)) {
@@ -42,12 +44,20 @@ const WeekdayPicker = ({ label }) => {
     }
   };
 
+  const formattedSelectedDays = selectedDays
+    .slice() 
+    .sort((a, b) => weekdays.indexOf(a) - weekdays.indexOf(b)) // 원래 순서대로 정렬
+    .join(", ");
+
   return (
     <div>
-      {/* 라벨 표시 */}
-      {label && <StyledLabel>{label}</StyledLabel>}
+      <StyledLabel>
+        {label}{" "}
+        {formattedSelectedDays && (
+          <SelectedDaysText>({formattedSelectedDays})</SelectedDaysText>
+        )}
+      </StyledLabel>
 
-      {/* 요일 선택 컨테이너 */}
       <WeekdayContainer>
         {weekdays.map((day) => (
           <WeekdayButton
