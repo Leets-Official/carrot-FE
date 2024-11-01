@@ -88,10 +88,6 @@ function ApplyContent({ content, onClick, onCancle }) {
         </Content>
       </FormContent>
       <BtnContent>
-        {content.tag == "APPLY" && (
-          <Button onClick={cancleApply}>지원 취소</Button>
-        )}{" "}
-        {/**지원 중인 상태에서만 지원취소 버튼 보이기 */}
         <Button onClick={onClick}>구인글 보기</Button>
         {/**추후, 채팅하기로 바뀔 가능성O */}
       </BtnContent>

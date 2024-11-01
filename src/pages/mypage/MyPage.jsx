@@ -2,7 +2,6 @@ import { useState } from "react";
 import { IconChevronLeft } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
 import ApplyList from "./ApplyList";
-import InterestList from "./InterestList";
 import RecruitList from "./applicant/RecruitList";
 import {
   Container,
@@ -16,7 +15,6 @@ import {
 
 const TABS = [
   { name: "내 지원내역", content: <ApplyList />, type: [1, 0] },
-  { name: "관심 목록", content: <InterestList />, type: [1, 1] },
   { name: "내 구인글 보기", content: <RecruitList />, type: [0, 1] },
 ];
 
