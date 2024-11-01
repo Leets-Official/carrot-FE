@@ -4,7 +4,7 @@ import {
   Container,
   HeaderContainer,
   BodyContainer,
-} from "../../styles/MyPage.styles";
+} from "../../styles/mypage/MyPage.styles";
 import { IconLetterX, IconPhotoPlus } from "@tabler/icons-react";
 import Button from "../../components/Button";
 import Input from "../../components/Input";

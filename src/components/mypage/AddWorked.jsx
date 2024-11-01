@@ -3,7 +3,7 @@ import {
   Container,
   HeaderContainer,
   BodyContainer,
-} from "../../styles/MyPage.styles";
+} from "../../styles/mypage/MyPage.styles";
 import { IconX } from "@tabler/icons-react";
 import Input from "../Input";
 import Button from "../Button";

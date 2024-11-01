@@ -10,7 +10,7 @@ import {
   Section,
   WrapToggle,
   Tag,
-} from "../../styles/MyPage.styles";
+} from "../../styles/mypage/MyPage.styles";
 import { MYPAGE_MERIT_TAG, MYPAGE_EXTRA_INFO_TAG } from "../../constants";
 import theme from "../../styles/theme/theme";
 import Button from "../../components/Button";

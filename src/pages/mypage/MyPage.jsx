@@ -11,7 +11,7 @@ import {
   ProfileBox,
   TabMenuContainer,
   TabContent,
-} from "../../styles/MyPage.styles";
+} from "../../styles/mypage/MyPage.styles";
 
 const TABS = [
   { name: "내 지원내역", content: <ApplyList />, type: [1, 0] },

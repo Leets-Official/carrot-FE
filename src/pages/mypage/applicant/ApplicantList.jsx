@@ -5,7 +5,7 @@ import {
   Container,
   HeaderContainer,
   BodyContainer,
-} from "../../../styles/MyPage.styles";
+} from "../../../styles/mypage/MyPage.styles";
 import styled from "styled-components";
 import Applicant from "../../../components/mypage/Applicant";
 
