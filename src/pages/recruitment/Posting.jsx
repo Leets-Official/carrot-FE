@@ -9,6 +9,11 @@ import upmuTags from "../../constants/upmuTag";
 import eutTags from "../../constants/eutTag";
 import WorkTimePicker from "../../components/WorkTimepicker";
 import WeekdayPicker from "../../components/WeekdayPicker";
+import PayPicker from "../../components/PayPicker";
+import AddressInput from "../../components/AddressInput";
+import PhotoUpload from "../../components/PhotoUpload";
+import DescriptionInput from "../../components/DescriptionInput";
+import PhoneInput from "../../components/PhoneInput";
 import "../../styles/Posting.css";
 
 const PageContainer = styled.div`
@@ -20,7 +25,6 @@ const PageContainer = styled.div`
   overflow: hidden;
 `;
 
-// 스크롤 가능한 부분
 const ContentContainer = styled.div`
   flex: 1;
   overflow-y: auto;
@@ -28,7 +32,6 @@ const ContentContainer = styled.div`
   margin-bottom: 70px;
 `;
 
-// 다음 버튼 하단에 고정
 const FixedButtonContainer = styled.div`
   position: fixed;
   bottom: 0;
@@ -42,13 +45,14 @@ const FixedButtonContainer = styled.div`
   justify-content: center;
 `;
 
-function Posting() {
+const Posting = () => {
+  const [workLocation, setWorkLocation] = useState("");
   const [selectedOption, setSelectedOption] = useState("업무 목적");
   const [periodOption, setPeriodOption] = useState(null);
 
   const handleOptionChange = (option) => {
     setSelectedOption(option);
-    setPeriodOption(null); 
+    setPeriodOption(null);
   };
 
   const handlePeriodChange = (option) => {
@@ -75,7 +79,7 @@ function Posting() {
             placeholder="공고 내용을 요약해주세요."
             textColor="#333"
             border="#cccccc"
-            size="15px"
+            size="14px"
           />
         </div>
 
@@ -104,23 +108,25 @@ function Posting() {
                   <WorkTimePicker label="일하는 시간" />
                 </div>
                 <div className="form-section">
-                  <Tag
-                    label="급여"
-                    tags={["시급", "일급", "주급", "월급"]}
-                    maxSelectable={1}
+                  <PayPicker label="급여" />
+                </div>
+                <div className="form-section">
+                  <PhotoUpload label="사진" />
+                </div>
+                <div className="form-section">
+                  <DescriptionInput label="자세한 설명" />
+                </div>
+                <div className="form-section">
+                  <div className="header">업체 정보</div>
+                  <InputField label="업체명" placeholder="예) 당근가게" />
+                  <AddressInput
+                    label="일하는 장소"
+                    value={workLocation}
+                    onChange={setWorkLocation}
                   />
-                </div>
-                <div className="form-section">
-                  <InputField label="사진 업로드" placeholder="사진 최대 10장" />
-                </div>
-                <div className="form-section">
-                  <InputField
-                    label="자세한 설명"
-                    placeholder="최대 2000자까지 작성 가능합니다."
+                  <PhoneInput
+                    label = "연락처"
                   />
-                </div>
-                <div className="form-section">
-                  <InputField label="업체 정보" placeholder="업체 정보를 입력하세요" />
                 </div>
               </>
             )}
@@ -134,23 +140,25 @@ function Posting() {
                   <WorkTimePicker label="일하는 시간" />
                 </div>
                 <div className="form-section">
-                  <Tag
-                    label="급여"
-                    tags={["시급", "일급", "주급", "월급"]}
-                    maxSelectable={1}
+                  <PayPicker label="급여" />
+                </div>
+                <div className="form-section">
+                  <PhotoUpload label="사진" />
+                </div>
+                <div className="form-section">
+                  <DescriptionInput label="자세한 설명" />
+                </div>
+                <div className="form-section">
+                  <div className="header">업체 정보</div>
+                  <InputField label="업체명" placeholder="예) 당근가게" />
+                  <AddressInput
+                    label="일하는 장소"
+                    value={workLocation}
+                    onChange={setWorkLocation}
                   />
-                </div>
-                <div className="form-section">
-                  <InputField label="사진 업로드" placeholder="사진 최대 10장" />
-                </div>
-                <div className="form-section">
-                  <InputField
-                    label="자세한 설명"
-                    placeholder="최대 2000자까지 작성 가능합니다."
+                  <PhoneInput
+                    label = "연락처"
                   />
-                </div>
-                <div className="form-section">
-                  <InputField label="업체 정보" placeholder="업체 정보를 입력하세요" />
                 </div>
               </>
             )}
@@ -161,32 +169,20 @@ function Posting() {
               <Tag label="하는 일" tags={eutTags} maxSelectable={3} />
             </div>
             <div className="form-section">
-              <Calendar label="일하는 날짜" />
+              <PayPicker label="급여" />
             </div>
             <div className="form-section">
-              <InputField
-                label="일하는 시간"
-                placeholder="30분 단위로 선택하세요"
+              <DescriptionInput label="자세한 설명" />
+            </div>
+            <div className="form-section">
+              <AddressInput
+                label="일하는 장소"
+                value={workLocation}
+                onChange={setWorkLocation}
               />
             </div>
             <div className="form-section">
-              <Tag
-                label="급여"
-                tags={["시급", "일급", "주급", "월급"]}
-                maxSelectable={1}
-              />
-            </div>
-            <div className="form-section">
-              <InputField
-                label="자세한 설명"
-                placeholder="최대 2000자까지 작성 가능합니다."
-              />
-            </div>
-            <div className="form-section">
-              <InputField label="일하는 장소" placeholder="장소를 입력하세요" />
-            </div>
-            <div className="form-section">
-              <InputField label="사진 업로드" placeholder="사진 최대 10장" />
+              <PhotoUpload label="사진" />
             </div>
           </>
         )}
@@ -204,6 +200,6 @@ function Posting() {
       </FixedButtonContainer>
     </PageContainer>
   );
-}
+};
 
 export default Posting;

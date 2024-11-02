@@ -1,62 +1,16 @@
 import React, { useState } from "react";
-import styled from "styled-components";
-
-const StyledLabel = styled.label`
-  display: block;
-  margin-bottom: 12px;
-  font-size: 14px;
-  font-weight: bold;
-  color: #333;
-  font-family: "NanumSquareNeo", sans-serif;
-`;
-
-const Row = styled.div`
-  display: flex;
-  gap: 115px; /*시작 글자와 종료 글자 간격. 이렇게 gap으로 해버리면 나중에 화면 간격 조정시 계속 바꿔줘야할텐데 다른 방식으로 구현이 가능할까..?*/
-  align-items: center;
-  margin-bottom: 8px; 
-`;
-
-const TimeSelectContainer = styled.div`
-  display: flex;
-  gap: 15px; /* 시간 선택란 간격 */
-  width: 100%;
-`;
-
-const TimeSelectLabel = styled.label`
-  font-size: 12px; 
-  width: 30%;
-  color: #666;
-`;
-
-const TimeSelect = styled.select`
-  display: flex;
-  padding: 12px;
-  font-size: 16px;
-  border: 1px solid #cccccc;
-  border-radius: 8px;
-  appearance: none; 
-  cursor: pointer;
-  width: 45%; /*시간 선택란 크기*/
-  
-`;
-
-const WaveSymbol = styled.span`
-  font-size: 24px;
-  color: #666;
-`;
-
-const CheckboxContainer = styled.div`
-  display: flex;
-  align-items: center;
-  margin-top: 12px;
-`;
-
-const CheckboxLabel = styled.label`
-  margin-left: 8px;
-  font-size: 14px;
-  color: #333;
-`;
+import {
+  StyledLabel,
+  Row,
+  TimeSelectContainer,
+  TimeSelectLabel,
+  TimeSelectWrapper,
+  TimeSelect,
+  DropdownIcon,
+  WaveSymbol,
+  CheckboxContainer,
+  CheckboxLabel,
+} from "../styles/WorkTimePickerStyles";
 
 const WorkTimePicker = ({ label }) => {
   const generateTimeOptions = () => {
@@ -86,23 +40,35 @@ const WorkTimePicker = ({ label }) => {
       </Row>
 
       <TimeSelectContainer>
-        <TimeSelect value={startTime} onChange={(e) => setStartTime(e.target.value)}>
-          {timeOptions.map((time) => (
-            <option key={time} value={time}>
-              {time}
-            </option>
-          ))}
-        </TimeSelect>
+        <TimeSelectWrapper>
+          <TimeSelect
+            value={startTime}
+            onChange={(e) => setStartTime(e.target.value)}
+          >
+            {timeOptions.map((time) => (
+              <option key={time} value={time}>
+                {time}
+              </option>
+            ))}
+          </TimeSelect>
+          <DropdownIcon>∨</DropdownIcon>
+        </TimeSelectWrapper>
 
         <WaveSymbol>~</WaveSymbol>
 
-        <TimeSelect value={endTime} onChange={(e) => setEndTime(e.target.value)}>
-          {timeOptions.map((time) => (
-            <option key={time} value={time}>
-              {time}
-            </option>
-          ))}
-        </TimeSelect>
+        <TimeSelectWrapper>
+          <TimeSelect
+            value={endTime}
+            onChange={(e) => setEndTime(e.target.value)}
+          >
+            {timeOptions.map((time) => (
+              <option key={time} value={time}>
+                {time}
+              </option>
+            ))}
+          </TimeSelect>
+          <DropdownIcon>∨</DropdownIcon>
+        </TimeSelectWrapper>
       </TimeSelectContainer>
 
       <CheckboxContainer>

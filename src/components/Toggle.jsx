@@ -1,16 +1,7 @@
 import React from "react";
 import ToggleCard from "./ToggleCard";
 import TagToggle from "./TagToggle";
-import styled from "styled-components";
-
-const StyledLabel = styled.label`
-  display: block;
-  margin-bottom: 15px;
-  font-size: 14px;
-  font-weight: bold;
-  color: #333;
-  font-family: "NanumSquareNeo", sans-serif;
-`;
+import { StyledLabel } from "../styles/ToggleStyles";
 
 const Toggle = ({ label, styleType, options, selectedOption, onChange }) => {
   return (
