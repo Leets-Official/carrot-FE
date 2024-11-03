@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { 
   StyledLabel, 
   TagContainer, 
@@ -6,21 +6,28 @@ import {
   MoreButton 
 } from "../styles/TagStyles";
 
-const Tag = ({ label, tags = [], maxSelectable = 3 }) => {
-  const [selectedTags, setSelectedTags] = useState([]);
-  const [showAll, setShowAll] = useState(false); // 더보기/접기 상태 관리
+const Tag = ({ 
+  label, 
+  tags = [], 
+  maxSelectable = 3, 
+  selectedTags, 
+  setSelectedTags 
+}) => {
+  const [internalSelectedTags, setInternalSelectedTags] = useState([]);
+  const [showAll, setShowAll] = useState(false); 
+
+  const effectiveSelectedTags = selectedTags ?? internalSelectedTags;
+  const handleSetSelectedTags = setSelectedTags ?? setInternalSelectedTags;
 
   const handleTagClick = (tag) => {
-    if (selectedTags.includes(tag)) {
-      setSelectedTags(selectedTags.filter((t) => t !== tag));
-    } else if (selectedTags.length < maxSelectable) {
-      setSelectedTags([...selectedTags, tag]);
+    if (effectiveSelectedTags.includes(tag)) {
+      handleSetSelectedTags(effectiveSelectedTags.filter((t) => t !== tag));
+    } else if (effectiveSelectedTags.length < maxSelectable) {
+      handleSetSelectedTags([...effectiveSelectedTags, tag]);
     }
   };
 
-  const toggleShowAll = () => {
-    setShowAll(!showAll);
-  };
+  const toggleShowAll = () => setShowAll(!showAll);
 
   const displayedTags = showAll ? tags : tags.slice(0, 5);
 
@@ -31,11 +38,11 @@ const Tag = ({ label, tags = [], maxSelectable = 3 }) => {
         {displayedTags.map((tag, index) => (
           <TagButton
             key={index}
-            selected={selectedTags.includes(tag)}
+            selected={effectiveSelectedTags.includes(tag)}
             onClick={() => handleTagClick(tag)}
             disabled={
-              !selectedTags.includes(tag) && 
-              selectedTags.length >= maxSelectable
+              !effectiveSelectedTags.includes(tag) &&
+              effectiveSelectedTags.length >= maxSelectable
             }
           >
             {tag}

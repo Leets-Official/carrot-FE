@@ -12,7 +12,7 @@ import {
   CheckboxLabel,
 } from "../styles/WorkTimePickerStyles";
 
-const WorkTimePicker = ({ label }) => {
+const WorkTimePicker = ({ label, showNegotiable = true }) => {
   const generateTimeOptions = () => {
     const times = [];
     for (let hour = 0; hour < 24; hour++) {
@@ -71,14 +71,16 @@ const WorkTimePicker = ({ label }) => {
         </TimeSelectWrapper>
       </TimeSelectContainer>
 
-      <CheckboxContainer>
-        <input
-          type="checkbox"
-          checked={negotiable}
-          onChange={() => setNegotiable(!negotiable)}
-        />
-        <CheckboxLabel>협의 가능</CheckboxLabel>
-      </CheckboxContainer>
+      {showNegotiable && (
+        <CheckboxContainer>
+          <input
+            type="checkbox"
+            checked={negotiable}
+            onChange={() => setNegotiable(!negotiable)}
+          />
+          <CheckboxLabel>협의 가능</CheckboxLabel>
+        </CheckboxContainer>
+      )}
     </>
   );
 };

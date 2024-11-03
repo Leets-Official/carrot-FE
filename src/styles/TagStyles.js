@@ -25,7 +25,6 @@ export const TagButton = styled.button`
   padding: 8px 16px;
   cursor: pointer;
   font-size: 14px;
-  transition: background-color 0.3s, color 0.3s;
   display: inline-flex;
   justify-content: center;
   align-items: center;

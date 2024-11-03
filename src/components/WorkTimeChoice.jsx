@@ -4,17 +4,16 @@ import {
   OptionContainer,
   OptionButton,
   InputContainer,
-} from "../styles/WorkDayPickerStyles";
-import Calendar from "./Calendar";
-import WeekdayPicker from "./WeekdayPicker";
+} from "../styles/WorkTimeChoiceStyles.js";
+import WorkTimePicker from "./WorkTimepicker";
 
-function WorkDayPicker({ label }) {
-  const [selectedDayOption, setSelectedDayOption] = useState("오늘");
+function WorkTimeChoice({ label }) {
+  const [selectedTimeOption, setSelectedTimeOption] = useState("협의 가능");
 
-  const dayOptions = ["오늘", "내일", "다른 날짜", "한 달 이상"];
+  const dayOptions = ["협의 가능", "시간 설정"];
 
   const handleOptionClick = (option) => {
-    setSelectedDayOption(option);
+    setSelectedTimeOption(option);
   };
 
   return (
@@ -25,7 +24,7 @@ function WorkDayPicker({ label }) {
         {dayOptions.map((option) => (
           <OptionButton
             key={option}
-            selected={selectedDayOption === option}
+            selected={selectedTimeOption === option}
             onClick={() => handleOptionClick(option)}
           >
             {option}
@@ -35,11 +34,10 @@ function WorkDayPicker({ label }) {
 
       {/* 조건부 렌더링으로 오류 방지 */}
       <InputContainer>
-        {selectedDayOption === "다른 날짜" && <Calendar />}
-        {selectedDayOption === "한 달 이상" && <WeekdayPicker />}
+        {selectedTimeOption === "시간 설정" && <WorkTimePicker showNegotiable={false}/>}
       </InputContainer>
     </div>
   );
 }
 
-export default WorkDayPicker;
+export default WorkTimeChoice;

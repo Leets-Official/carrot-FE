@@ -9,16 +9,14 @@ import {
   MinimumWageInfo,
 } from "../styles/PayPickerStyles";
 
-function PayPicker({ label }) {
+function PayPicker({ label, options = ["시급", "건당", "일급", "월급"] }) {
   // 연도와 최저시급은 매년 변동이 있으므로 변수로 처리
   const year = 2024; 
   const minimumWage = 9860; 
   const estimatedDailyWage = minimumWage * 9; 
 
-  const [selectedPayOption, setSelectedPayOption] = useState("시급");
+  const [selectedPayOption, setSelectedPayOption] = useState(options[0]);
   const [inputValue, setInputValue] = useState("");
-
-  const payOptions = ["시급", "건당", "일급", "월급"];
 
   useEffect(() => {
     setInputValue(""); 
@@ -65,7 +63,7 @@ function PayPicker({ label }) {
       {label && <StyledLabel>{label}</StyledLabel>}
 
       <PayOptionContainer>
-        {payOptions.map((option) => (
+        {options.map((option) => (
           <PayButton
             key={option}
             selected={selectedPayOption === option}

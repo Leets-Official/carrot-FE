@@ -14,6 +14,8 @@ import AddressInput from "../../components/AddressInput";
 import PhotoUpload from "../../components/PhotoUpload";
 import DescriptionInput from "../../components/DescriptionInput";
 import PhoneInput from "../../components/PhoneInput";
+import WorkDayPicker from "../../components/WorkDayPicker";
+import WorkTimeChoice from "../../components/WorkTimeChoice";
 import "../../styles/Posting.css";
 
 const PageContainer = styled.div`
@@ -50,9 +52,19 @@ const Posting = () => {
   const [selectedOption, setSelectedOption] = useState("업무 목적");
   const [periodOption, setPeriodOption] = useState(null);
 
+  const [upmuTagsSelected, setUpmuTagsSelected] = useState([]);
+  const [eutTagsSelected, setEutTagsSelected] = useState([]);
+
   const handleOptionChange = (option) => {
     setSelectedOption(option);
     setPeriodOption(null);
+
+    // 다른 옵션 선택 시 선택된 태그 초기화
+    if (option === "업무 목적") {
+      setEutTagsSelected([]); // 이웃 알바 태그 초기화
+    } else {
+      setUpmuTagsSelected([]); // 업무 목적 태그 초기화
+    }
   };
 
   const handlePeriodChange = (option) => {
@@ -86,9 +98,14 @@ const Posting = () => {
         {selectedOption === "업무 목적" ? (
           <>
             <div className="form-section">
-              <Tag label="하는 일" tags={upmuTags} maxSelectable={3} />
+              <Tag
+                label="하는 일"
+                tags={upmuTags}
+                selectedTags={upmuTagsSelected}
+                setSelectedTags={setUpmuTagsSelected}
+                maxSelectable={3}
+              />
             </div>
-
             <div className="form-section">
               <Toggle
                 label="일하는 기간"
@@ -124,9 +141,7 @@ const Posting = () => {
                     value={workLocation}
                     onChange={setWorkLocation}
                   />
-                  <PhoneInput
-                    label = "연락처"
-                  />
+                  <PhoneInput label="연락처" />
                 </div>
               </>
             )}
@@ -156,9 +171,7 @@ const Posting = () => {
                     value={workLocation}
                     onChange={setWorkLocation}
                   />
-                  <PhoneInput
-                    label = "연락처"
-                  />
+                  <PhoneInput label="연락처" />
                 </div>
               </>
             )}
@@ -166,10 +179,25 @@ const Posting = () => {
         ) : (
           <>
             <div className="form-section">
-              <Tag label="하는 일" tags={eutTags} maxSelectable={3} />
+              <Tag
+                label="하는 일"
+                tags={eutTags}
+                selectedTags={eutTagsSelected}
+                setSelectedTags={setEutTagsSelected}
+                maxSelectable={3}
+              />
             </div>
             <div className="form-section">
-              <PayPicker label="급여" />
+              <WorkDayPicker label="일하는 날짜"/>
+            </div>
+            <div className="form-section">
+              <WorkTimeChoice label="일하는 시간"/>
+            </div>
+            <div className="form-section">
+              <PayPicker 
+                label="급여" 
+                options={["시급", "건당", "월급"]} 
+              />
             </div>
             <div className="form-section">
               <DescriptionInput label="자세한 설명" />
@@ -193,7 +221,7 @@ const Posting = () => {
           color="#ff8a3d"
           textColor="#ffffff"
           size="18px"
-          onClick={() => alert("제출되었습니다!")}
+          onClick={() => alert("미리보기 화면으로 이동 예정")}
         >
           다음
         </Button>

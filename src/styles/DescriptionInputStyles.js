@@ -38,7 +38,6 @@ export const StyledTextArea = styled.textarea`
 
 export const CharCount = styled.span`
   position: absolute;
-  bottom: 8px;
   right: 12px;
   font-size: 12px;
   color: #666;
