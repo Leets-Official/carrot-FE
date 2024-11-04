@@ -50,7 +50,8 @@ const postCodeStyle = {
 function InitLocation() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { signupType, signupEmail } = useSelector((state) => state.signupInfo);
+  const { signupType, signupEmail, signupPwd, signupName, signupPhone } =
+    useSelector((state) => state.signupInfo);
   const [locationData, setLocationData] = useState({
     primaryAddress: "",
     subAddress: "",
@@ -71,7 +72,14 @@ function InitLocation() {
       dispatch(SET_ADDRESS(locationData.subAddress));
       // 회원가입 정보 ALL 제출(axios)
       alert("회원가입이 완료되었습니다");
-      console.log(signupEmail);
+      console.log(
+        signupType,
+        signupEmail,
+        signupPwd,
+        signupName,
+        signupPhone,
+        locationData.subAddress
+      );
       // 로그인 이동
       dispatch(RESET_SIGNUP());
       navigate("/", { replace: true });

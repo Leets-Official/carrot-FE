@@ -19,8 +19,8 @@ function SignUp() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const handleSuccess = (email) => {
-    dispatch(VERIFY_EMAIL(email));
+  const handleSuccess = (email, password) => {
+    dispatch(VERIFY_EMAIL({ email: email, password: password }));
     navigate("/signup/info");
   };
 
