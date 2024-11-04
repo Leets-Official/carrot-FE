@@ -5,6 +5,7 @@ import Landing from "./pages/Landing";
 import Login from "./pages/register/Login";
 import SignUpRoute from "./pages/register/SignUp";
 import MyPageRoute from "./pages/mypage/MyPageRoute";
+import PostDetail from "./pages/postDetail/PostDetail";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup/*" element={<SignUpRoute />} />
           <Route path="/mypage/*" element={<MyPageRoute />} />
+          <Route path="/post/detail" element={<PostDetail />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
