@@ -1,22 +1,12 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import InputField from "../../components/InputField";
-import Tag from "../../components/Tag";
-import Toggle from "../../components/Toggle";
-import Calendar from "../../components/Calendar";
-import Button from "../../components/Button";
+import "../../styles/Posting.css";
 import upmuTags from "../../constants/upmuTag";
 import eutTags from "../../constants/eutTag";
-import WorkTimePicker from "../../components/WorkTimepicker";
-import WeekdayPicker from "../../components/WeekdayPicker";
-import PayPicker from "../../components/PayPicker";
-import AddressInput from "../../components/AddressInput";
-import PhotoUpload from "../../components/PhotoUpload";
-import DescriptionInput from "../../components/DescriptionInput";
-import PhoneInput from "../../components/PhoneInput";
-import WorkDayPicker from "../../components/WorkDayPicker";
-import WorkTimeChoice from "../../components/WorkTimeChoice";
-import "../../styles/Posting.css";
+
+import {InputField, Tag, Toggle, Calendar, Button, WeekdayPicker, WorkTimePicker, PayPicker, AddressInput, 
+  PhotoUpload, DescriptionInput, PhoneInput, WorkDayPicker, WorkTimeChoice
+} from "../../components";
 
 const PageContainer = styled.div`
   width: 440px;
@@ -59,11 +49,10 @@ const Posting = () => {
     setSelectedOption(option);
     setPeriodOption(null);
 
-    // 다른 옵션 선택 시 선택된 태그 초기화
     if (option === "업무 목적") {
-      setEutTagsSelected([]); // 이웃 알바 태그 초기화
+      setEutTagsSelected([]); 
     } else {
-      setUpmuTagsSelected([]); // 업무 목적 태그 초기화
+      setUpmuTagsSelected([]); 
     }
   };
 
