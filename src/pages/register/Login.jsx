@@ -11,9 +11,12 @@ import { useNavigate } from "react-router-dom";
 import Input from "../../components/Input";
 import Button from "../../components/Button";
 import theme from "./../../styles/theme/theme";
+import { loginAPI } from "../../api";
+import { useDispatch } from "react-redux";
 
 function Login() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [loginState, setLoginState] = useState({
     email: "",
     password: "",
@@ -30,7 +33,13 @@ function Login() {
       return;
     }
     // 로그인 API 호출
-    console.log(email, password);
+    loginAPI(email, password, dispatch).then((response) => {
+      if (response.isSuccess) {
+        navigate("/home", { replace: true });
+      } else {
+        alert(response.message);
+      }
+    });
   };
 
   return (
