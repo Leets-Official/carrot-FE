@@ -67,7 +67,8 @@ function BusinessUserInfo() {
   };
   // 전화번호 형식 확인
   const validatePhoneFormat = () => {
-    let phoneRule = /^(010)[0-9]{3,4}[0-9]{4}$/;
+    let phoneRule =
+      /^(01[016789]{1}|02|0[3-9]{1}[0-9]{1})-?[0-9]{3,4}-?[0-9]{4}$/;
     return phoneRule.test(user.phone);
   };
 
@@ -121,7 +122,6 @@ function BusinessUserInfo() {
     if (validateNickNameFormat()) {
       if (validatePhoneFormat()) {
         if (isCEO) {
-          console.log(user, CEOInfo, isCEO);
           // 날짜 포맷 변환
           let fullDate = `${CEOInfo.date.year}${String(
             CEOInfo.date.month

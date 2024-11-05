@@ -34,7 +34,8 @@ function UserInfo() {
 
   // 전화번호 형식 확인
   const validatePhoneFormat = () => {
-    let phoneRule = /^(010)[0-9]{3,4}[0-9]{4}$/;
+    let phoneRule =
+      /^(01[016789]{1}|02|0[3-9]{1}[0-9]{1})-?[0-9]{3,4}-?[0-9]{4}$/;
     return phoneRule.test(user.phone);
   };
 
