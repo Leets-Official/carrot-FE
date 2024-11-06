@@ -6,6 +6,8 @@ import Login from "./pages/register/Login";
 import SignUpRoute from "./pages/register/SignUp";
 import MyPageRoute from "./pages/mypage/MyPageRoute";
 import PostDetail from "./pages/postDetail/PostDetail";
+import Home from "./pages/home/Home";
+import SearchHome from "./pages/home/SearchHome";
 
 function App() {
   return (
@@ -16,7 +18,9 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup/*" element={<SignUpRoute />} />
           <Route path="/mypage/*" element={<MyPageRoute />} />
-          <Route path="/post/detail" element={<PostDetail />} />
+          <Route path="/post/detail/:id" element={<PostDetail />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/home/search" element={<SearchHome />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

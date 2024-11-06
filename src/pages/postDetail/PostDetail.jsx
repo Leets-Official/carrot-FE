@@ -21,7 +21,7 @@ import {
   Tag,
   ButtonContainer,
 } from "../../styles/PostDetail.style";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import CeoInfo from "./CeoInfo";
 import MapContainer from "../../components/MapContainer";
 import Button from "../../components/Button";
@@ -61,6 +61,7 @@ const data = {
 function PostDetail() {
   const userType = "USER";
   const navigate = useNavigate();
+  const { id } = useParams();
   const [isOpen, setIsOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const imageContainerRef = useRef(null);

@@ -33,6 +33,7 @@ const Input = ({
   name,
   type,
   onChange,
+  onKeyDown,
 }) => {
   return (
     <>
@@ -47,6 +48,7 @@ const Input = ({
         name={name}
         type={type}
         onChange={onChange}
+        onKeyDown={onKeyDown}
       />
     </>
   );
