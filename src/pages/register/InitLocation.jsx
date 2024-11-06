@@ -9,6 +9,7 @@ import styled from "styled-components";
 import { useSignupRouter } from "../../hooks/useSignupRouter";
 import { useDispatch, useSelector } from "react-redux";
 import { SET_ADDRESS, RESET_SIGNUP } from "../../store/signupInfo";
+import { signupCEOAPI, signupUserAPI } from "../../api";
 
 const LocationForm = styled.div`
   display: flex;
@@ -50,7 +51,14 @@ const postCodeStyle = {
 function InitLocation() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { signupType, signupEmail } = useSelector((state) => state.signupInfo);
+  const {
+    signupType,
+    signupEmail,
+    signupPwd,
+    signupName,
+    signupPhone,
+    signupCEO,
+  } = useSelector((state) => state.signupInfo);
   const [locationData, setLocationData] = useState({
     primaryAddress: "",
     subAddress: "",
@@ -64,17 +72,50 @@ function InitLocation() {
     setOpenPostcode(false);
   };
 
-  const handleSignupForm = () => {
+  const handleSignupForm = (e) => {
+    e.preventDefault();
     if (locationData.primaryAddress == "") {
       alert("주소는 필수입력사항입니다.");
+      return;
+    }
+
+    dispatch(SET_ADDRESS(locationData.subAddress));
+    // 회원가입 API - 사업자, 일반유저 구분
+    if (signupType === "USER") {
+      // 일반유저
+      signupUserAPI(
+        signupEmail,
+        signupPwd,
+        signupPhone,
+        signupName,
+        locationData.subAddress
+      ).then((response) => {
+        if (response.isSuccess) {
+          alert("회원가입이 완료되었습니다");
+          navigate("/", { replace: true });
+        } else {
+          alert(response.message + `. 회원가입을 다시 진행해주세요.`);
+          navigate("/signup", { replace: true });
+        }
+      });
     } else {
-      dispatch(SET_ADDRESS(locationData.subAddress));
-      // 회원가입 정보 ALL 제출(axios)
-      alert("회원가입이 완료되었습니다");
-      console.log(signupEmail);
-      // 로그인 이동
-      dispatch(RESET_SIGNUP());
-      navigate("/", { replace: true });
+      // 사업자 유저
+      signupCEOAPI(
+        signupEmail,
+        signupPwd,
+        signupPhone,
+        signupName,
+        signupCEO,
+        locationData.subAddress
+      ).then((response) => {
+        if (response.isSuccess) {
+          alert("회원가입이 완료되었습니다");
+          navigate("/login", { replace: true });
+        } else {
+          alert(response.message + `. 회원가입을 다시 진행해주세요.`);
+          navigate("/signup", { replace: true });
+        }
+      });
     }
   };
 

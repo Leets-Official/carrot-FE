@@ -43,6 +43,12 @@ const Form = styled.div`
   gap: 10px;
   margin-bottom: 20px;
 
+  .emailInput {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    gap: 10px;
+  }
   .validEmailRequest .validEmailAuthCode {
     font-size: 12px;
   }
