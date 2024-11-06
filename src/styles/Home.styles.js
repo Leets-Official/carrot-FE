@@ -62,32 +62,3 @@ export const BodyContainer = styled.div`
     display: none;
   }
 `;
-
-export const FilterBox = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  width: 100%;
-
-  button {
-    background-color: ${theme.color.lightgray};
-    color: grey;
-    border: none;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 5px 10px;
-    font-family: "NanumSquareNeo";
-    font-size: 14px;
-    cursor: pointer;
-
-    &:active {
-      opacity: 0.8;
-      transition: 0.5s;
-    }
-    &:hover {
-      opacity: 0.8;
-      transition: 0.5s;
-    }
-  }
-`;

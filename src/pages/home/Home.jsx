@@ -3,17 +3,14 @@ import {
   IconUserCircle,
   IconPencilPlus,
   IconSearch,
-  IconChevronDown,
 } from "@tabler/icons-react";
 import {
   Container,
   HeaderContainer,
   HeaderMenuContainer,
   BodyContainer,
-  FilterBox,
 } from "../../styles/Home.styles";
 import PostCard from "../../components/home/PostCard";
-import FilterModal from "../../components/home/FilteredModal";
 import { useNavigate } from "react-router-dom";
 
 const data = [
@@ -82,18 +79,6 @@ const data = [
 function Home() {
   const userType = "CEO";
   const navigate = useNavigate();
-  const [isOpen, setIsOpen] = useState(false);
-  const [selectedTags, setSelectedTags] = useState([]); // 선택된 태그들
-
-  const filterJob = () => {
-    setIsOpen((pre) => !pre);
-  };
-
-  const filteredData = data.filter((post) =>
-    selectedTags.length === 0
-      ? true // 선택된 태그가 없으면 모든 데이터를 표시
-      : post.jobTags.some((tag) => selectedTags.includes(tag))
-  );
 
   return (
     <Container>
@@ -113,21 +98,7 @@ function Home() {
         </div>
       </HeaderContainer>
       <BodyContainer>
-        <FilterBox>
-          <button onClick={filterJob}>
-            하는일 <IconChevronDown />
-          </button>
-        </FilterBox>
-
-        {isOpen && (
-          <FilterModal
-            tags={["요리", "청소", "고객관리", "편의점", "서빙"]} // 가능한 "하는 일" 태그들 api로 불러와야함.
-            selectedTags={selectedTags}
-            setSelectedTags={setSelectedTags}
-            onClose={filterJob}
-          />
-        )}
-        {filteredData.map((data) => {
+        {data.map((data) => {
           return (
             <PostCard
               key={data.postId}
