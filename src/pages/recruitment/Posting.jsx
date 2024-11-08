@@ -11,6 +11,7 @@ const Posting = () => {
     handleChange("selectedOption", value);
     setIsOptionSelected(true); 
   };
+
   const [formData, setFormData] = useState({
     title: "",
     workTags: [],
@@ -25,6 +26,7 @@ const Posting = () => {
     description: "",
     workPeriod: "1개월 이상" 
   });
+
   // 값의 길이에 대한 유효성 검증하여 제출을 막아둠
   const [validStates, setValidStates] = useState({
     title: true,
@@ -69,19 +71,13 @@ const Posting = () => {
     return days.map((day) => dayMap[day]).join(", ");
   };
 
-  const handleSubmit = () => {
-    const allValid = Object.values(validStates).every((isValid) => isValid);
-    if (!allValid) {
-      alert("모든 필드를 올바르게 입력해주세요.");
-      return;
-    }
-  
+  const createPayload = () => {
     const { doName, siName, detailName } = parseAddress(formData.workLocation);
     const workDays = convertDays(formData.workDays);
     const [startHour, startMinute] = formData.workTime.start.split(":").map(Number);
     const [endHour, endMinute] = formData.workTime.end.split(":").map(Number);
   
-    const payload = {
+    return {
       postId: 0,
       userId: 1,
       storeName: formData.storeName,
@@ -106,12 +102,14 @@ const Posting = () => {
         imageList: [""],
       },
     };
-  
+  };
+
+  const validateForm = (payload, formData) => {
     const requiredFields = {
       "제목": payload.postData.title,
       "하는 일": payload.postData.workType,
       "일하는 기간": formData.workPeriod,
-      "요일 선택": formData.workDays,
+      "일하는 요일": formData.workDays,
       "일하는 시간": formData.workTime.start && formData.workTime.end,
       "급여": formData.pay,
       "일하는 장소": formData.workLocation,
@@ -122,10 +120,21 @@ const Posting = () => {
     for (const [label, value] of Object.entries(requiredFields)) {
       if (!value || (Array.isArray(value) && value.length === 0)) {
         alert(`${label}을(를) 입력해주세요.`);
-        return;
+        return false; // 유효성 검사 실패
       }
     }
+    return true; // 유효성 검사 성공
+  };
   
+  const handleSubmit = () => {
+    const allValid = Object.values(validStates).every((isValid) => isValid);
+    if (!allValid) {
+      alert("모든 필드를 올바르게 입력해주세요.");
+      return;
+    }
+    
+    const payload = createPayload(); // payload 생성 로직 분리
+    if (!validateForm(payload, formData)) return; // 유효성 검사 실패 시 중단
     console.log("Payload:", payload);
     // API 호출
     // axios.post('/api/posting', payload).then(...);
