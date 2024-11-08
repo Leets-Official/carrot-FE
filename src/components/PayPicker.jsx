@@ -10,7 +10,7 @@ import {
   ErrorMessage,
 } from "../styles/PayPickerStyles";
 
-function PayPicker({ label, options = ["시급", "건당", "일급", "월급"], onChange}) {
+function PayPicker({ label, options = ["시급", "건당", "일급", "월급"], onChange }) {
   const year = 2024;
   const minimumWage = 9860;
   const estimatedDailyWage = minimumWage * 9;
@@ -28,10 +28,7 @@ function PayPicker({ label, options = ["시급", "건당", "일급", "월급"], 
 
   const handleOptionClick = (option) => {
     setSelectedPayOption(option);
-  };
-
-  const formatNumber = (value) => {
-    return value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    updatePay(option, inputValue);
   };
 
   const handleInputChange = (e) => {
@@ -39,17 +36,19 @@ function PayPicker({ label, options = ["시급", "건당", "일급", "월급"], 
     if (/^\d*$/.test(rawValue)) {
       setInputValue(rawValue);
       setFormattedValue(formatNumber(rawValue));
-      onChange && onChange(rawValue); // 부모 컴포넌트에 값 전달
+      updatePay(selectedPayOption, rawValue);
     }
   };
 
-  useEffect(() => {
-    validateInput();
-  }, [inputValue, selectedPayOption]);
+  const updatePay = (payType, value) => {
+    const pay = payType === "월급" ? parseInt(value || "0", 10) * 10000 : parseInt(value || "0", 10);
+    onChange && onChange({ payType, pay });
+  };
+
+  const formatNumber = (value) => value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
   const validateInput = () => {
     let message = "";
-
     if (
       (selectedPayOption === "시급" || selectedPayOption === "일급") &&
       inputValue &&
@@ -59,13 +58,14 @@ function PayPicker({ label, options = ["시급", "건당", "일급", "월급"], 
     } else if (selectedPayOption === "월급" && inputValue && inputValue.length > 7) {
       message = "유효한 값을 입력해주세요.";
     }
-
     setErrorMessage(message);
   };
 
-  const getCurrencyLabel = () => (selectedPayOption === "월급" ? "만원" : "원");
+  useEffect(() => {
+    validateInput();
+  }, [inputValue, selectedPayOption]);
 
-  const getPlaceholder = () => (selectedPayOption === "시급" ? minimumWage.toString() : "0");
+  const getCurrencyLabel = () => (selectedPayOption === "월급" ? "만원" : "원");
 
   const renderWageInfo = () => {
     if (selectedPayOption === "시급" || selectedPayOption === "월급") {
@@ -107,7 +107,7 @@ function PayPicker({ label, options = ["시급", "건당", "일급", "월급"], 
           type="text"
           value={formattedValue}
           onChange={handleInputChange}
-          placeholder={getPlaceholder()}
+          placeholder={selectedPayOption === "시급" ? minimumWage.toString() : "0"}
         />
         <CurrencyLabel>{getCurrencyLabel()}</CurrencyLabel>
       </InputContainer>
