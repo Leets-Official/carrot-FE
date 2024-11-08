@@ -164,7 +164,7 @@ function PostDetail() {
           </div>
         </Content>
         <Content>
-          <MapContainer location={data.location} />
+          {/* <MapContainer location={data.location} /> */}
         </Content>
         <Content>
           <div className="ceoInfo">
