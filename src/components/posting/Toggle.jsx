@@ -1,7 +1,7 @@
 import React from "react";
 import ToggleCard from "./ToggleCard";
 import TagToggle from "./TagToggle";
-import { StyledLabel } from "../../styles/ToggleStyles";
+import { StyledLabel } from "../../styles/posting/ToggleStyles";
 
 const Toggle = ({ label, styleType, options, selectedOption, onChange }) => {
   return (

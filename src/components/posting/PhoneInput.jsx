@@ -7,7 +7,7 @@ import {
   CheckboxContainer,
   CheckboxLabel,
   CustomCheckbox,
-} from "../../styles/PhoneInputStyles";
+} from "../../styles/posting/PhoneInputStyles";
 
 const PhoneInput = ({ label, onChange, onValidityChange }) => {
   const [phone, setPhone] = useState("");

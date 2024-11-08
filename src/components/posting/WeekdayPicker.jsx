@@ -4,7 +4,7 @@ import {
   WeekdayContainer,
   WeekdayButton,
   SelectedDaysText,
-} from "../../styles/WeekdayPickerStyles";
+} from "../../styles/posting/WeekdayPickerStyles";
 
 const WeekdayPicker = ({ label, onChange }) => {
   const weekdays = ["월", "화", "수", "목", "금", "토", "일"];

@@ -8,7 +8,7 @@ import {
   CurrencyLabel,
   MinimumWageInfo,
   ErrorMessage,
-} from "../../styles/PayPickerStyles";
+} from "../../styles/posting/PayPickerStyles";
 
 function PayPicker({ label, options = ["시급", "건당", "일급", "월급"], onChange }) {
   const year = 2024;

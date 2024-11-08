@@ -7,7 +7,7 @@ import {
   ToggleTitle,
   ToggleSubtitle,
   ToggleCircle,
-} from "../../styles/ToggleCardStyles";
+} from "../../styles/posting/ToggleCardStyles";
 
 const ToggleCard = ({ selected, onClick }) => {
   const option = "업무 목적"; 

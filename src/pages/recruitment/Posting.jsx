@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { PageContainer, ContentContainer, FixedButtonContainer} from "../../styles/PostingStyles";
+import { PageContainer, ContentContainer, FixedButtonContainer} from "../../styles/posting/PostingStyles";
 import {InputField,Tag,Toggle,WeekdayPicker,WorkTimePicker,PayPicker,AddressInput,PhotoUpload,DescriptionInput,PhoneInput,Button} from "../../components";
-import "../../styles/Posting.css";
-import upmuTags from "../../constants/upmuTag";
+import "../../styles/posting/Posting.css";
+import { POSTING_UPMU_TAG } from "../../constants";
+
 
 const Posting = () => {
   const [isOptionSelected, setIsOptionSelected] = useState(false);
@@ -167,7 +168,7 @@ const Posting = () => {
             <div className="form-section">
             <Tag
             label="하는 일"
-            tags={upmuTags} 
+            tags={POSTING_UPMU_TAG} 
             selectedTags={formData.workTags}
             setSelectedTags={(tags) => handleChange("workTags", tags)}
             maxSelectable={1}

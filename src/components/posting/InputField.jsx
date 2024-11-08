@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { InputWrapper, StyledLabel, BasicInput, ErrorMessage } from "../../styles/InputFieldStyles";
+import { InputWrapper, StyledLabel, BasicInput, ErrorMessage } from "../../styles/posting/InputFieldStyles";
 
 const InputField = ({
   label,

@@ -11,7 +11,7 @@ import {
   CheckboxContainer,
   CheckboxLabel,
   CustomCheckbox,
-} from "../../styles/WorkTimePickerStyles";
+} from "../../styles/posting/WorkTimePickerStyles";
 
 const WorkTimePicker = ({ label, showNegotiable = true, onChange }) => {
   const generateTimeOptions = () => {

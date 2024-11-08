@@ -8,7 +8,7 @@ import {
   PreviewContainer,
   PreviewImage,
   RemoveButton,
-} from "../../styles/PhotoUploadStyles";
+} from "../../styles/posting/PhotoUploadStyles";
 
 const PhotoUpload = ({ label }) => {
   const [photos, setPhotos] = useState([]);
