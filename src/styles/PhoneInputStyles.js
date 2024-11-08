@@ -33,7 +33,6 @@ export const ErrorMessage = styled.span`
   color: #ff0000;
   font-size: 12px;
   margin-top: 4px;
-  visibility: ${({ show }) => (show ? "visible" : "hidden")};
 `;
 
 export const CheckboxContainer = styled.div`

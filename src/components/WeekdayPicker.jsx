@@ -6,16 +6,17 @@ import {
   SelectedDaysText,
 } from "../styles/WeekdayPickerStyles";
 
-const WeekdayPicker = ({ label }) => {
+const WeekdayPicker = ({ label, onChange }) => {
   const weekdays = ["월", "화", "수", "목", "금", "토", "일"];
   const [selectedDays, setSelectedDays] = useState([]);
 
   const toggleDay = (day) => {
-    if (selectedDays.includes(day)) {
-      setSelectedDays(selectedDays.filter((d) => d !== day));
-    } else {
-      setSelectedDays([...selectedDays, day]);
-    }
+    const updatedDays = selectedDays.includes(day)
+      ? selectedDays.filter((d) => d !== day)
+      : [...selectedDays, day];
+
+    setSelectedDays(updatedDays);
+    onChange(updatedDays); // 부모 컴포넌트에 선택된 요일 전달
   };
 
   const formattedSelectedDays = selectedDays

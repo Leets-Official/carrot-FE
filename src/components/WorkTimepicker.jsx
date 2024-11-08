@@ -10,6 +10,7 @@ import {
   WaveSymbol,
   CheckboxContainer,
   CheckboxLabel,
+  CustomCheckbox
 } from "../styles/WorkTimePickerStyles";
 
 const WorkTimePicker = ({ label, showNegotiable = true }) => {
@@ -72,14 +73,12 @@ const WorkTimePicker = ({ label, showNegotiable = true }) => {
       </TimeSelectContainer>
 
       {showNegotiable && (
-        <CheckboxContainer>
-          <input
-            type="checkbox"
-            checked={negotiable}
-            onChange={() => setNegotiable(!negotiable)}
-          />
-          <CheckboxLabel>협의 가능</CheckboxLabel>
-        </CheckboxContainer>
+      <CheckboxContainer>
+      <CustomCheckbox
+
+      />
+      <CheckboxLabel>협의 가능</CheckboxLabel>
+    </CheckboxContainer>
       )}
     </>
   );

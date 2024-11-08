@@ -15,18 +15,24 @@ export const StyledLabel = styled.label`
 `;
 
 export const BasicInput = styled.input`
-  background-color: ${({ color }) => color || "#ffffff"};
-  color: ${({ textColor }) => textColor || "#333"};
+  background-color: ${({ isValid }) => (isValid ? "#ffffff" : "#fff5f5")};
   border: 1px solid ${({ border }) => border || "#cccccc"};
+  color: ${({ textColor }) => textColor || "#333"};
   border-radius: 0.5rem;
   width: 100%;
   padding: 15px 10px;
   font-family: "NanumSquareNeo", sans-serif;
   font-size: ${({ size }) => size || "14px"};
-  cursor: pointer;
   outline: none;
 
   &:focus {
-    border-color: #000000;
+    border-color: ${({ isValid }) => (isValid ? "#000000" : "#ff0000")};
   }
+`;
+
+export const ErrorMessage = styled.span`
+  display: ${({ show }) => (show ? "block" : "none")};
+  color: #ff0000;
+  font-size: 12px;
+  margin-top: 4px;
 `;

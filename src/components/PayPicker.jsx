@@ -7,51 +7,79 @@ import {
   PayInput,
   CurrencyLabel,
   MinimumWageInfo,
+  ErrorMessage,
 } from "../styles/PayPickerStyles";
 
-function PayPicker({ label, options = ["시급", "건당", "일급", "월급"] }) {
-  // 연도와 최저시급은 매년 변동이 있으므로 변수로 처리
-  const year = 2024; 
-  const minimumWage = 9860; 
-  const estimatedDailyWage = minimumWage * 9; 
+function PayPicker({ label, options = ["시급", "건당", "일급", "월급"], onChange}) {
+  const year = 2024;
+  const minimumWage = 9860;
+  const estimatedDailyWage = minimumWage * 9;
 
   const [selectedPayOption, setSelectedPayOption] = useState(options[0]);
   const [inputValue, setInputValue] = useState("");
+  const [formattedValue, setFormattedValue] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    setInputValue(""); 
+    setInputValue("");
+    setFormattedValue("");
+    setErrorMessage("");
   }, [selectedPayOption]);
 
   const handleOptionClick = (option) => {
     setSelectedPayOption(option);
-    setInputValue("");
+  };
+
+  const formatNumber = (value) => {
+    return value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
 
   const handleInputChange = (e) => {
-    const { value } = e.target;
-    if (/^\d*$/.test(value)) {
-      setInputValue(value); // 숫자만 입력 허용
+    const rawValue = e.target.value.replace(/,/g, "");
+    if (/^\d*$/.test(rawValue)) {
+      setInputValue(rawValue);
+      setFormattedValue(formatNumber(rawValue));
+      onChange && onChange(rawValue); // 부모 컴포넌트에 값 전달
     }
   };
 
-  const getCurrencyLabel = () =>
-    selectedPayOption === "월급" ? "만원" : "원"; 
+  useEffect(() => {
+    validateInput();
+  }, [inputValue, selectedPayOption]);
 
-  const getPlaceholder = () =>
-    selectedPayOption === "시급" ? minimumWage.toString() : "0"; 
+  const validateInput = () => {
+    let message = "";
+
+    if (
+      (selectedPayOption === "시급" || selectedPayOption === "일급") &&
+      inputValue &&
+      parseInt(inputValue) < minimumWage
+    ) {
+      message = `최저임금을 준수해주세요 (${minimumWage.toLocaleString()}원 이상)`;
+    } else if (selectedPayOption === "월급" && inputValue && inputValue.length > 7) {
+      message = "유효한 값을 입력해주세요.";
+    }
+
+    setErrorMessage(message);
+  };
+
+  const getCurrencyLabel = () => (selectedPayOption === "월급" ? "만원" : "원");
+
+  const getPlaceholder = () => (selectedPayOption === "시급" ? minimumWage.toString() : "0");
 
   const renderWageInfo = () => {
     if (selectedPayOption === "시급" || selectedPayOption === "월급") {
       return (
         <MinimumWageInfo>
-          {year}년 최저시급은 <b>{minimumWage}</b>원입니다.
+          {year}년 최저시급은 <b>{minimumWage.toLocaleString()}</b>원입니다.
         </MinimumWageInfo>
       );
     }
     if (selectedPayOption === "일급") {
       return (
         <MinimumWageInfo>
-          {year}년 최저시급은 <b>{minimumWage}</b>원이며, 하루 9시간씩 근무할 경우 예상 일급은 <b>{estimatedDailyWage}</b>원 이상입니다.
+          {year}년 최저시급은 <b>{minimumWage.toLocaleString()}</b>원이며, 하루 9시간씩 근무할 경우 예상
+          일급은 <b>{estimatedDailyWage.toLocaleString()}</b>원 이상입니다.
         </MinimumWageInfo>
       );
     }
@@ -77,12 +105,14 @@ function PayPicker({ label, options = ["시급", "건당", "일급", "월급"] }
       <InputContainer>
         <PayInput
           type="text"
-          value={inputValue}
+          value={formattedValue}
           onChange={handleInputChange}
-          placeholder={getPlaceholder()} 
+          placeholder={getPlaceholder()}
         />
         <CurrencyLabel>{getCurrencyLabel()}</CurrencyLabel>
       </InputContainer>
+
+      {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
 
       {renderWageInfo()}
     </div>

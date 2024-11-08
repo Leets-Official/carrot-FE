@@ -2,11 +2,8 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import "../../styles/Posting.css";
 import upmuTags from "../../constants/upmuTag";
-import eutTags from "../../constants/eutTag";
 
-import {InputField, Tag, Toggle, Calendar, Button, WeekdayPicker, WorkTimePicker, PayPicker, AddressInput, 
-  PhotoUpload, DescriptionInput, PhoneInput, WorkDayPicker, WorkTimeChoice
-} from "../../components";
+import {InputField,Tag,Toggle,WeekdayPicker,WorkTimePicker,PayPicker,AddressInput,PhotoUpload,DescriptionInput,PhoneInput,Button,} from "../../components";
 
 const PageContainer = styled.div`
   width: 440px;
@@ -38,168 +35,221 @@ const FixedButtonContainer = styled.div`
 `;
 
 const Posting = () => {
-  const [workLocation, setWorkLocation] = useState("");
-  const [selectedOption, setSelectedOption] = useState("업무 목적");
-  const [periodOption, setPeriodOption] = useState(null);
+  const [isOptionSelected, setIsOptionSelected] = useState(false); 
 
-  const [upmuTagsSelected, setUpmuTagsSelected] = useState([]);
-  const [eutTagsSelected, setEutTagsSelected] = useState([]);
+  // 토글 클릭 시 하위 컴포넌트 활성화 시키도록 설정해둠
+  const handleToggleClick = (value) => {
+    handleChange("selectedOption", value);
+    setIsOptionSelected(true); 
+  };
 
-  const handleOptionChange = (option) => {
-    setSelectedOption(option);
-    setPeriodOption(null);
+  const [formData, setFormData] = useState({
+    title: "",
+    workTags: [],
+    allTags: [...upmuTags],
+    workPeriod: "1개월 이상",
+    workDays: [],
+    workTime: { start: "09:00", end: "18:00" },
+    pay: "",
+    workLocation: "",
+    storeName: "",
+    applyNumber: "", 
+    isNumberPublic: true, 
+    description: "",
+  });
 
-    if (option === "업무 목적") {
-      setEutTagsSelected([]); 
-    } else {
-      setUpmuTagsSelected([]); 
+  const handleChange = (key, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+  const handlePhoneInputChange = ({ phone, noCalls }) => {
+    handleChange("applyNumber", phone); 
+    handleChange("isNumberPublic", !noCalls); 
+  };
+  
+// 태그를 업데이트하기 위한 함수
+const handleTagsUpdate = (updatedTags) => {
+  setFormData((prev) => ({
+    ...prev,
+    allTags: updatedTags,
+  }));
+};
+const parseAddress = (address) => {
+  const addressParts = address.split(" ");
+
+  const doName = addressParts[0] || ""; 
+  const siName = addressParts[1] || ""; 
+  const detailName = addressParts[2] || ""; 
+
+  return { doName, siName, detailName };
+};
+
+const convertDays = (days) => {
+  const dayMap = {
+    월: "MONDAY",
+    화: "TUESDAY",
+    수: "WEDNESDAY",
+    목: "THURSDAY",
+    금: "FRIDAY",
+    토: "SATURDAY",
+    일: "SUNDAY",
+  };
+  return days.map((day) => dayMap[day]).join(", ");
+};
+
+const handleSubmit = () => {
+  const { doName, siName, detailName } = parseAddress(formData.workLocation);
+  const workDays = convertDays(formData.workDays);
+  const [startHour, startMinute] = formData.workTime.start.split(":").map(Number);
+  const [endHour, endMinute] = formData.workTime.end.split(":").map(Number);
+
+  const payload = {
+    postId: 0, 
+    userId: 1, 
+    storeName: formData.storeName,
+    postData: {
+      doName,
+      siName,
+      detailName,
+      workType: formData.workTags[0] || "기타",
+      title: formData.title,
+      content: formData.description,
+      pay: parseInt(formData.pay, 10),
+      workStartHour: startHour,
+      workStartMinute: startMinute,
+      workEndHour: endHour,
+      workEndTimeMinute: endMinute,
+      isNegotiable: true, 
+      applyNumber: formData.applyNumber,
+      workDays,
+      isShortTermJob: formData.workPeriod === "단기",
+      payType: "주급", 
+      isNumberPublic: formData.isNumberPublic,
+      imageList: [""], 
+    },
+  };
+
+  // 유효성 검사: content, imageList 제외한 필드 확인
+  const requiredFields = {
+    "제목": payload.postData.title,
+    "하는 일": payload.postData.workType,
+    "일하는 기간": formData.workPeriod,
+    "요일 선택": formData.workDays,
+    "일하는 시간": formData.workTime.start && formData.workTime.end,
+    "급여": formData.pay,
+    "일하는 장소": formData.workLocation,
+    "업체명": payload.storeName,
+    "연락처": payload.postData.applyNumber,
+  };
+
+  for (const [label, value] of Object.entries(requiredFields)) {
+    if (!value || (Array.isArray(value) && value.length === 0)) {
+      alert(`${label}을(를) 입력해주세요.`);
+      return;
     }
-  };
+  }
 
-  const handlePeriodChange = (option) => {
-    setPeriodOption(option);
-  };
+  console.log("Payload:", payload);
+  // API 호출
+  // axios.post('/api/posting', payload).then(...);
+};
 
   return (
     <PageContainer>
       <ContentContainer>
-        <div className="header">어떤 목적으로 알바를 구하시나요?</div>
-
+        <div className="header">어떤 알바를 구하고 계신가요?</div>
         <div className="toggle-section">
           <Toggle
-            options={["업무 목적", "이웃 알바"]}
-            onChange={handleOptionChange}
-            selectedOption={selectedOption}
+            options={["업무 목적"]}
+            selectedOption={formData.selectedOption}
+            onChange={handleToggleClick} 
             styleType="card"
           />
         </div>
 
-        <div className="form-section">
-          <InputField
-            label="제목"
-            placeholder="공고 내용을 요약해주세요."
-            textColor="#333"
-            border="#cccccc"
-            size="14px"
-          />
-        </div>
-
-        {selectedOption === "업무 목적" ? (
+        {isOptionSelected && (
           <>
+            <div className="form-section">
+              <InputField
+                label="제목"
+                placeholder="공고 내용을 요약해주세요."
+                onChange={(value) => handleChange("title", value)}
+              />
+            </div>
+
             <div className="form-section">
               <Tag
                 label="하는 일"
-                tags={upmuTags}
-                selectedTags={upmuTagsSelected}
-                setSelectedTags={setUpmuTagsSelected}
-                maxSelectable={3}
+                tags={formData.allTags}
+                selectedTags={formData.workTags}
+                setSelectedTags={(tags) => handleChange("workTags", tags)}
+                onTagsUpdate={handleTagsUpdate} 
+                maxSelectable={1}
               />
             </div>
+
             <div className="form-section">
               <Toggle
                 label="일하는 기간"
-                options={["단기", "1개월 이상"]}
-                onChange={handlePeriodChange}
-                selectedOption={periodOption}
+                options={["1개월 이상"]}
+                onChange={(value) => handleChange("workPeriod", value)}
+                selectedOption={formData.workPeriod}
                 styleType="tag"
               />
             </div>
 
-            {periodOption === "단기" && (
-              <>
-                <div className="form-section">
-                  <Calendar label="일하는 날짜" />
-                </div>
-                <div className="form-section">
-                  <WorkTimePicker label="일하는 시간" />
-                </div>
-                <div className="form-section">
-                  <PayPicker label="급여" />
-                </div>
-                <div className="form-section">
-                  <PhotoUpload label="사진" />
-                </div>
-                <div className="form-section">
-                  <DescriptionInput label="자세한 설명" />
-                </div>
-                <div className="form-section">
-                  <div className="header">업체 정보</div>
-                  <InputField label="업체명" placeholder="예) 당근가게" />
-                  <AddressInput
-                    label="일하는 장소"
-                    value={workLocation}
-                    onChange={setWorkLocation}
-                  />
-                  <PhoneInput label="연락처" />
-                </div>
-              </>
-            )}
+            <div className="form-section">
+            <WeekdayPicker
+            label="요일 선택"
+            onChange={(days) => handleChange("workDays", days)}
+            />
 
-            {periodOption === "1개월 이상" && (
-              <>
-                <div className="form-section">
-                  <WeekdayPicker label="요일 선택" />
-                </div>
-                <div className="form-section">
-                  <WorkTimePicker label="일하는 시간" />
-                </div>
-                <div className="form-section">
-                  <PayPicker label="급여" />
-                </div>
-                <div className="form-section">
-                  <PhotoUpload label="사진" />
-                </div>
-                <div className="form-section">
-                  <DescriptionInput label="자세한 설명" />
-                </div>
-                <div className="form-section">
-                  <div className="header">업체 정보</div>
-                  <InputField label="업체명" placeholder="예) 당근가게" />
-                  <AddressInput
-                    label="일하는 장소"
-                    value={workLocation}
-                    onChange={setWorkLocation}
-                  />
-                  <PhoneInput label="연락처" />
-                </div>
-              </>
-            )}
-          </>
-        ) : (
-          <>
+            </div>
+
             <div className="form-section">
-              <Tag
-                label="하는 일"
-                tags={eutTags}
-                selectedTags={eutTagsSelected}
-                setSelectedTags={setEutTagsSelected}
-                maxSelectable={3}
+              <WorkTimePicker
+                label="일하는 시간"
+                onChange={(time) => handleChange("workTime", time)}
               />
             </div>
+
             <div className="form-section">
-              <WorkDayPicker label="일하는 날짜"/>
+            <PayPicker
+            label="급여"
+            onChange={(value) => handleChange("pay", value)} 
+            />
             </div>
-            <div className="form-section">
-              <WorkTimeChoice label="일하는 시간"/>
-            </div>
-            <div className="form-section">
-              <PayPicker 
-                label="급여" 
-                options={["시급", "건당", "월급"]} 
-              />
-            </div>
-            <div className="form-section">
-              <DescriptionInput label="자세한 설명" />
-            </div>
-            <div className="form-section">
-              <AddressInput
-                label="일하는 장소"
-                value={workLocation}
-                onChange={setWorkLocation}
-              />
-            </div>
+
             <div className="form-section">
               <PhotoUpload label="사진" />
+            </div>
+
+            <div className="form-section">
+              <DescriptionInput
+                label="자세한 설명"
+                onChange={(value) => handleChange("description", value)}
+              />
+            </div>
+
+            <div className="form-section">
+              <div className="header">업체 정보</div>
+              <InputField
+                label="업체명"
+                placeholder="예) 당근가게"
+                onChange={(value) => handleChange("storeName", value)}
+              />
+              <AddressInput
+                label="일하는 장소"
+                value={formData.workLocation}
+                onChange={(value) => handleChange("workLocation", value)}
+              />
+              <PhoneInput 
+              label="연락처" 
+              onChange={handlePhoneInputChange} 
+              />
+
             </div>
           </>
         )}
@@ -210,7 +260,7 @@ const Posting = () => {
           color="#ff8a3d"
           textColor="#ffffff"
           size="18px"
-          onClick={() => alert("미리보기 화면으로 이동 예정")}
+          onClick={handleSubmit}
         >
           다음
         </Button>

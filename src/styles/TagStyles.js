@@ -44,3 +44,34 @@ export const MoreButton = styled.button`
     color: #333;
   }
 `;
+
+export const AddTagButton = styled.button`
+  background-color: #ff8a3d;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-top: 8px;
+  cursor: pointer;
+  font-size: 12px;
+`;
+
+export const TagInputWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+`;
+
+export const TagInputField = styled.input`
+  flex: 1;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+  outline: none;
+
+  &:focus {
+    border-color: #ff8a3d;
+  }
+`;

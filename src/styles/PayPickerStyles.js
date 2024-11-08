@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 export const StyledLabel = styled.label`
   display: block;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
   font-size: 14px;
   font-weight: bold;
   color: #333;
@@ -35,7 +35,6 @@ export const InputContainer = styled.div`
   margin-bottom: 8px;
   justify-content: space-between;
   font-size: 14px;
-
 `;
 
 export const PayInput = styled.input`
@@ -68,4 +67,10 @@ export const MinimumWageInfo = styled.div`
   font-size: 12px;
   color: #666;
   margin-top: 4px;
+`;
+export const ErrorMessage = styled.span`
+  color: #ff0000;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
 `;
