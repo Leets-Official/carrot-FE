@@ -9,25 +9,25 @@ import {
   CustomCheckbox,
 } from "../styles/PhoneInputStyles";
 
-const PhoneInput = ({ label, onChange }) => { // onChange prop 추가
+const PhoneInput = ({ label, onChange, onValidityChange }) => {
   const [phone, setPhone] = useState("");
   const [isValid, setIsValid] = useState(true);
   const [noCalls, setNoCalls] = useState(false);
 
   const handlePhoneChange = (e) => {
-    const value = e.target.value;
-    const filteredValue = value.replace(/[^0-9-]/g, "");
-    setPhone(filteredValue);
-    setIsValid(/^\d{3}-\d{4}-\d{4}$/.test(filteredValue));
-
-    // 상태 변경 시 부모로 전달
-    onChange({ phone: filteredValue, noCalls });
-  };
+    const value = e.target.value.replace(/[^0-9-]/g, ""); // 숫자와 하이픈만 허용
+    setPhone(value);
+  
+    const valid = /^\d{3}-\d{4}-\d{4}$/.test(value); // 올바른 형식인지 확인
+    setIsValid(valid); 
+    onValidityChange && onValidityChange(valid); // 유효성 상태 부모 전달
+    onChange && onChange({ phone: value, noCalls });
+  };  
 
   const handleCheckboxChange = () => {
     setNoCalls((prev) => {
       const updatedNoCalls = !prev;
-      onChange({ phone, noCalls: updatedNoCalls }); // 상태 변경 시 부모로 전달
+      onChange && onChange({ phone, noCalls: updatedNoCalls });
       return updatedNoCalls;
     });
   };

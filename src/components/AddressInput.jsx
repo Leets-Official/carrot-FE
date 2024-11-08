@@ -14,7 +14,7 @@ const AddressInput = ({ label, value, onChange }) => {
     }
     new window.daum.Postcode({
       oncomplete: function (data) {
-        onChange(data.address); // 선택한 주소를 부모 컴포넌트에 전달
+        onChange(data.address); 
       },
     }).open();
   };

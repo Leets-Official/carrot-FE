@@ -9,17 +9,19 @@ const InputField = ({
   border = "#cccccc",
   size = "14px",
   onChange,
+  onValidityChange, // 유효성 상태 전달 콜백
   minLength = 6,
 }) => {
   const [inputValue, setInputValue] = useState("");
+
+  const isValid = label !== "제목" || (inputValue.length >= minLength && inputValue.length <= 30);
 
   const handleChange = (e) => {
     const value = e.target.value;
     setInputValue(value);
     onChange && onChange(value);
+    onValidityChange && onValidityChange(isValid); // 유효성 상태 전달
   };
-
-  const isValid = label !== "제목" || (inputValue.length >= minLength && inputValue.length <= 30);
 
   return (
     <InputWrapper>
@@ -32,7 +34,7 @@ const InputField = ({
         placeholder={placeholder}
         value={inputValue}
         onChange={handleChange}
-        isValid={isValid}
+        isValid={isValid} // 수정된 isValid 전달
       />
       {label === "제목" && (
         <ErrorMessage show={!isValid}>

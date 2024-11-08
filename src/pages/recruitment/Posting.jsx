@@ -23,7 +23,13 @@ const Posting = () => {
     applyNumber: "",
     isNumberPublic: true,
     description: "",
-    workPeriod: "1개월 이상" // 기본값 추가
+    workPeriod: "1개월 이상" 
+  });
+  // 값의 길이에 대한 유효성 검증하여 제출을 막아둠
+  const [validStates, setValidStates] = useState({
+    title: true,
+    description: true,
+    applyNumber: true,
   });
 
   const handleChange = (key, value) => {
@@ -33,6 +39,13 @@ const Posting = () => {
     }));
   };
 
+  const handleValidityChange = (key, isValid) => {
+    setValidStates((prev) => ({
+      ...prev,
+      [key]: isValid, 
+    }));
+  };
+  
   const handlePhoneInputChange = ({ phone, noCalls }) => {
     handleChange("applyNumber", phone);
     handleChange("isNumberPublic", !noCalls);
@@ -57,11 +70,17 @@ const Posting = () => {
   };
 
   const handleSubmit = () => {
+    const allValid = Object.values(validStates).every((isValid) => isValid);
+    if (!allValid) {
+      alert("모든 필드를 올바르게 입력해주세요.");
+      return;
+    }
+  
     const { doName, siName, detailName } = parseAddress(formData.workLocation);
     const workDays = convertDays(formData.workDays);
     const [startHour, startMinute] = formData.workTime.start.split(":").map(Number);
     const [endHour, endMinute] = formData.workTime.end.split(":").map(Number);
-
+  
     const payload = {
       postId: 0,
       userId: 1,
@@ -87,7 +106,7 @@ const Posting = () => {
         imageList: [""],
       },
     };
-
+  
     const requiredFields = {
       "제목": payload.postData.title,
       "하는 일": payload.postData.workType,
@@ -99,14 +118,14 @@ const Posting = () => {
       "업체명": payload.storeName,
       "연락처": payload.postData.applyNumber,
     };
-
+  
     for (const [label, value] of Object.entries(requiredFields)) {
       if (!value || (Array.isArray(value) && value.length === 0)) {
         alert(`${label}을(를) 입력해주세요.`);
         return;
       }
     }
-
+  
     console.log("Payload:", payload);
     // API 호출
     // axios.post('/api/posting', payload).then(...);
@@ -128,11 +147,12 @@ const Posting = () => {
         {isOptionSelected && (
           <>
             <div className="form-section">
-              <InputField
-                label="제목"
-                placeholder="공고 내용을 요약해주세요."
-                onChange={(value) => handleChange("title", value)}
-              />
+            <InputField
+          label="제목"
+          placeholder="공고 내용을 요약해주세요."
+          onChange={(value) => handleChange("title", value)}
+          onValidityChange={(isValid) => handleValidityChange("title", isValid)}
+        />
             </div>
 
             <div className="form-section">
@@ -193,6 +213,7 @@ const Posting = () => {
             <DescriptionInput
   label="자세한 설명"
   onChange={(value) => handleChange("description", value)} 
+  onValidityChange={(isValid) => handleValidityChange("description", isValid)}
 />
 
             </div>
@@ -212,6 +233,7 @@ const Posting = () => {
               <PhoneInput 
               label="연락처" 
               onChange={handlePhoneInputChange} 
+              onValidityChange={(isValid) => handleValidityChange("applyNumber", isValid)}
               />
 
             </div>
