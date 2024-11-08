@@ -7,7 +7,7 @@ import {
   AddTagButton, 
   TagInputWrapper, 
   TagInputField 
-} from "../styles/TagStyles";
+} from "../../styles/TagStyles";
 
 const Tag = ({ 
   label, 

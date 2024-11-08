@@ -1,5 +1,5 @@
 import React from "react";
-import { BasicButton } from "../styles/ButtonStyles";
+import { BasicButton } from "../../styles/ButtonStyles";
 
 const Button = ({ children, color, textColor, size, onClick }) => (
   <BasicButton

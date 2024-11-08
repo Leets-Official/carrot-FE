@@ -5,7 +5,7 @@ import {
   StyledTextArea,
   CharCountContainer,
   ErrorMessage,
-} from "../styles/DescriptionInputStyles";
+} from "../../styles/DescriptionInputStyles";
 
 const DescriptionInput = ({ label, maxLength = 2000, minLength = 15, onChange }) => {
   const [text, setText] = useState("");

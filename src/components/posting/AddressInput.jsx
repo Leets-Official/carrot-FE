@@ -4,7 +4,7 @@ import {
   InputWrapper,
   TextInput,
   SearchButton,
-} from "../styles/AddressInputStyles";
+} from "../../styles/AddressInputStyles";
 
 const AddressInput = ({ label, value, onChange }) => {
   const handleSearchClick = () => {

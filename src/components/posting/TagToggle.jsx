@@ -1,5 +1,5 @@
 import React from "react";
-import { TagToggleContainer, ToggleButton } from "../styles/TagToggleStyles";
+import { TagToggleContainer, ToggleButton } from "../../styles/TagToggleStyles";
 
 const TagToggle = ({ options, selectedOption, onChange }) => (
   <TagToggleContainer>
