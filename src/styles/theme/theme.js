@@ -1,8 +1,9 @@
-const colors={
+const theme = {
+  color: {
     carrot: "#ff8a3d",
     green: "#339f46",
-    검정:"#000000",
-    연회색:"cccccc",
-    흰색:"ffffff"
+    lightgray: "#f1f3f5",
+  },
+};
 
-}
+export default theme;
