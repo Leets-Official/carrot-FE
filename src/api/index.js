@@ -10,3 +10,4 @@ export {
   postListAPI, // 알바리스트 불러오기(홈) API
   searchPostListAPI, // 알바리스트 불러오기 (검색) API
 };
+
