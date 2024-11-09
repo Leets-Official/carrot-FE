@@ -4,8 +4,8 @@ import {InputField,Tag,Toggle,WeekdayPicker,WorkTimePicker,PayPicker,AddressInpu
 import "../../styles/posting/Posting.css";
 import { POSTING_UPMU_TAG } from "../../constants";
 
-import { postJobPosting } from "../../api";
-import { getAccessToken } from "../../utils/getAccessToken"; 
+import  {postJobPosting}  from "../../api";
+import  getAccessToken  from "../../utils/getAccessToken"; 
 import { useDispatch } from "react-redux"; 
 
 const Posting = () => {
@@ -131,17 +131,20 @@ const Posting = () => {
   };
   const dispatch = useDispatch(); 
   const accessToken = getAccessToken();
-
+  console.log("Access Token:", accessToken);
+  
   const handleSubmit = async () => {
     const allValid = Object.values(validStates).every((isValid) => isValid);
     if (!allValid) {
       alert("모든 필드를 올바르게 입력해주세요.");
       return;
     }
-    
+
     const payload = createPayload(); // payload 생성
     if (!validateForm(payload, formData)) return; // 유효성 검사 실패 시 중단
-
+    if (!validateForm(payload, formData)) return;
+    postJobPosting(accessToken, dispatch, formData).then((response) => {
+    });
     // API 호출
     const response = await postJobPosting(accessToken, dispatch, payload.postData);
     if (response.isSuccess) {
