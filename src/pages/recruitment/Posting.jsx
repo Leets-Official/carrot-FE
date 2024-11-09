@@ -4,6 +4,9 @@ import {InputField,Tag,Toggle,WeekdayPicker,WorkTimePicker,PayPicker,AddressInpu
 import "../../styles/posting/Posting.css";
 import { POSTING_UPMU_TAG } from "../../constants";
 
+import { postJobPosting } from "../../api";
+import { getAccessToken } from "../../utils/getAccessToken"; 
+import { useDispatch } from "react-redux"; 
 
 const Posting = () => {
   const [isOptionSelected, setIsOptionSelected] = useState(false);
@@ -126,19 +129,29 @@ const Posting = () => {
     }
     return true; // 유효성 검사 성공
   };
-  
-  const handleSubmit = () => {
+  const dispatch = useDispatch(); 
+  const accessToken = getAccessToken();
+
+  const handleSubmit = async () => {
     const allValid = Object.values(validStates).every((isValid) => isValid);
     if (!allValid) {
       alert("모든 필드를 올바르게 입력해주세요.");
       return;
     }
     
-    const payload = createPayload(); // payload 생성 로직 분리
+    const payload = createPayload(); // payload 생성
     if (!validateForm(payload, formData)) return; // 유효성 검사 실패 시 중단
-    console.log("Payload:", payload);
+
     // API 호출
-    // axios.post('/api/posting', payload).then(...);
+    const response = await postJobPosting(accessToken, dispatch, payload.postData);
+    if (response.isSuccess) {
+      console.log("성공:", response.message);
+      alert("성공");// 성공 처리 (예: 알림창, 페이지 이동)
+    } else {
+      console.error("실패:", response.message);
+      alert("실패");
+      // 실패 처리 (예: 에러 메시지 표시)
+    }
   };
 
   return (

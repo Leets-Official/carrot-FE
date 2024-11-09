@@ -1,5 +1,6 @@
 import { verifyCEOAPI, signupUserAPI, signupCEOAPI } from "./signupAPI";
 import { loginAPI } from "./loginAPI";
+import{} from "./postingAPI";
 
 export {
   verifyCEOAPI, // 사업자 인증 API
