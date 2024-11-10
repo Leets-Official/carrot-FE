@@ -1,6 +1,22 @@
 import React, { useState } from "react";
-import { PageContainer, ContentContainer, FixedButtonContainer} from "../../styles/posting/PostingStyles";
-import {InputField,Tag,Toggle,WeekdayPicker,WorkTimePicker,PayPicker,AddressInput,PhotoUpload,DescriptionInput,PhoneInput,Button} from "../../components";
+import {
+  PageContainer,
+  ContentContainer,
+  FixedButtonContainer,
+} from "../../styles/posting/PostingStyles";
+import {
+  InputField,
+  Tag,
+  Toggle,
+  WeekdayPicker,
+  WorkTimePicker,
+  PayPicker,
+  AddressInput,
+  PhotoUpload,
+  DescriptionInput,
+  PhoneInput,
+  Button,
+} from "../../components";
 import "../../styles/posting/Posting.css";
 import { POSTING_UPMU_TAG } from "../../constants";
 
@@ -13,7 +29,7 @@ const Posting = () => {
   // 토글 클릭 시 하위 컴포넌트 활성화 시키도록 설정해둠
   const handleToggleClick = (value) => {
     handleChange("selectedOption", value);
-    setIsOptionSelected(true); 
+    setIsOptionSelected(true);
   };
 
   const [formData, setFormData] = useState({
@@ -28,7 +44,7 @@ const Posting = () => {
     applyNumber: "",
     isNumberPublic: true,
     description: "",
-    workPeriod: "1개월 이상" 
+    workPeriod: "1개월 이상",
   });
 
   // 값의 길이에 대한 유효성 검증하여 제출을 막아둠
@@ -48,10 +64,10 @@ const Posting = () => {
   const handleValidityChange = (key, isValid) => {
     setValidStates((prev) => ({
       ...prev,
-      [key]: isValid, 
+      [key]: isValid,
     }));
   };
-  
+
   const handlePhoneInputChange = ({ phone, noCalls }) => {
     handleChange("applyNumber", phone);
     handleChange("isNumberPublic", !noCalls);
@@ -78,9 +94,11 @@ const Posting = () => {
   const createPayload = () => {
     const { doName, siName, detailName } = parseAddress(formData.workLocation);
     const workDays = convertDays(formData.workDays);
-    const [startHour, startMinute] = formData.workTime.start.split(":").map(Number);
+    const [startHour, startMinute] = formData.workTime.start
+      .split(":")
+      .map(Number);
     const [endHour, endMinute] = formData.workTime.end.split(":").map(Number);
-  
+
     return {
       postId: 0,
       userId: 1,
@@ -110,17 +128,17 @@ const Posting = () => {
 
   const validateForm = (payload, formData) => {
     const requiredFields = {
-      "제목": payload.postData.title,
+      제목: payload.postData.title,
       "하는 일": payload.postData.workType,
       "일하는 기간": formData.workPeriod,
       "일하는 요일": formData.workDays,
       "일하는 시간": formData.workTime.start && formData.workTime.end,
-      "급여": formData.pay,
+      급여: formData.pay,
       "일하는 장소": formData.workLocation,
-      "업체명": payload.storeName,
-      "연락처": payload.postData.applyNumber,
+      업체명: payload.storeName,
+      연락처: payload.postData.applyNumber,
     };
-  
+
     for (const [label, value] of Object.entries(requiredFields)) {
       if (!value || (Array.isArray(value) && value.length === 0)) {
         alert(`${label}을(를) 입력해주세요.`);
@@ -165,7 +183,7 @@ const Posting = () => {
           <Toggle
             options={["업무 목적"]}
             selectedOption={formData.selectedOption}
-            onChange={handleToggleClick} 
+            onChange={handleToggleClick}
             styleType="card"
           />
         </div>
@@ -173,26 +191,28 @@ const Posting = () => {
         {isOptionSelected && (
           <>
             <div className="form-section">
-            <InputField
-          label="제목"
-          placeholder="공고 내용을 요약해주세요."
-          onChange={(value) => handleChange("title", value)}
-          onValidityChange={(isValid) => handleValidityChange("title", isValid)}
-        />
+              <InputField
+                label="제목"
+                placeholder="공고 내용을 요약해주세요."
+                onChange={(value) => handleChange("title", value)}
+                onValidityChange={(isValid) =>
+                  handleValidityChange("title", isValid)
+                }
+              />
             </div>
 
             <div className="form-section">
-            <Tag
-            label="하는 일"
-            tags={POSTING_UPMU_TAG} 
-            selectedTags={formData.workTags}
-            setSelectedTags={(tags) => handleChange("workTags", tags)}
-            maxSelectable={1}
-            />
+              <Tag
+                label="하는 일"
+                tags={POSTING_UPMU_TAG}
+                selectedTags={formData.workTags}
+                setSelectedTags={(tags) => handleChange("workTags", tags)}
+                maxSelectable={1}
+              />
             </div>
 
             <div className="form-section">
-            <Toggle
+              <Toggle
                 label="일하는 기간"
                 options={["1개월 이상"]}
                 onChange={(value) => handleChange("workPeriod", value)}
@@ -202,32 +222,33 @@ const Posting = () => {
             </div>
 
             <div className="form-section">
-            <WeekdayPicker
-            label="요일 선택"
-            onChange={(days) => handleChange("workDays", days)}
-            />
-
+              <WeekdayPicker
+                label="요일 선택"
+                onChange={(days) => handleChange("workDays", days)}
+              />
             </div>
 
             <div className="form-section">
-            <WorkTimePicker
-            label="일하는 시간"
-            onChange={(timeData) => {
-            handleChange("workTime", { start: timeData.start, end: timeData.end }); 
-            handleChange("isNegotiable", timeData.isNegotiable); 
-            }}
-            />
+              <WorkTimePicker
+                label="일하는 시간"
+                onChange={(timeData) => {
+                  handleChange("workTime", {
+                    start: timeData.start,
+                    end: timeData.end,
+                  });
+                  handleChange("isNegotiable", timeData.isNegotiable);
+                }}
+              />
             </div>
 
             <div className="form-section">
-            <PayPicker
-            label="급여"
-            onChange={(payData) => {
-            handleChange("pay", payData.pay);
-            handleChange("payType", payData.payType);
-            }}
-            />
-
+              <PayPicker
+                label="급여"
+                onChange={(payData) => {
+                  handleChange("pay", payData.pay);
+                  handleChange("payType", payData.payType);
+                }}
+              />
             </div>
 
             <div className="form-section">
@@ -235,13 +256,13 @@ const Posting = () => {
             </div>
 
             <div className="form-section">
-            
-            <DescriptionInput
-  label="자세한 설명"
-  onChange={(value) => handleChange("description", value)} 
-  onValidityChange={(isValid) => handleValidityChange("description", isValid)}
-/>
-
+              <DescriptionInput
+                label="자세한 설명"
+                onChange={(value) => handleChange("description", value)}
+                onValidityChange={(isValid) =>
+                  handleValidityChange("description", isValid)
+                }
+              />
             </div>
 
             <div className="form-section">
@@ -256,12 +277,13 @@ const Posting = () => {
                 value={formData.workLocation}
                 onChange={(value) => handleChange("workLocation", value)}
               />
-              <PhoneInput 
-              label="연락처" 
-              onChange={handlePhoneInputChange} 
-              onValidityChange={(isValid) => handleValidityChange("applyNumber", isValid)}
+              <PhoneInput
+                label="연락처"
+                onChange={handlePhoneInputChange}
+                onValidityChange={(isValid) =>
+                  handleValidityChange("applyNumber", isValid)
+                }
               />
-
             </div>
           </>
         )}

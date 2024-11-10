@@ -22,13 +22,16 @@ import {
   ButtonContainer,
 } from "../../styles/PostDetail.style";
 import { useNavigate, useParams } from "react-router-dom";
+import { IconDotsVertical } from "@tabler/icons-react";
 import CeoInfo from "./CeoInfo";
 import MapContainer from "../../components/MapContainer";
 import Button from "../../components/Button";
 import theme from "../../styles/theme/theme";
+import { ButtonsModal } from "../../components/ButtonsModal";
 
 // 예시 데이터
 const data = {
+  postId: 1,
   img: [
     "https://i.pinimg.com/550x/5f/fd/2a/5ffd2a1c09352f38e65083e163c58cd9.jpg",
     "https://3.gall-img.com/tdgall/files/attach/images/82/193/178/071/9a2ccc0facd637233f98b0e2b45f7bbf.png",
@@ -62,7 +65,9 @@ function PostDetail() {
   const userType = "USER";
   const navigate = useNavigate();
   const { id } = useParams();
-  const [isOpen, setIsOpen] = useState(false);
+
+  const [isOpen, setIsOpen] = useState(false); // 사업자 정보 모달
+  const [isMode, setIsMode] = useState(false); // 게시글 수정, 삭제 모달창
   const [currentIndex, setCurrentIndex] = useState(0);
   const imageContainerRef = useRef(null);
 
@@ -94,6 +99,15 @@ function PostDetail() {
     <Container>
       <HeaderContainer>
         <IconChevronLeft size={30} onClick={() => navigate("/home")} />
+        {/**수정/삭제 아이콘은 작성자와 로그인 유저 id가 일치할 경우만 보여줌 */}
+        <IconDotsVertical size={30} onClick={() => setIsMode((pre) => !pre)} />
+        {isMode && (
+          <ButtonsModal
+            isMode={isMode}
+            postId={data.postId}
+            setIsMode={setIsMode}
+          />
+        )}
       </HeaderContainer>
       <BodyContainer>
         <ImageContainer
@@ -101,11 +115,13 @@ function PostDetail() {
           onScroll={handleScroll}
           style={{ overflowX: "scroll", scrollSnapType: "x mandatory" }}
         >
-          <ImageList style={{ display: "flex", scrollSnapAlign: "start" }}>
-            {data.img.map((image, index) => (
-              <Image key={index} src={image} />
-            ))}
-          </ImageList>
+          {data.img.length !== 0 && (
+            <ImageList style={{ display: "flex", scrollSnapAlign: "start" }}>
+              {data.img.map((image, index) => (
+                <Image key={index} src={image} />
+              ))}
+            </ImageList>
+          )}
         </ImageContainer>
         <DotsContainer>
           {data.img.map((_, index) => (
@@ -117,8 +133,8 @@ function PostDetail() {
           ))}
         </DotsContainer>
         <TagWrap>
-          {data.tag.map((tag) => {
-            return <Tag>{tag}</Tag>;
+          {data.tag.map((tag, i) => {
+            return <Tag key={i}>{tag}</Tag>;
           })}
         </TagWrap>
         <Content>
@@ -148,7 +164,7 @@ function PostDetail() {
           </div>
         </Content>
         <Content>
-          {/* <MapContainer location={data.location} /> */}
+          <MapContainer location={data.location} />
         </Content>
         <Content>
           <div className="ceoInfo">

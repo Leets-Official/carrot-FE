@@ -10,10 +10,11 @@ const Container = styled.div`
 `;
 
 const HeaderContainer = styled.div`
+  position: relative;
   width: 100%;
   padding: 10px;
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: 1fr auto;
   border-bottom: 1px solid #f1f3f5;
   span {
     font-size: 20px;
