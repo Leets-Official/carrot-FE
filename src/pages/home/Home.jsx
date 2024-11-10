@@ -15,7 +15,7 @@ import PostCard from "../../components/home/PostCard";
 import { useNavigate } from "react-router-dom";
 import { postListAPI } from "./../../api/homeAPI";
 import getAccessToken from "./../../utils/getAccessToken";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { BeatLoader } from "react-spinners";
 
 const data = [
@@ -39,19 +39,18 @@ function Home() {
   const dispatch = useDispatch();
 
   const accessToken = getAccessToken(); // 토큰 가져오기
-  const userType = "CEO";
+  const userType = useSelector((state) => state.userInfo.userType); // 유저타입가져오기
   const [posts, setPosts] = useState([]); // 알바리스트 데이터
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     postListAPI(accessToken, dispatch).then((res) => {
       if (res.isSuccess) {
-        setPosts(res.data);
-      } else {
-        alert(res.message);
+        if (res.data == null) setPosts([]);
+        else setPosts(res.data);
       }
-      setLoading(false);
     });
+    setLoading(false);
   }, []);
 
   return (
@@ -82,15 +81,13 @@ function Home() {
         ) : posts.length === 0 ? (
           <div>구인 중인 알바 정보가 없습니다</div>
         ) : (
-          posts.map((data) => {
-            return (
-              <PostCard
-                key={data.postId}
-                data={data}
-                onClick={() => navigate(`/post/detail/${data.postId}`)}
-              />
-            );
-          })
+          posts.map((data) => (
+            <PostCard
+              key={data.postId}
+              data={data}
+              onClick={() => navigate(`/post/detail/${data.postId}`)}
+            />
+          ))
         )}
       </BodyContainer>
     </Container>

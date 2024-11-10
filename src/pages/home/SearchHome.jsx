@@ -38,10 +38,12 @@ function SearchHome() {
   // 엔터 키를 눌렀을 때 검색 처리하는 핸들러
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
+      console.log("여긴데");
       setLoading(true);
       searchPostListAPI(accessToken, dispatch, searchKeyWord).then((res) => {
         if (res.isSuccess) {
           setPosts(res.data);
+          console.log(res.data);
         } else {
           alert(res.message);
         }

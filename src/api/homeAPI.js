@@ -12,7 +12,6 @@ export const postListAPI = async (accessToken, dispatch) => {
     const result = await privateAxios(accessToken, dispatch).get(
       "/api/v1/post"
     );
-    console.log(result.data.data);
     if (result.status === 200) {
       response.isSuccess = true;
       response.message = result.data.message;
@@ -32,12 +31,10 @@ export const searchPostListAPI = async (accessToken, dispatch, keyword) => {
     message: "",
     data: null,
   };
-
   try {
     const result = await privateAxios(accessToken, dispatch).get(
       `/api/v1/post/search/${keyword}`
     );
-
     if (result.status === 200) {
       response.isSuccess = true;
       response.message = result.data.message;

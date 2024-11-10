@@ -28,7 +28,7 @@ import MapContainer from "../../components/MapContainer";
 import Button from "../../components/Button";
 import theme from "../../styles/theme/theme";
 import { ButtonsModal } from "../../components/ButtonsModal";
-//<MapContainer location={data.location} />
+
 // 예시 데이터
 const data = {
   postId: 1,
@@ -164,7 +164,7 @@ function PostDetail() {
           </div>
         </Content>
         <Content>
-          {/* <MapContainer location={data.location} /> */}
+          <MapContainer location={data.location} />
         </Content>
         <Content>
           <div className="ceoInfo">
