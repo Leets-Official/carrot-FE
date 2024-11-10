@@ -74,7 +74,7 @@ function UserInfo() {
             이름을 입력해주세요.(2자이상)
           </Input>
           <Input label="전화번호" border="grey" onChange={onChangePhoneNumber}>
-            휴대폰 번호(- 없이 숫자만 입력)
+            휴대폰 번호(- 하이픈 포함 입력)
           </Input>
         </UserInfoStyle.Form>
         <Button color={theme.color.carrot} onClick={checkInputFormat}>
