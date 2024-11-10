@@ -1,20 +1,33 @@
 import React, { useState } from "react";
-import { PageContainer, ContentContainer, FixedButtonContainer} from "../../styles/posting/PostingStyles";
-import {InputField,Tag,Toggle,WeekdayPicker,WorkTimePicker,PayPicker,AddressInput,PhotoUpload,DescriptionInput,PhoneInput,Button} from "../../components";
+import { PageContainer, ContentContainer, FixedButtonContainer } from "../../styles/posting/PostingStyles";
+import {
+  InputField,
+  Tag,
+  Toggle,
+  WeekdayPicker,
+  WorkTimePicker,
+  PayPicker,
+  AddressInput,
+  PhotoUpload,
+  DescriptionInput,
+  PhoneInput,
+  Button,
+} from "../../components";
 import "../../styles/posting/Posting.css";
 import { POSTING_UPMU_TAG } from "../../constants";
 
-import  {postJobPosting}  from "../../api";
-import  getAccessToken  from "../../utils/getAccessToken"; 
-import { useDispatch } from "react-redux"; 
+import { postJobPosting } from "../../api";
+import getAccessToken from "../../utils/getAccessToken";
+import { useDispatch } from "react-redux";
 
 const Posting = () => {
-  const [isOptionSelected, setIsOptionSelected] = useState(false);
-  // 토글 클릭 시 하위 컴포넌트 활성화 시키도록 설정해둠
-  const handleToggleClick = (value) => {
-    handleChange("selectedOption", value);
-    setIsOptionSelected(true); 
-  };
+    const [isOptionSelected, setIsOptionSelected] = useState(false);
+
+    // handleToggleClick 함수 정의
+    const handleToggleClick = (value) => {
+      console.log("Toggle clicked with value:", value);
+      setIsOptionSelected(true);
+    };
 
   const [formData, setFormData] = useState({
     title: "",
@@ -28,10 +41,9 @@ const Posting = () => {
     applyNumber: "",
     isNumberPublic: true,
     description: "",
-    workPeriod: "1개월 이상" 
+    workPeriod: "1개월 이상",
   });
 
-  // 값의 길이에 대한 유효성 검증하여 제출을 막아둠
   const [validStates, setValidStates] = useState({
     title: true,
     description: true,
@@ -48,10 +60,10 @@ const Posting = () => {
   const handleValidityChange = (key, isValid) => {
     setValidStates((prev) => ({
       ...prev,
-      [key]: isValid, 
+      [key]: isValid,
     }));
   };
-  
+
   const handlePhoneInputChange = ({ phone, noCalls }) => {
     handleChange("applyNumber", phone);
     handleChange("isNumberPublic", !noCalls);
@@ -62,29 +74,16 @@ const Posting = () => {
     return { doName, siName, detailName };
   };
 
-  const convertDays = (days) => {
-    const dayMap = {
-      월: "MONDAY",
-      화: "TUESDAY",
-      수: "WEDNESDAY",
-      목: "THURSDAY",
-      금: "FRIDAY",
-      토: "SATURDAY",
-      일: "SUNDAY",
-    };
-    return days.map((day) => dayMap[day]).join(", ");
-  };
-
   const createPayload = () => {
     const { doName, siName, detailName } = parseAddress(formData.workLocation);
-    const workDays = convertDays(formData.workDays);
     const [startHour, startMinute] = formData.workTime.start.split(":").map(Number);
     const [endHour, endMinute] = formData.workTime.end.split(":").map(Number);
-  
+
     return {
       postId: 0,
       userId: 1,
       storeName: formData.storeName,
+      workPlaceAddress: formData.workLocation,
       postData: {
         doName,
         siName,
@@ -99,40 +98,20 @@ const Posting = () => {
         workEndTimeMinute: endMinute,
         isNegotiable: formData.isNegotiable || false,
         applyNumber: formData.applyNumber,
-        workDays,
+        workDays: formData.workDays.join(","), // workDays 배열을 String으로 변환
         isShortTermJob: formData.workPeriod === "단기",
         payType: formData.payType,
         isNumberPublic: formData.isNumberPublic,
         imageList: [""],
+        imageUrlList: [""], // 빈 값 처리
+        lastUpdatedTime: new Date().toISOString(),
       },
     };
   };
 
-  const validateForm = (payload, formData) => {
-    const requiredFields = {
-      "제목": payload.postData.title,
-      "하는 일": payload.postData.workType,
-      "일하는 기간": formData.workPeriod,
-      "일하는 요일": formData.workDays,
-      "일하는 시간": formData.workTime.start && formData.workTime.end,
-      "급여": formData.pay,
-      "일하는 장소": formData.workLocation,
-      "업체명": payload.storeName,
-      "연락처": payload.postData.applyNumber,
-    };
-  
-    for (const [label, value] of Object.entries(requiredFields)) {
-      if (!value || (Array.isArray(value) && value.length === 0)) {
-        alert(`${label}을(를) 입력해주세요.`);
-        return false; // 유효성 검사 실패
-      }
-    }
-    return true; // 유효성 검사 성공
-  };
-  const dispatch = useDispatch(); 
+  const dispatch = useDispatch();
   const accessToken = getAccessToken();
-  console.log("Access Token:", accessToken);
-  
+
   const handleSubmit = async () => {
     const allValid = Object.values(validStates).every((isValid) => isValid);
     if (!allValid) {
@@ -140,20 +119,15 @@ const Posting = () => {
       return;
     }
 
-    const payload = createPayload(); // payload 생성
-    if (!validateForm(payload, formData)) return; // 유효성 검사 실패 시 중단
-    if (!validateForm(payload, formData)) return;
-    postJobPosting(accessToken, dispatch, formData).then((response) => {
-    });
-    // API 호출
-    const response = await postJobPosting(accessToken, dispatch, payload.postData);
+    const payload = createPayload();
+    const response = await postJobPosting(accessToken, dispatch, payload);
+
     if (response.isSuccess) {
       console.log("성공:", response.message);
-      alert("성공");// 성공 처리 (예: 알림창, 페이지 이동)
+      alert("게시글이 성공적으로 등록되었습니다.");
     } else {
       console.error("실패:", response.message);
-      alert("실패");
-      // 실패 처리 (예: 에러 메시지 표시)
+      alert("게시글 등록에 실패했습니다.");
     }
   };
 

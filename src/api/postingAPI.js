@@ -2,7 +2,7 @@ import { privateAxios } from "../utils/customAxios";
 
 export const postJobPosting = async (accessToken, dispatch, formData) => {
   const headers = {
-    Authorization: `Bearer ${accessToken}`, // 헤더에 Bearer 토큰 추가
+    Authorization: `Bearer ${accessToken}`, // Bearer 토큰 설정
   };
 
   const { workLocation = "" } = formData;
@@ -14,13 +14,14 @@ export const postJobPosting = async (accessToken, dispatch, formData) => {
 
   const body = {
     postId: 0,
-    userId: 1,
+    userId: 1, 
     storeName: formData.storeName,
+    workPlaceAddress: formData.workLocation, //주소 필드 해뒀음 
     postData: {
       doName,
       siName,
       detailName,
-      workType: Array.isArray(formData.workTags) && formData.workTags.length > 0 ? formData.workTags[0] : "기타",
+      workType: formData.workTags[0] || "기타", 
       title: formData.title,
       content: formData.description,
       pay: parseInt(formData.pay, 10),
@@ -30,11 +31,13 @@ export const postJobPosting = async (accessToken, dispatch, formData) => {
       workEndTimeMinute: endMinute,
       isNegotiable: formData.isNegotiable || false,
       applyNumber: formData.applyNumber,
-      workDays: formData.workDays.join(","), // workDays 배열을 String으로 변환
+      workDays: formData.workDays.join(","), 
       isShortTermJob: formData.workPeriod === "단기",
       payType: formData.payType,
       isNumberPublic: formData.isNumberPublic,
-      imageList: [""], // 이미지 리스트, 필요시 수정
+      imageList: formData.imageList || [""], // 이미지 리스트
+      imageUrlList: [""], // Swagger 요청 구조에 따라서 빈 리스트 추가
+      lastUpdatedTime: new Date().toISOString(), 
     },
   };
 
