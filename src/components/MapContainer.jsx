@@ -4,6 +4,11 @@ const { kakao } = window;
 
 const MapContainer = ({ location }) => {
   useEffect(() => {
+    // kakao.maps가 로드되지 않은 경우 예외 처리
+    if (!kakao) {
+      console.error("Kakao Maps API is not loaded properly.");
+      return;
+    }
     const container = document.getElementById("myMap");
     const options = {
       center: new kakao.maps.LatLng(35.12, 129.1),

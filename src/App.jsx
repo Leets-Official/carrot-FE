@@ -23,7 +23,7 @@ function App() {
           <Route path="/home" element={<Home />} />
           <Route path="/home/search" element={<SearchHome />} />
           <Route path="/posting" element={<Posting />} />
-      </Routes>
+        </Routes>
       </BrowserRouter>
     </ThemeProvider>
   );

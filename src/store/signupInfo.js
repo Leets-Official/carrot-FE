@@ -61,11 +61,6 @@ const signupSlice = createSlice({
       return initialState; // 초기 상태로 리셋
     },
   },
-  extraReducers: (builder) => {
-    builder.addCase(PURGE, () => {
-      return initialState; // Redux Persist의 PURGE 액션에 대한 처리
-    });
-  },
 });
 
 // 액션 및 리듀서 내보내기

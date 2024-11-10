@@ -14,8 +14,8 @@ export const loginAPI = async (email, pwd, dispatch) => {
   const response = {
     isSuccess: false, //API 성공 여부
     message: "", //API 메시지
-    userType: "", // 유저 타입 (현재 X)
-    userId: null, // 유저 아이디 (현재 X)
+    userType: "", // 유저 타입
+    userId: 0, // 유저 아이디
   };
 
   // 서버로 로그인 요청
@@ -26,6 +26,12 @@ export const loginAPI = async (email, pwd, dispatch) => {
       response.isSuccess = true;
       response.message = result.data.message;
       dispatch(SET_LOCAL_TOKEN(result.headers["authorization"]));
+      dispatch(
+        USER_LOGIN({
+          type: result.data.data.userType,
+          id: result.data.data.userId,
+        })
+      );
     }
   } catch (err) {
     response.isSuccess = false;

@@ -3,6 +3,7 @@ import Input from "./Input";
 import Button from "./Button";
 import { Form } from "../styles/Login.styles";
 import theme from "../styles/theme/theme";
+import { duplicateEmailAPI } from "../api";
 
 const EMAIL_VALIDITY = {
   INITIAL: -1,
@@ -55,26 +56,28 @@ const EmailAuth = ({ onSuccess }) => {
 
   // 이메일 중복 여부 확인 함수
   const checkEmailDuplicate = () => {
-    // 이메일 중복 확인 API
     setEmailState((pre) => ({
       ...pre,
       emailDuplicate: REQUEST_STATUS.PENDING,
     }));
-    // ex
-    if (emailState.email === "aaa@gmail.com") {
-      setEmailState((pre) => ({
-        ...pre,
-        emailDuplicate: REQUEST_STATUS.FAILED,
-      }));
-    } else {
-      setEmailState((pre) => ({
-        ...pre,
-        emailDuplicate: REQUEST_STATUS.SUCCESS,
-      }));
-    }
+
+    // 이메일 중복 확인 API
+    duplicateEmailAPI(emailState.email).then((res) => {
+      if (res.isSuccess) {
+        setEmailState((pre) => ({
+          ...pre,
+          emailDuplicate: REQUEST_STATUS.SUCCESS,
+        }));
+      } else {
+        setEmailState((pre) => ({
+          ...pre,
+          emailDuplicate: REQUEST_STATUS.FAILED,
+        }));
+      }
+    });
   };
 
-  // 이메일 인증 요청
+  // (보류) 이메일 인증 요청
   const onClickRequest = () => {
     setEmailState((prevState) => ({
       ...prevState,
@@ -103,7 +106,7 @@ const EmailAuth = ({ onSuccess }) => {
     if (emailValid === EMAIL_VALIDITY.INVALID)
       return "올바르지 않은 이메일 형식입니다.";
     else if (emailDuplicate === REQUEST_STATUS.FAILED) {
-      return "이 이메일은 이미 사용 중입니다.";
+      return "이미 사용 중인 이메일입니다.";
     } else if (
       emailValid === EMAIL_VALIDITY.VALID &&
       emailDuplicate === REQUEST_STATUS.NOT_REQUESTED
