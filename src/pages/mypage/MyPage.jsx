@@ -62,7 +62,7 @@ function MyPage() {
         <ProfileContainer>
           <ProfileBox>
             <div className="profileImgBox">
-              {data?.img && <img src={data?.img} />}
+              {data?.profileImageUrl && <img src={data?.profileImageUrl} />}
             </div>
             <div className="captionBox">
               <span>

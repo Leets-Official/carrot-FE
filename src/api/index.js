@@ -14,6 +14,8 @@ import {
   modifyMySelfAPI,
   modifyExtraInfoAPI,
   modifyStrengthInfoAPI,
+  uploadProfileImageAPI,
+  modifyBasicInfoAPI,
 } from "./mypageAPI";
 
 export {
@@ -31,4 +33,6 @@ export {
   modifyMySelfAPI, // 마이페이지 자기소개 수정 API
   modifyExtraInfoAPI, // 마이페이지 추가사항 수정 API
   modifyStrengthInfoAPI, // 마이페이지 나의 장점 API
+  uploadProfileImageAPI, // 마이페이지 기본 정보 프로필 이미지 업로드 API
+  modifyBasicInfoAPI, // 마이페이지 (이미지 제외) 기본정보 수정 API
 };

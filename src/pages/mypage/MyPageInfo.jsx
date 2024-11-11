@@ -174,7 +174,11 @@ function MyPageInfo() {
                 : userData?.ceoName}
             </div>
             <div>
-              {userData?.gender === "MALE" ? "남성" : "여성"} ·{" "}
+              {userData?.gender
+                ? userData?.gender === "MALE"
+                  ? "남성 ·"
+                  : "여성 ·"
+                : ""}{" "}
               {userData?.birthYear ? `${userData.birthYear} · ` : ""}
               {userType === "EMPLOYEE"
                 ? userData?.employeeAddress

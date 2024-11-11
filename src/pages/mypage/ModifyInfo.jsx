@@ -11,6 +11,9 @@ import Input from "../../components/Input";
 import { SelectBox, SelectOptions, Option } from "../../components/SelectBox";
 import theme from "../../styles/theme/theme";
 import styled from "styled-components";
+import { useDispatch, useSelector } from "react-redux";
+import getAccessToken from "./../../utils/getAccessToken";
+import { modifyBasicInfoAPI, uploadProfileImageAPI } from "../../api";
 
 const ImgForm = styled.div`
   width: 100px;
@@ -45,7 +48,11 @@ const SexOption = styled(Option)`
 `;
 
 function ModifyInfo() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const accessToken = getAccessToken();
+  const userType = useSelector((state) => state.userInfo.userType);
+
   const { state } = useLocation();
   const [form, setForm] = useState(state.data);
   const [image, setImage] = useState(null); // 이미지 데이터
@@ -58,17 +65,20 @@ function ModifyInfo() {
     const file = e.target.files[0];
 
     if (file) {
-      setImage(file);
-      const reader = new FileReader();
-      reader.onload = () => {
-        setImageURL(reader.result);
-      };
-      reader.readAsDataURL(file);
+      uploadProfileImageAPI(accessToken, dispatch, file).then((res) => {
+        if (res.isSuccess) {
+          setImage(file);
+          setImageURL(res.data); // 이미지 url
+        } else {
+          alert(res.message);
+        }
+      });
     }
   };
   /*----------이미지 제외 관련 함수----------- */
   const isValidName = (name) => /^[A-Za-z가-힣\s]*$/.test(name); // 영문자만 허용
-  const isValidPhone = (phone) => /^(010)[0-9]{3,4}[0-9]{4}$/.test(phone); // 숫자만 허용
+  const isValidPhone = (phone) =>
+    /^(01[016789]{1}|02|0[3-9]{1}[0-9]{1})-?[0-9]{3,4}-?[0-9]{4}$/.test(phone); // 숫자만 허용
   const isValidYear = (year) => /^\d{0,4}$/.test(year); // 0~4자리 숫자만 허용
 
   // 성별 제외한 입력 값
@@ -82,21 +92,49 @@ function ModifyInfo() {
 
   const MAX_YEAR = new Date().getFullYear() - 14;
   const MIN_YEAR = new Date().getFullYear() - 100;
+
   const modifyForm = () => {
     /**형식 검사하기 */
+    const name = userType === "EMPLOYEE" ? form.employeeName : form.ceoName;
+    const phone =
+      userType === "EMPLOYEE" ? form.phoneNumber : form.ceoPhoneNumber;
+    const year = Number(form.birthYear);
     // 이름
-    if (!isValidName(form.name) || form.name === "")
+    if (!isValidName(name) || name === "")
       return alert("이름을 다시 입력해주세요.");
     // 폰 번호
-    if (!isValidPhone(form.phone) || form.phone === "")
+    if (!isValidPhone(phone) || phone === "")
       return alert("전화번호를 다시 입력해주세요.");
+    // 성별
+    if (form.gender == null) return alert("성별을 입력해주세요.");
     // 년도
-    if (!isValidYear(form.year) || form.year < MIN_YEAR || form.year > MAX_YEAR)
+    if (!isValidYear(year) || year < MIN_YEAR || year > MAX_YEAR)
       return alert("년도를 다시입력해주세요.");
 
+    const body = {
+      gender: form.gender,
+      birthYear: form.birthYear,
+    };
+
+    if (userType === "EMPLOYEE") {
+      body.phoneNumber = form.phoneNumber; // EMPLOYEE의 경우
+      body.employeeName = form.employeeName; // EMPLOYEE에 추가적인 정보
+      body.employeeAddress = form.employeeAddress;
+    } else if (userType === "CEO") {
+      body.ceoPhoneNumber = form.ceoPhoneNumber; // CEO의 경우
+      body.ceoName = form.ceoName; // CEO에 추가적인 정보
+      body.ceoAddress = form.ceoAddress;
+    }
+    console.log(body);
     // 모두 적합할 경우 API 전송
-    console.log(form);
-    navigate("/mypage/info");
+    modifyBasicInfoAPI(accessToken, dispatch, body).then((res) => {
+      if (res.isSuccess) {
+        alert(res.message);
+        navigate("/mypage/info");
+      } else {
+        alert(res.message);
+      }
+    });
   };
 
   return (
@@ -139,38 +177,48 @@ function ModifyInfo() {
         </ImgForm>
         <InfoInput
           label="이름"
-          name="name"
+          name={userType === "EMPLOYEE" ? "employeeName" : "ceoName"}
           border={theme.color.lightgray}
-          value={form.name}
+          value={userType === "EMPLOYEE" ? form.employeeName : form.ceoName}
           onChange={handleForm}
         />
         <InfoInput
           label="연락처"
-          name="phone"
+          name={userType === "EMPLOYEE" ? "phoneNumber" : "ceoPhoneNumber"}
           border={theme.color.lightgray}
-          value={form.phone}
+          value={
+            userType === "EMPLOYEE" ? form.phoneNumber : form.ceoPhoneNumber
+          }
           onChange={handleForm}
-          type="number"
         />
         <span>성별</span>
         <SexSelectBox onClick={() => setSexVisible((pre) => !pre)}>
-          <label>{form.sex}</label>
+          <label>
+            {form.gender !== null
+              ? form.gender == "FEMALE"
+                ? "여성"
+                : "남성"
+              : "성별을 선택해주세요"}
+          </label>
           <SexSelectOptions $visible={sexVisible}>
-            {["여성", "남성"].map((type) => (
+            {[
+              ["FEMALE", "여성"],
+              ["MALE", "남성"],
+            ].map((type) => (
               <SexOption
                 key={type}
-                onClick={() => setForm((pre) => ({ ...pre, sex: type }))}
+                onClick={() => setForm((pre) => ({ ...pre, gender: type[0] }))}
               >
-                {type}
+                {type[1]}
               </SexOption>
             ))}
           </SexSelectOptions>
         </SexSelectBox>
         <InfoInput
           label="태어난 연도"
-          name="year"
+          name="birthYear"
           border={theme.color.lightgray}
-          value={form.year}
+          value={form.birthYear === "" ? "" : form.birthYear}
           onChange={handleForm}
           type="number"
         />
