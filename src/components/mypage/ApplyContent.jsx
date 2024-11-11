@@ -19,16 +19,16 @@ function ApplyContent({ content, onClick }) {
         <Content>
           <div
             className={
-              content.img != null ? "apply-img-box" : "apply-img-box hidden"
+              content?.imgUrl !== null
+                ? "apply-img-box"
+                : "apply-img-box hidden"
             }
           >
-            {content.img != null ? (
-              <img src="https://cafe24.poxo.com/ec01/rainbowtree81/UVTjSep0dwP4/wX7AtHyXO6bEUL260IgzZWiHzbvHSCwWpbQLz54pYhGkVPg29PUXQnuw2Jhlv5+bbb00it4TQ==/_/web/product/big/rainbowtree81_1547.jpg" />
-            ) : null}
+            {content?.imgUrl != null ? <img src={content.imgUrl} /> : null}
           </div>
           <div className="apply-content">
             <div className="apply-content-title">{content.title}</div>
-            <div className="apply-content-company">{content.company}</div>
+            <div className="apply-content-company">{content.storeName}</div>
           </div>
         </Content>
       </FormContent>

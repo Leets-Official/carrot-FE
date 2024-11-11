@@ -44,7 +44,8 @@ export const appliedPostListAPI = async (accessToken, dispatch, id) => {
     if (result.status == 200) {
       response.isSuccess = true;
       response.message = result.data.message;
-      response.data = result.data.data.postList;
+      response.data =
+        result.data.data.length == 0 ? [] : result.data.data.postList;
     }
   } catch (err) {
     response.isSuccess = false;
@@ -69,7 +70,8 @@ export const writtenPostListAPI = async (accessToken, dispatch, id) => {
     if (result.status == 200) {
       response.isSuccess = true;
       response.message = result.data.message;
-      response.data = result.data.data.postedPostList;
+      response.data =
+        result.data.data.length == 0 ? [] : result.data.data.postedPostList;
     }
   } catch (err) {
     response.isSuccess = false;

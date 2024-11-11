@@ -38,26 +38,6 @@ const Tag = styled.button`
   }
 `;
 
-/**DUMMY DATA (삭제 예정) */
-const DATA = [
-  {
-    id: 12,
-    status: "UNDONE",
-    tag: "APPLY",
-    title: "한국공학대전 무대, 조명, 전시부스 철거",
-    company: "아트플랜",
-    img: "https://cafe24.poxo.com/ec01/rainbowtree81/UVTjSep0dwP4/wX7AtHyXO6bEUL260IgzZWiHzbvHSCwWpbQLz54pYhGkVPg29PUXQnuw2Jhlv5+bbb00it4TQ==/_/web/product/big/rainbowtree81_1547.jpg",
-  },
-  {
-    id: 11,
-    status: "DONE",
-    tag: "SUCCESS",
-    title: "문화예술회관 하우스 어셔",
-    company: "하우스",
-    img: null,
-  },
-];
-
 function ApplyList() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -66,7 +46,7 @@ function ApplyList() {
 
   const [currentTag, setCurrentTag] = useState(0);
   const [isChecked, setIsChecked] = useState(false);
-  const [filteredData, setFilteredData] = useState(DATA);
+  const [filteredData, setFilteredData] = useState([]);
 
   const handleClickTag = (index) => {
     setCurrentTag(index);
@@ -80,7 +60,8 @@ function ApplyList() {
 
   // 데이터 필터링 함수
   const filterData = (tagIndex, recruitingOnly) => {
-    const arr = DATA.filter((data) => {
+    if (filteredData.length == 0) return;
+    const arr = filteredData.filter((data) => {
       let matchesTag = false;
 
       // 태그가 "전체"일 경우
@@ -114,7 +95,7 @@ function ApplyList() {
   };
 
   useEffect(() => {
-    appliedPostListAPI(accessToken, dispatch).then((res) => {
+    appliedPostListAPI(accessToken, dispatch, userId).then((res) => {
       if (res.isSuccess) {
         setFilteredData(res.data);
       } else {

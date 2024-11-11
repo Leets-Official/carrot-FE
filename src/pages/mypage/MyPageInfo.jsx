@@ -24,6 +24,7 @@ import {
   modifyExtraInfoAPI,
   modifyMySelfAPI,
   modifyStrengthInfoAPI,
+  normalProfileAPI,
 } from "../../api";
 
 function MyPageInfo() {
@@ -133,18 +134,26 @@ function MyPageInfo() {
   }
   // 수정할 기본 정보 받아오기
   useEffect(() => {
-    basicProfileInfoAPI(accessToken, dispatch).then((res) => {
-      if (res.isSuccess) {
-        setUserData(res.data);
-        if (userType === "EMPLOYEE") {
+    if (userType === "EMPLOYEE") {
+      basicProfileInfoAPI(accessToken, dispatch).then((res) => {
+        if (res.isSuccess) {
+          setUserData(res.data);
           const { extra, strength } = separateTags(res.data);
           setExtraData(extra);
           setStrengthData(strength);
+        } else {
+          alert(res.message);
         }
-      } else {
-        alert(res.message);
-      }
-    });
+      });
+    } else if (userType === "CEO") {
+      normalProfileAPI(accessToken, dispatch).then((res) => {
+        if (res.isSuccess) {
+          setUserData(res.data);
+        } else {
+          alert(res.message);
+        }
+      });
+    }
   }, []);
 
   return (
