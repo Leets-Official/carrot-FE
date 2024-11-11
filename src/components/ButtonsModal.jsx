@@ -42,6 +42,20 @@ const ContentText = styled.button`
 
 const ButtonsModal = ({ isMode, setIsMode, postId }) => {
   const navigate = useNavigate();
+  //게시글 수정
+  const modifyPosts = () => {
+    const result = confirm("해당 게시글을 수정하시겠습니까?");
+    if(result){
+    navigate(`/modify`, {
+      state: {
+        postId: postId,
+        mode: "modify",
+      },
+    });
+    setIsMode(false); // 모달 닫기
+  };
+}
+
   // 게시글 삭제
   const deletePosts = () => {
     setIsMode((pre) => !pre);
@@ -56,7 +70,7 @@ const ButtonsModal = ({ isMode, setIsMode, postId }) => {
     <>
       <Modal $display={isMode}>
         <Content>
-          <ContentText>수정</ContentText>
+          <ContentText onClick={modifyPosts}>수정</ContentText>
           <ContentText onClick={deletePosts}>삭제</ContentText>
         </Content>
       </Modal>

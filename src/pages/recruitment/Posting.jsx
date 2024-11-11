@@ -1,4 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { postJobPosting, updateJobPosting } from "../../api"; // 수정 및 포스팅 API
+import getAccessToken from "../../utils/getAccessToken";
 import { PageContainer, ContentContainer, FixedButtonContainer } from "../../styles/posting/PostingStyles";
 import {
   InputField,
@@ -16,18 +20,18 @@ import {
 import "../../styles/posting/Posting.css";
 import { POSTING_UPMU_TAG } from "../../constants";
 
-import { postJobPosting } from "../../api";
-import getAccessToken from "../../utils/getAccessToken";
-import { useDispatch } from "react-redux";
-
 const Posting = () => {
-    const [isOptionSelected, setIsOptionSelected] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { mode, postData } = location.state || {}; 
 
-    // handleToggleClick 함수 정의
-    const handleToggleClick = (value) => {
-      console.log("Toggle clicked with value:", value);
-      setIsOptionSelected(true);
-    };
+
+  const [isOptionSelected, setIsOptionSelected] = useState(false);
+
+  const handleToggleClick = (value) => {
+    console.log("Toggle clicked with value:", value);
+    setIsOptionSelected(true);
+  };
 
   const [formData, setFormData] = useState({
     title: "",
@@ -42,7 +46,34 @@ const Posting = () => {
     isNumberPublic: true,
     description: "",
     workPeriod: "1개월 이상",
+    imageList: [],
+    imageUrlList: [],
   });
+
+  //전달된 데이터로 form 초기화 해줌
+  useEffect(() => {
+    if (mode === "modify" && postData) {
+      setFormData({
+        title: postData.title,
+        workTags: [postData.workType],
+        workDays: postData.workDays.split(","),
+        workTime: {
+          start: `${postData.workStartHour}:${postData.workStartMinute}`,
+          end: `${postData.workEndHour}:${postData.workEndTimeMinute}`,
+        },
+        pay: postData.pay,
+        payType: postData.payType,
+        workLocation: `${postData.doName} ${postData.siName} ${postData.detailName}`,
+        storeName: postData.storeName,
+        applyNumber: postData.applyNumber,
+        isNumberPublic: postData.isNumberPublic,
+        description: postData.content,
+        workPeriod: postData.isShortTermJob ? "단기" : "장기",
+        imageList: postData.imageList || [],
+        imageUrlList: postData.imageUrlList || [],
+      });
+    }
+  }, [postData, mode]);  
 
   const [validStates, setValidStates] = useState({
     title: true,
@@ -74,13 +105,36 @@ const Posting = () => {
     return { doName, siName, detailName };
   };
 
+  const convertDays = (days) => {
+    const dayMap = {
+      월: "MONDAY",
+      화: "TUESDAY",
+      수: "WEDNESDAY",
+      목: "THURSDAY",
+      금: "FRIDAY",
+      토: "SATURDAY",
+      일: "SUNDAY",
+    };
+
+    return days
+      .map((day) => {
+        const convertedDay = dayMap[day];
+        if (!convertedDay) {
+          console.warn(`Unknown day: ${day}`); // 디버깅용: 변환되지 않은 값 경고
+        }
+        return convertedDay || day;
+      })
+      .join(", ");
+  };
+
   const createPayload = () => {
+    const workDays = convertDays(formData.workDays);
     const { doName, siName, detailName } = parseAddress(formData.workLocation);
     const [startHour, startMinute] = formData.workTime.start.split(":").map(Number);
     const [endHour, endMinute] = formData.workTime.end.split(":").map(Number);
-
+  
     return {
-      postId: 0,
+      postId: mode === "modify" ? postData.postId : 0, // postId 수정모드 처리
       userId: 1,
       storeName: formData.storeName,
       workPlaceAddress: formData.workLocation,
@@ -98,18 +152,17 @@ const Posting = () => {
         workEndTimeMinute: endMinute,
         isNegotiable: formData.isNegotiable || false,
         applyNumber: formData.applyNumber,
-        workDays: formData.workDays.join(","), // workDays 배열을 String으로 변환
+        workDays,
         isShortTermJob: formData.workPeriod === "단기",
         payType: formData.payType,
         isNumberPublic: formData.isNumberPublic,
-        imageList: [""],
-        imageUrlList: [""], // 빈 값 처리
+        imageList: formData.imageList, // 파일 이미지 전달
+        imageUrlList: formData.imageUrlList, // 업로드된 URL들
         lastUpdatedTime: new Date().toISOString(),
       },
     };
-  };
+  };  
 
-  const dispatch = useDispatch();
   const accessToken = getAccessToken();
 
   const handleSubmit = async () => {
@@ -118,19 +171,33 @@ const Posting = () => {
       alert("모든 필드를 올바르게 입력해주세요.");
       return;
     }
-
+  
     const payload = createPayload();
-    const response = await postJobPosting(accessToken, dispatch, payload);
+  
+    console.log("Form Data (사용자 입력):", formData);
+    console.log("Payload (API로 전송되는 데이터):", payload);
+  
+    try {
+      const endpoint = mode === "modify" ? "api/v1/post/update" : "api/v1/post";
+      console.log("Attempting to call API Endpoint:", endpoint);
+      
+      const response =
+        mode === "modify"
+          ? await updateJobPosting(accessToken, payload) // 수정 API 호출
+          : await postJobPosting(accessToken, payload); // 등록 API 호출
 
-    if (response.isSuccess) {
-      console.log("성공:", response.message);
-      alert("게시글이 성공적으로 등록되었습니다.");
-    } else {
-      console.error("실패:", response.message);
-      alert("게시글 등록에 실패했습니다.");
+          if (response.isSuccess) {
+        alert(mode === "modify" ? "게시글이 성공적으로 수정되었습니다." : "게시글이 성공적으로 등록되었습니다.");
+        navigate(`/post/detail/${response.postId}`); // 성공 시 상세 페이지로 이동
+      } else {
+        alert("게시글 저장에 실패했습니다.");
+      }
+    } catch (error) {
+      console.error("API 호출 중 오류 발생:", error);
+      alert("실패");
     }
   };
-
+  
   return (
     <PageContainer>
       <ContentContainer>
