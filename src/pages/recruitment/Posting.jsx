@@ -21,17 +21,14 @@ import "../../styles/posting/Posting.css";
 import { POSTING_UPMU_TAG } from "../../constants";
 
 const Posting = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const { mode, postData } = location.state || {}; 
-
-
   const [isOptionSelected, setIsOptionSelected] = useState(false);
-
   const handleToggleClick = (value) => {
-    console.log("Toggle clicked with value:", value);
     setIsOptionSelected(true);
   };
+
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { mode, postData } = location.state || {};
 
   const [formData, setFormData] = useState({
     title: "",
@@ -50,7 +47,7 @@ const Posting = () => {
     imageUrlList: [],
   });
 
-  //전달된 데이터로 form 초기화 해줌
+  //전달된 데이터로 formData 초기화 해줌
   useEffect(() => {
     if (mode === "modify" && postData) {
       setFormData({
@@ -73,7 +70,7 @@ const Posting = () => {
         imageUrlList: postData.imageUrlList || [],
       });
     }
-  }, [postData, mode]);  
+  }, [postData, mode]); 
 
   const [validStates, setValidStates] = useState({
     title: true,
@@ -82,17 +79,11 @@ const Posting = () => {
   });
 
   const handleChange = (key, value) => {
-    setFormData((prev) => ({
-      ...prev,
-      [key]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [key]: value }));
   };
 
   const handleValidityChange = (key, isValid) => {
-    setValidStates((prev) => ({
-      ...prev,
-      [key]: isValid,
-    }));
+    setValidStates((prev) => ({ ...prev, [key]: isValid }));
   };
 
   const handlePhoneInputChange = ({ phone, noCalls }) => {
@@ -115,16 +106,7 @@ const Posting = () => {
       토: "SATURDAY",
       일: "SUNDAY",
     };
-
-    return days
-      .map((day) => {
-        const convertedDay = dayMap[day];
-        if (!convertedDay) {
-          console.warn(`Unknown day: ${day}`); // 디버깅용: 변환되지 않은 값 경고
-        }
-        return convertedDay || day;
-      })
-      .join(", ");
+    return days.map((day) => dayMap[day] || day).join(",");
   };
 
   const createPayload = () => {
@@ -132,9 +114,9 @@ const Posting = () => {
     const { doName, siName, detailName } = parseAddress(formData.workLocation);
     const [startHour, startMinute] = formData.workTime.start.split(":").map(Number);
     const [endHour, endMinute] = formData.workTime.end.split(":").map(Number);
-  
+
     return {
-      postId: mode === "modify" ? postData.postId : 0, // postId 수정모드 처리
+      postId: mode === "modify" ? postData.postId : 0,
       userId: 1,
       storeName: formData.storeName,
       workPlaceAddress: formData.workLocation,
@@ -156,18 +138,17 @@ const Posting = () => {
         isShortTermJob: formData.workPeriod === "단기",
         payType: formData.payType,
         isNumberPublic: formData.isNumberPublic,
-        imageList: formData.imageList, // 파일 이미지 전달
-        imageUrlList: formData.imageUrlList, // 업로드된 URL들
+        imageList: formData.imageList,
+        imageUrlList: formData.imageUrlList,
         lastUpdatedTime: new Date().toISOString(),
       },
     };
-  };  
+  };
 
   const accessToken = getAccessToken();
 
   const handleSubmit = async () => {
-    const allValid = Object.values(validStates).every((isValid) => isValid);
-    if (!allValid) {
+    if (!Object.values(validStates).every(Boolean)) {
       alert("모든 필드를 올바르게 입력해주세요.");
       return;
     }
@@ -178,23 +159,20 @@ const Posting = () => {
     console.log("Payload (API로 전송되는 데이터):", payload);
   
     try {
-      const endpoint = mode === "modify" ? "api/v1/post/update" : "api/v1/post";
-      console.log("Attempting to call API Endpoint:", endpoint);
-      
-      const response =
-        mode === "modify"
-          ? await updateJobPosting(accessToken, payload) // 수정 API 호출
-          : await postJobPosting(accessToken, payload); // 등록 API 호출
+      const response = 
+        mode === "modify" 
+        ? await updateJobPosting(payload) 
+        : await postJobPosting(payload);
 
-          if (response.isSuccess) {
+      if (response.isSuccess) {
         alert(mode === "modify" ? "게시글이 성공적으로 수정되었습니다." : "게시글이 성공적으로 등록되었습니다.");
-        navigate(`/post/detail/${response.postId}`); // 성공 시 상세 페이지로 이동
+        navigate(`/post/detail/${response.data.postId}`);
       } else {
         alert("게시글 저장에 실패했습니다.");
       }
     } catch (error) {
       console.error("API 호출 중 오류 발생:", error);
-      alert("실패");
+      alert("서버와의 통신 중 문제가 발생했습니다.");
     }
   };
   
@@ -278,7 +256,7 @@ const Posting = () => {
             <div className="form-section">
             
             <DescriptionInput
-  label="자세한 설명"
+        label="자세한 설명"
   onChange={(value) => handleChange("description", value)} 
   onValidityChange={(isValid) => handleValidityChange("description", isValid)}
 />
@@ -315,7 +293,7 @@ const Posting = () => {
           size="18px"
           onClick={handleSubmit}
         >
-          다음
+          {mode === "modify" ? "수정하기" : "등록하기"}
         </Button>
       </FixedButtonContainer>
     </PageContainer>
