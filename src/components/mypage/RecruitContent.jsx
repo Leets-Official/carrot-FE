@@ -81,20 +81,20 @@ function RecruitContent({ content }) {
       <Content>
         <div
           className={
-            content.img !== null
+            content?.imgUrl !== ""
               ? "content img-content exist"
               : "content img-content"
           }
         >
-          {content.img !== null && <img src={content.img} />}
+          {content?.imgUrl !== "" && <img src={content?.imgUrl} />}
         </div>
         <div className="content">
-          <div className="content-title">{content.title}</div>
-          <div className="content-location">{content.location}</div>
+          <div className="content-title">{content?.title}</div>
+          <div className="content-location">{content?.detailAreaName}</div>
         </div>
       </Content>
       <Content>
-        {status !== "DONE" ? (
+        {content?.isRecruiting ? (
           <>
             <Button
               color={theme.color.carrot}

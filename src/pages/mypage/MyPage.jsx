@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { IconChevronLeft } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
 import ApplyList from "./ApplyList";
@@ -12,6 +12,9 @@ import {
   TabMenuContainer,
   TabContent,
 } from "../../styles/mypage/MyPage.styles";
+import { normalProfileAPI } from "../../api";
+import getAccessToken from "./../../utils/getAccessToken";
+import { useDispatch, useSelector } from "react-redux";
 
 const TABS = [
   { name: "내 지원내역", content: <ApplyList />, type: [1, 0] },
@@ -20,26 +23,29 @@ const TABS = [
 
 function MyPage() {
   const navigate = useNavigate();
-
-  const userType = "USER"; // "userType(USER,CEO)"은 useSelector를 통해 userInfo reducer에서 가져올 예정
-  const userIndex = userType === "USER" ? 0 : 1;
+  const dispatch = useDispatch();
+  const accessToken = getAccessToken();
+  const userType = useSelector((state) => state.userInfo.userType);
+  const userIndex = userType === "EMPLOYEE" ? 0 : 1;
   const filteredTabs = TABS.filter((tab) => tab.type[userIndex] === 1);
 
   const [tabMenu] = useState(filteredTabs);
   const [currentTab, clickTab] = useState(0);
-  const [data, setData] = useState({
-    img: "https://pbs.twimg.com/profile_images/1715217368455213056/lrIZCNs5_400x400.jpg",
-    name: "오수빈",
-    phone: "01049412984",
-    sex: "여성",
-    year: 2002,
-    location: "장현동",
-    self: "자기소개뭐라뭐라",
-  });
+  const [data, setData] = useState(null);
 
   const selectTabHandler = (index) => {
     clickTab(index);
   };
+
+  useEffect(() => {
+    normalProfileAPI(accessToken, dispatch).then((res) => {
+      if (res.isSuccess) {
+        setData(res.data);
+      } else {
+        alert(res.message);
+      }
+    });
+  }, []);
 
   return (
     <Container>
@@ -56,16 +62,21 @@ function MyPage() {
         <ProfileContainer>
           <ProfileBox>
             <div className="profileImgBox">
-              {data?.img && <img src={data.img} />}
+              {data?.img && <img src={data?.img} />}
             </div>
             <div className="captionBox">
-              <span>{data.name}</span>
-              <span>{data.location}</span>
+              <span>
+                {userType == "EMPLOYEE" ? data?.employeeName : data?.ceoName}
+              </span>
+              <span>
+                {userType == "EMPLOYEE"
+                  ? data?.employeeAddress
+                  : data?.ceoAddress}
+              </span>
             </div>
           </ProfileBox>
-
           <button onClick={() => navigate("/mypage/info")}>
-            {userType == "USER" ? "내 지원서 관리" : "정보 수정하기"}
+            {userType == "EMPLOYEE" ? "내 지원서 관리" : "정보 수정하기"}
           </button>
         </ProfileContainer>
         <TabMenuContainer>

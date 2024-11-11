@@ -61,6 +61,7 @@ const ProfileBox = styled.div`
     height: 100px;
     border-radius: 50%;
     overflow: hidden;
+    background-color: ${theme.color.lightgray};
 
     > img {
       object-fit: cover;
@@ -193,6 +194,7 @@ const Tag = styled.div`
   padding: 5px;
   border-radius: 5px;
   font-size: 14px;
+  cursor: pointer;
 
   color: ${({ textcolor }) => textcolor || "gray"};
   background-color: ${({ color }) => color || theme.color.lightgray};

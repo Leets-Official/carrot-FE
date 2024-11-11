@@ -7,7 +7,7 @@ import {
 import Button from "../Button";
 import { MYPAGE_APPLY_TAG } from "../../constants";
 
-function ApplyContent({ content, onClick, onCancle }) {
+function ApplyContent({ content, onClick }) {
   const applyStatus = MYPAGE_APPLY_TAG.filter((tag) => content.tag == tag[0]);
 
   return (

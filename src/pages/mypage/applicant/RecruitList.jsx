@@ -1,5 +1,9 @@
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import RecruitContent from "../../../components/mypage/RecruitContent";
+import { writtenPostListAPI } from "../../../api";
+import getAccessToken from "./../../../utils/getAccessToken";
+import { useSelector, useDispatch } from "react-redux";
 
 /**DUMMY DATA (삭제 예정) */
 const DATA = [
@@ -29,10 +33,24 @@ const Container = styled.div`
 `;
 
 function RecruitList() {
+  const dispatch = useDispatch();
+  const accessToken = getAccessToken();
+  const userId = useSelector((state) => state.userInfo.userId);
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    writtenPostListAPI(accessToken, dispatch, userId).then((res) => {
+      if (res.isSuccess) {
+        setData(res.data);
+      } else {
+        alert(res.message + "여기");
+      }
+    });
+  }, []);
   return (
     <Container>
-      {DATA.map((data) => (
-        <RecruitContent key={data.id} content={data} />
+      {data?.map((data) => (
+        <RecruitContent key={data.postId} content={data} />
       ))}
     </Container>
   );
