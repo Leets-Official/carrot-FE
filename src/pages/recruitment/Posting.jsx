@@ -3,32 +3,20 @@ import { PageContainer, ContentContainer, FixedButtonContainer} from "../../styl
 import {InputField,Tag,Toggle,WeekdayPicker,WorkTimePicker,PayPicker,AddressInput,PhotoUpload,DescriptionInput,PhoneInput,Button} from "../../components";
 import "../../styles/posting/Posting.css";
 import { POSTING_UPMU_TAG } from "../../constants";
-import { postJobPosting } from "../../api";
-import getAccessToken from "../../utils/getAccessToken";
-import { useDispatch } from "react-redux";
+import { postJobPosting, updateJobPosting } from "../../api"; // 수정
+import { useNavigate, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
+import getAccessToken from "../../utils/getAccessToken"; // 일반 함수로 가져오기
 
 const Posting = () => {
+  const state = useSelector((state) => state); // 최상단에서 상태 가져오기
+  const accessToken = getAccessToken(state); // 상태를 함수로 전달
   const [isOptionSelected, setIsOptionSelected] = useState(false);
   // 토글 클릭 시 하위 컴포넌트 활성화 시키도록 설정해둠
   const handleToggleClick = (value) => {
     handleChange("selectedOption", value);
     setIsOptionSelected(true); 
   };
-
-  const [formData, setFormData] = useState({
-    title: "",
-    workTags: [],
-    workDays: [],
-    workTime: { start: "09:00", end: "18:00" },
-    pay: "",
-    payType: "시급",
-    workLocation: "",
-    storeName: "",
-    applyNumber: "",
-    isNumberPublic: true,
-    description: "",
-    workPeriod: "1개월 이상" 
-  });
 
   // 값의 길이에 대한 유효성 검증하여 제출을 막아둠
   const [validStates, setValidStates] = useState({
@@ -73,6 +61,26 @@ const Posting = () => {
     };
     return days.map((day) => dayMap[day]).join(", ");
   };
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const mode = location.state?.mode || "create"; // default "create"
+  const postId = location.state?.postId || null;
+  const userId = useSelector((state) => state.userInfo.userId);
+  const [formData, setFormData] = useState({
+    title: "",
+    workTags: [],
+    workDays: [],
+    workTime: { start: "09:00", end: "18:00" },
+    pay: "",
+    payType: "시급",
+    workLocation: "",
+    storeName: "",
+    applyNumber: "",
+    isNumberPublic: true,
+    description: "",
+    workPeriod: "1개월 이상" 
+  });
 
   const createPayload = () => {
     const { doName, siName, detailName } = parseAddress(formData.workLocation);
@@ -81,8 +89,8 @@ const Posting = () => {
     const [endHour, endMinute] = formData.workTime.end.split(":").map(Number);
   
     return {
-      postId: 0,
-      userId: 1,
+      postId: postId || 0, // 수정 시 기존 postId 사용
+      userId,
       storeName: formData.storeName,
       workPlaceAddress: formData.workLocation,
       postData: {
@@ -105,8 +113,6 @@ const Posting = () => {
         isNumberPublic: formData.isNumberPublic,
         imageList: [""],
         imageUrlList: [""], // 빈 값 처리
-        lastUpdatedTime: new Date().toISOString(),
-        
       },
     };
   };
@@ -117,36 +123,71 @@ const Posting = () => {
       "하는 일": payload.postData.workType,
       "일하는 기간": formData.workPeriod,
       "일하는 요일": formData.workDays,
-      "일하는 시간": formData.workTime.start && formData.workTime.end,
+      "일하는 시간": formData.workTime?.start && formData.workTime?.end,
       "급여": formData.pay,
       "일하는 장소": formData.workLocation,
       "업체명": payload.storeName,
       "연락처": payload.postData.applyNumber,
     };
-  
+
     for (const [label, value] of Object.entries(requiredFields)) {
-      if (!value || (Array.isArray(value) && value.length === 0)) {
+      if (
+        value === undefined ||
+        value === null ||
+        (typeof value === "string" && value.trim() === "") ||
+        (Array.isArray(value) && value.length === 0) ||
+        value === false
+      ) {
         alert(`${label}을(를) 입력해주세요.`);
         return false; // 유효성 검사 실패
       }
     }
     return true; // 유효성 검사 성공
   };
-  
-  const handleSubmit = () => {
+
+  const handleSubmit = async () => {
+    // 모든 입력 필드의 유효성 확인
     const allValid = Object.values(validStates).every((isValid) => isValid);
     if (!allValid) {
       alert("모든 필드를 올바르게 입력해주세요.");
-      return;
+      return; // 유효성 검사 실패 시 즉시 중단
     }
-    
-    const payload = createPayload(); // payload 생성 로직 분리
-    if (!validateForm(payload, formData)) return; // 유효성 검사 실패 시 중단
-    console.log("Payload:", payload);
-    // API 호출
-    // axios.post('/api/posting', payload).then(...);
+  
+    // Payload 생성
+    const payload = createPayload();
+    console.log("Form Data (사용자 입력):", formData);
+    console.log("Payload (API로 전송되는 데이터):", payload);
+    // 유효성 검사 실패 시 이후 코드 중단
+    if (!validateForm(payload, formData)) {
+      console.log("Validation failed. Aborting API call."); // 디버깅 로그
+      return; // 이후 로직 실행 중단
+    }
+  
+    try {
+      // API 호출 로직
+      if (mode === "create") {
+        const response = await postJobPosting(accessToken, payload);
+        if (response.isSuccess) {
+          alert("게시글이 성공적으로 등록되었습니다.");
+          navigate("/home");
+        } else {
+          alert(`등록 실패: ${response.message}`);
+        }
+      } else if (mode === "modify") {
+        const response = await updateJobPosting(accessToken, postId, payload.postData);
+        if (response.isSuccess) {
+          alert("게시글이 성공적으로 수정되었습니다.");
+          navigate("/home");
+        } else {
+          alert(`수정 실패: ${response.message}`);
+        }
+      }
+    } catch (error) {
+      console.error("Error during submission:", error);
+      alert("제출 과정에서 오류가 발생했습니다. 다시 시도해주세요.");
+    }
   };
-
+  
   return (
     <PageContainer>
       <ContentContainer>
@@ -196,7 +237,6 @@ const Posting = () => {
             label="요일 선택"
             onChange={(days) => handleChange("workDays", days)}
             />
-
             </div>
 
             <div className="form-section">
@@ -217,7 +257,6 @@ const Posting = () => {
             handleChange("payType", payData.payType);
             }}
             />
-
             </div>
 
             <div className="form-section">
@@ -248,8 +287,8 @@ const Posting = () => {
               />
               <PhoneInput 
               label="연락처" 
-              onChange={handlePhoneInputChange} 
-              onValidityChange={(isValid) => handleValidityChange("applyNumber", isValid)}
+              onChange={handlePhoneInputChange} // 부모 상태 변경 핸들러
+  onValidityChange={(isValid) => handleValidityChange("applyNumber", isValid)}
               />
 
             </div>
@@ -264,7 +303,7 @@ const Posting = () => {
           size="18px"
           onClick={handleSubmit}
         >
-          다음
+          {mode === "create" ? "등록" : "수정"}
         </Button>
       </FixedButtonContainer>
     </PageContainer>
