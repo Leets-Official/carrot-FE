@@ -21,8 +21,7 @@ export const duplicateEmailAPI = async (email) => {
     }
   } catch (err) {
     response.isSuccess = false;
-    response.message =
-      err.status == 400 ? "이미 사용중인 이메일입니다." : err.message;
+    response.message = err.response.data;
   }
   return response;
 };
@@ -49,6 +48,7 @@ export const verifyCEOAPI = async (req) => {
     corp_no: "",
     b_sector: "",
     b_type: "",
+    b_adr: "",
   };
 
   const url = `https://api.odcloud.kr/api/nts-businessman/v1/validate?serviceKey=${
@@ -59,7 +59,6 @@ export const verifyCEOAPI = async (req) => {
     const { data } = await axios.post(url, {
       businesses: [form],
     });
-
     return data.data[0];
   } catch (error) {
     console.error(
@@ -104,7 +103,7 @@ export const signupUserAPI = async (
     }
   } catch (err) {
     response.isSuccess = false;
-    response.message = err.message;
+    response.message = err.response.data;
   }
   return response;
 };
@@ -143,7 +142,7 @@ export const signupCEOAPI = async (
     }
   } catch (err) {
     response.isSuccess = false;
-    response.message = err.message;
+    response.message = err.response.data;
   }
   return response;
 };

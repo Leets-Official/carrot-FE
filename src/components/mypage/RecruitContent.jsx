@@ -3,6 +3,9 @@ import styled from "styled-components";
 import theme from "../../styles/theme/theme";
 import Button from "../Button";
 import { useNavigate } from "react-router-dom";
+import { closePostAPI } from "../../api";
+import { useDispatch } from "react-redux";
+import getAccessToken from "../../utils/getAccessToken";
 
 const RecruitForm = styled.div`
   width: 90%;
@@ -24,7 +27,7 @@ const Content = styled.div`
     flex-direction: column;
     gap: 10px;
   }
-  .img-content.exist {
+  .img-content {
     width: 100px;
     height: 100px;
     overflow: hidden;
@@ -57,20 +60,28 @@ const Content = styled.div`
 
 function RecruitContent({ content }) {
   const navigate = useNavigate();
-  const [status, setStatus] = useState(content.status);
+  const dispatch = useDispatch();
+  const accessToken = getAccessToken();
+
+  const [status, setStatus] = useState(content.isRecruiting);
 
   const viewingApplicants = () => {
-    navigate(`/mypage/applicant/${content.id}`, {
-      state: { content: content, id: content.id },
+    navigate(`/mypage/applicant/${content.postId}`, {
+      state: { content: content, id: content.postId },
     });
   };
 
   const closeRecruit = () => {
     const result = confirm("해당 공고의 채용을 마감하시겠습니까?");
     if (result) {
-      /*모집 마감 api*/
-      alert("모집이 마감되었습니다");
-      setStatus("DONE");
+      closePostAPI(accessToken, dispatch, content.postId).then((res) => {
+        if (res.isSuccess) {
+          alert("모집이 마감되었습니다");
+          setStatus(false);
+        } else {
+          alert(res.message);
+        }
+      });
     } else {
       alert("취소되었습니다.");
     }
@@ -79,22 +90,18 @@ function RecruitContent({ content }) {
   return (
     <RecruitForm>
       <Content>
-        <div
-          className={
-            content.img !== null
-              ? "content img-content exist"
-              : "content img-content"
-          }
-        >
-          {content.img !== null && <img src={content.img} />}
-        </div>
+        {content?.imgUrl !== undefined && (
+          <div className="content img-content">
+            <img src={content?.imgUrl} />
+          </div>
+        )}
         <div className="content">
-          <div className="content-title">{content.title}</div>
-          <div className="content-location">{content.location}</div>
+          <div className="content-title">{content?.title}</div>
+          <div className="content-location">{content?.detailAreaName}</div>
         </div>
       </Content>
       <Content>
-        {status !== "DONE" ? (
+        {status ? (
           <>
             <Button
               color={theme.color.carrot}

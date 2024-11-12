@@ -7,28 +7,36 @@ import {
 import Button from "../Button";
 import { MYPAGE_APPLY_TAG } from "../../constants";
 
-function ApplyContent({ content, onClick, onCancle }) {
-  const applyStatus = MYPAGE_APPLY_TAG.filter((tag) => content.tag == tag[0]);
+function ApplyContent({ content, onClick }) {
+  const viewStatus = () => {
+    if (!content.isAccepted && !content.isApplicationClosed) {
+      return MYPAGE_APPLY_TAG[1][1];
+    } else if (content.isAccepted) {
+      return MYPAGE_APPLY_TAG[2][1];
+    } else {
+      return MYPAGE_APPLY_TAG[3][1];
+    }
+  };
 
   return (
     <ApplyForm>
       <FormContent>
         <Content>
-          <div className="apply-status">{applyStatus[0][1]}</div>
+          <div className="apply-status">{viewStatus()}</div>
         </Content>
         <Content>
           <div
             className={
-              content.img != null ? "apply-img-box" : "apply-img-box hidden"
+              content?.imgUrl !== null
+                ? "apply-img-box"
+                : "apply-img-box hidden"
             }
           >
-            {content.img != null ? (
-              <img src="https://cafe24.poxo.com/ec01/rainbowtree81/UVTjSep0dwP4/wX7AtHyXO6bEUL260IgzZWiHzbvHSCwWpbQLz54pYhGkVPg29PUXQnuw2Jhlv5+bbb00it4TQ==/_/web/product/big/rainbowtree81_1547.jpg" />
-            ) : null}
+            {content?.imgUrl != null ? <img src={content.imgUrl} /> : null}
           </div>
           <div className="apply-content">
             <div className="apply-content-title">{content.title}</div>
-            <div className="apply-content-company">{content.company}</div>
+            <div className="apply-content-company">{content.storeName}</div>
           </div>
         </Content>
       </FormContent>
