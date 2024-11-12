@@ -13,7 +13,12 @@ import theme from "../../styles/theme/theme";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import getAccessToken from "./../../utils/getAccessToken";
-import { modifyBasicInfoAPI, uploadProfileImageAPI } from "../../api";
+import {
+  modifyBasicInfoAPI,
+  updateProfileImageAPI,
+  uploadProfileImageAPI,
+  deleteProfileImageAPI,
+} from "../../api";
 
 const ImgForm = styled.div`
   width: 100px;
@@ -56,7 +61,7 @@ function ModifyInfo() {
   const { state } = useLocation();
   const [form, setForm] = useState(state.data);
   const [image, setImage] = useState(null); // 이미지 데이터
-  const [imageURL, setImageURL] = useState(state.data.img); // 이미지 데이터 URL 저장
+  const [imageURL, setImageURL] = useState(state.data?.profileImageUrl || null); // 이미지 데이터 URL 저장
   const [sexVisible, setSexVisible] = useState(false); // 성별 셀렉트
 
   /*--------------이미지 관련 함수--------------- */
@@ -64,11 +69,36 @@ function ModifyInfo() {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
 
-    if (file) {
+    if (file && imageURL === null) {
       uploadProfileImageAPI(accessToken, dispatch, file).then((res) => {
         if (res.isSuccess) {
           setImage(file);
-          setImageURL(res.data); // 이미지 url
+          setImageURL(res.imageUrl); // 이미지 url
+          console.log(res.imageUrl);
+        } else {
+          alert(res.message);
+        }
+      });
+    } else if (file && imageURL !== null) {
+      updateProfileImageAPI(accessToken, dispatch, file, imageURL).then(
+        (res) => {
+          if (res.isSuccess) {
+            setImage(file);
+            setImageURL(res.imageUrl);
+          } else {
+            alert(res.message);
+          }
+        }
+      );
+    }
+  };
+  // 이미지 삭제
+  const deleteImage = () => {
+    if (imageURL !== null) {
+      deleteProfileImageAPI(accessToken, dispatch).then((res) => {
+        if (res.isSuccess) {
+          setImage(null);
+          setImageURL(null);
         } else {
           alert(res.message);
         }
@@ -162,7 +192,7 @@ function ModifyInfo() {
               onMouseEnter={(e) => (e.target.style.opacity = "0.8")}
               onMouseLeave={(e) => (e.target.style.opacity = "1")}
             >
-              {imageURL ? null : (
+              {imageURL !== null ? null : (
                 <IconPhotoPlus size={36} strokeWidth={1} color={"#E7E6EA"} />
               )}
             </div>
@@ -175,6 +205,7 @@ function ModifyInfo() {
             onChange={handleImageChange}
           />
         </ImgForm>
+        <Button onClick={deleteImage}>프로필이미지 삭제</Button>
         <InfoInput
           label="이름"
           name={userType === "EMPLOYEE" ? "employeeName" : "ceoName"}

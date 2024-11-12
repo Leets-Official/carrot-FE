@@ -61,19 +61,22 @@ export const writtenPostListAPI = async (accessToken, dispatch, id) => {
     message: "",
     data: null,
   };
+  const body = {
+    userId: id,
+  };
 
   try {
     const result = await privateAxios(accessToken, dispatch).get(
       "/api/v1/post/user/posted",
-      { params: { userId: id } }
+      body
     );
     if (result.status == 200) {
       response.isSuccess = true;
       response.message = result.data.message;
-      response.data =
-        result.data.data.length == 0 ? [] : result.data.data.postedPostList;
+      response.data = result.data.data.length == 0 ? [] : result.data.data;
     }
   } catch (err) {
+    console.log(err);
     response.isSuccess = false;
     response.message = err.message;
   }
@@ -219,7 +222,7 @@ export const uploadProfileImageAPI = async (
 export const updateProfileImageAPI = async (
   accessToken,
   dispatch,
-  profileImage
+  newImageFile
 ) => {
   const response = {
     isSuccess: false,
@@ -228,7 +231,7 @@ export const updateProfileImageAPI = async (
   };
 
   let formData = new FormData();
-  formData.append("image", profileImage);
+  formData.append("image", newImageFile);
 
   try {
     const result = await privateAxios(accessToken, dispatch).patch(
@@ -248,20 +251,15 @@ export const updateProfileImageAPI = async (
 };
 
 // (삭제)
-export const deleteProfileImageAPI = async (
-  accessToken,
-  dispatch,
-  imageUrl
-) => {
+export const deleteProfileImageAPI = async (accessToken, dispatch) => {
   const response = {
     isSuccess: false,
     message: "",
   };
 
   try {
-    const result = await privateAxios(accessToken, dispatch).patch(
-      "/api/v1/user-profiles/update-profile-image",
-      { params: imageUrl }
+    const result = await privateAxios(accessToken, dispatch).delete(
+      "/api/v1/user-profiles/delete-profile-image"
     );
     if (result.status === 200) {
       response.isSuccess = true;

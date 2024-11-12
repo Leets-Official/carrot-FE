@@ -5,7 +5,13 @@ import {
   signupCEOAPI,
 } from "./signupAPI";
 import { loginAPI } from "./loginAPI";
-import { postListAPI, searchPostListAPI } from "./homeAPI";
+import {
+  postListAPI,
+  searchPostListAPI,
+  postDetailAPI,
+  postDetailCEOInfoAPI,
+  deletePostAPI,
+} from "./homeAPI";
 import {
   normalProfileAPI,
   writtenPostListAPI,
@@ -15,6 +21,8 @@ import {
   modifyExtraInfoAPI,
   modifyStrengthInfoAPI,
   uploadProfileImageAPI,
+  updateProfileImageAPI,
+  deleteProfileImageAPI,
   modifyBasicInfoAPI,
 } from "./mypageAPI";
 
@@ -26,6 +34,9 @@ export {
   loginAPI, // 로그인 API
   postListAPI, // 알바리스트 불러오기(홈) API
   searchPostListAPI, // 알바리스트 불러오기 (검색) API
+  postDetailAPI, // 알바 상세조회 API
+  postDetailCEOInfoAPI, // 알바 상세조회 사업자 정보 조회 API
+  deletePostAPI, // 알바 구인글 삭제 API
   normalProfileAPI, // 마이페이지 메인 불러오기 API
   writtenPostListAPI, // (사업자) 마이페이지 구인글 불러오기 API
   appliedPostListAPI, // (구직자) 마이페이지 지원글 불러오기 API
@@ -34,5 +45,7 @@ export {
   modifyExtraInfoAPI, // 마이페이지 추가사항 수정 API
   modifyStrengthInfoAPI, // 마이페이지 나의 장점 API
   uploadProfileImageAPI, // 마이페이지 기본 정보 프로필 이미지 업로드 API
+  updateProfileImageAPI, // 마이페이지 기본 정보 프로필 이미지 수정 API
+  deleteProfileImageAPI, // 마이페이지 기본 정보 프로필 이미지 삭제 API
   modifyBasicInfoAPI, // 마이페이지 (이미지 제외) 기본정보 수정 API
 };

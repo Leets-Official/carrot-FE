@@ -32,7 +32,7 @@ function MyPageInfo() {
   const dispatch = useDispatch();
   const accessToken = getAccessToken();
   const userType = useSelector((state) => state.userInfo.userType);
-  // 예시데이터 (변경예정)
+
   const [userData, setUserData] = useState(null);
   const [extraData, setExtraData] = useState({}); // 추가정보 태그
   const [strengthData, setStrengthData] = useState({}); // 나의 장점 태그
