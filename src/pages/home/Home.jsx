@@ -61,7 +61,7 @@ function Home() {
           <div className="header-icons">
             <IconUserCircle onClick={() => navigate("/mypage")} />
             {userType === "CEO" && (
-              <IconPencilPlus onClick={() => navigate("/post")} />
+              <IconPencilPlus onClick={() => navigate("/posting")} />
             )}
           </div>
         </HeaderMenuContainer>

@@ -1,6 +1,9 @@
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import theme from "../styles/theme/theme";
+import { deletePostAPI } from "../api";
+import getAccessToken from "../utils/getAccessToken";
+import { useDispatch } from "react-redux";
 
 const Modal = styled.div`
   display: ${(props) => !props.$display && "none"};
@@ -42,13 +45,22 @@ const ContentText = styled.button`
 
 const ButtonsModal = ({ isMode, setIsMode, postId }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const accessToken = getAccessToken();
   // 게시글 삭제
   const deletePosts = () => {
     setIsMode((pre) => !pre);
     const result = confirm("해당 게시글을 삭제하시겠습니까?");
 
     if (result) {
-      // 삭제 API - > 삭제 후, home페이지로 이동
+      deletePostAPI(accessToken, dispatch, postId).then((res) => {
+        if (res.isSuccess) {
+          alert("해당 구인글이 삭제되었습니다.");
+          navigate("/home", { replace: true });
+        } else {
+          alert(res.message);
+        }
+      });
     }
   };
 

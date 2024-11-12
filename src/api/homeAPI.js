@@ -15,7 +15,7 @@ export const postListAPI = async (accessToken, dispatch) => {
     if (result.status === 200) {
       response.isSuccess = true;
       response.message = result.data.message;
-      response.data = result.data.data.shortPostDataList;
+      response.data = result.data.data;
     }
   } catch (err) {
     response.isSuccess = false;
@@ -45,5 +45,75 @@ export const searchPostListAPI = async (accessToken, dispatch, keyword) => {
     response.message = err.message;
   }
 
+  return response;
+};
+
+// 알바 상세조회 API
+export const postDetailAPI = async (accessToken, dispatch, id) => {
+  const response = {
+    isSuccess: false,
+    message: "",
+    data: null,
+  };
+
+  try {
+    const result = await privateAxios(accessToken, dispatch).get(
+      `/api/v1/post/${id}`
+    );
+    if (result.status === 200) {
+      response.isSuccess = true;
+      response.message = result.data.message;
+      response.data = result.data.data;
+    }
+  } catch (err) {
+    response.isSuccess = false;
+    response.message = err.message;
+  }
+  return response;
+};
+
+// 사업자 정보 조회
+export const postDetailCEOInfoAPI = async (accessToken, dispatch, ceoId) => {
+  const response = {
+    isSuccess: false,
+    message: "",
+    data: null,
+  };
+
+  try {
+    const result = await privateAxios(accessToken, dispatch).get(
+      `/api/v1/user-profiles/ceo-info/${ceoId}`
+    );
+    if (result.status === 200) {
+      response.isSuccess = true;
+      response.message = result.data.message;
+      response.data = result.data.data;
+    }
+  } catch (err) {
+    response.isSuccess = false;
+    response.message = err.message;
+  }
+  return response;
+};
+
+// 상세 조회 글 삭제
+export const deletePostAPI = async (accessToken, dispatch, postId) => {
+  const response = {
+    isSuccess: false,
+    message: "",
+  };
+
+  try {
+    const result = await privateAxios(accessToken, dispatch).delete(
+      `/api/v1/post/${postId}`
+    );
+    if (result.status === 200) {
+      response.isSuccess = true;
+      response.message = result.data.message;
+    }
+  } catch (err) {
+    response.isSuccess = false;
+    response.message = err.message;
+  }
   return response;
 };
