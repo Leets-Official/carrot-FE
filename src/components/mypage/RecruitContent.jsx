@@ -57,7 +57,7 @@ const Content = styled.div`
 
 function RecruitContent({ content }) {
   const navigate = useNavigate();
-  const [status, setStatus] = useState(content.status);
+  const [status, setStatus] = useState(content.isRecruiting);
 
   const viewingApplicants = () => {
     navigate(`/mypage/applicant/${content.id}`, {
@@ -70,7 +70,7 @@ function RecruitContent({ content }) {
     if (result) {
       /*모집 마감 api*/
       alert("모집이 마감되었습니다");
-      setStatus("DONE");
+      setStatus(false);
     } else {
       alert("취소되었습니다.");
     }
