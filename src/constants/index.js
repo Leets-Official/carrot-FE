@@ -50,3 +50,13 @@ export const POSTING_UPMU_TAG = [
   "가사/집정리",
   "기타",
 ];
+
+export const DAY_MAPPING = {
+  MONDAY: "월",
+  TUESDAY: "화",
+  WEDNESDAY: "수",
+  THURSDAY: "목",
+  FRIDAY: "금",
+  SATURDAY: "토",
+  SUNDAY: "일",
+};
