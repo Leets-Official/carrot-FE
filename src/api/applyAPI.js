@@ -85,4 +85,27 @@ export const hireApplicantAPI = async (
 
   return response;
 };
+
 // (사업자) 구인글 마감하기 API
+export const closePostAPI = async (accessToken, dispatch, postId) => {
+  const response = {
+    isSuccess: false,
+    message: "",
+  };
+
+  try {
+    const result = await privateAxios(accessToken, dispatch).patch(
+      `/api/v1/post/status/${postId}`
+    );
+
+    if (result.status === 200) {
+      response.isSuccess = true;
+      response.message = result.data.message;
+    }
+  } catch (err) {
+    response.isSuccess = false;
+    response.message = err.response.data;
+  }
+
+  return response;
+};

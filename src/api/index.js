@@ -25,7 +25,12 @@ import {
   deleteProfileImageAPI,
   modifyBasicInfoAPI,
 } from "./mypageAPI";
-import { applyPostAPI, applicantListAPI, hireApplicantAPI } from "./applyAPI";
+import {
+  applyPostAPI,
+  applicantListAPI,
+  hireApplicantAPI,
+  closePostAPI,
+} from "./applyAPI";
 
 export {
   duplicateEmailAPI, // 이메일 인증 API
@@ -52,4 +57,5 @@ export {
   applyPostAPI, // 지원하기 API
   applicantListAPI, // 지원자 리스트 확인 API
   hireApplicantAPI, // 채용하기 API
+  closePostAPI, // 구인글 마감하기 API
 };
