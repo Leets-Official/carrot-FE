@@ -106,11 +106,6 @@ const Content = styled.div`
     gap: 5px;
     color: #5f5f5f;
   }
-  .applicant {
-    display: flex;
-    align-items: center;
-    font-weight: 700;
-  }
   .ceoInfo {
     display: flex;
     align-items: center;

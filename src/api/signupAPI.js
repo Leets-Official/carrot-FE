@@ -49,6 +49,7 @@ export const verifyCEOAPI = async (req) => {
     corp_no: "",
     b_sector: "",
     b_type: "",
+    b_adr: "",
   };
 
   const url = `https://api.odcloud.kr/api/nts-businessman/v1/validate?serviceKey=${
@@ -59,7 +60,6 @@ export const verifyCEOAPI = async (req) => {
     const { data } = await axios.post(url, {
       businesses: [form],
     });
-
     return data.data[0];
   } catch (error) {
     console.error(

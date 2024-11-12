@@ -24,7 +24,7 @@ const Content = styled.div`
     flex-direction: column;
     gap: 10px;
   }
-  .img-content.exist {
+  .img-content {
     width: 100px;
     height: 100px;
     overflow: hidden;
@@ -57,11 +57,11 @@ const Content = styled.div`
 
 function RecruitContent({ content }) {
   const navigate = useNavigate();
-  const [status, setStatus] = useState(content.status);
+  const [status, setStatus] = useState(content.isRecruiting);
 
   const viewingApplicants = () => {
-    navigate(`/mypage/applicant/${content.id}`, {
-      state: { content: content, id: content.id },
+    navigate(`/mypage/applicant/${content.postId}`, {
+      state: { content: content, id: content.postId },
     });
   };
 
@@ -70,7 +70,7 @@ function RecruitContent({ content }) {
     if (result) {
       /*모집 마감 api*/
       alert("모집이 마감되었습니다");
-      setStatus("DONE");
+      setStatus(false);
     } else {
       alert("취소되었습니다.");
     }
@@ -79,22 +79,18 @@ function RecruitContent({ content }) {
   return (
     <RecruitForm>
       <Content>
-        <div
-          className={
-            content.img !== null
-              ? "content img-content exist"
-              : "content img-content"
-          }
-        >
-          {content.img !== null && <img src={content.img} />}
-        </div>
+        {content?.imgUrl !== undefined && (
+          <div className="content img-content">
+            <img src={content?.imgUrl} />
+          </div>
+        )}
         <div className="content">
-          <div className="content-title">{content.title}</div>
-          <div className="content-location">{content.location}</div>
+          <div className="content-title">{content?.title}</div>
+          <div className="content-location">{content?.detailAreaName}</div>
         </div>
       </Content>
       <Content>
-        {status !== "DONE" ? (
+        {content?.isRecruiting ? (
           <>
             <Button
               color={theme.color.carrot}

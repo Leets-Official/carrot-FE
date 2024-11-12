@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IconCircle, IconCircleCheckFilled } from "@tabler/icons-react";
 import styled from "styled-components";
 import theme from "../../styles/theme/theme";
 import ApplyContent from "../../components/mypage/ApplyContent";
 import { useNavigate } from "react-router-dom";
 import { MYPAGE_APPLY_TAG } from "../../constants";
+import { useDispatch, useSelector } from "react-redux";
+import getAccessToken from "./../../utils/getAccessToken";
+import { appliedPostListAPI } from "../../api/mypageAPI";
 
 const Container = styled.div`
   width: 100%;
@@ -35,31 +38,15 @@ const Tag = styled.button`
   }
 `;
 
-/**DUMMY DATA (삭제 예정) */
-const DATA = [
-  {
-    id: 12,
-    status: "UNDONE",
-    tag: "APPLY",
-    title: "한국공학대전 무대, 조명, 전시부스 철거",
-    company: "아트플랜",
-    img: "https://cafe24.poxo.com/ec01/rainbowtree81/UVTjSep0dwP4/wX7AtHyXO6bEUL260IgzZWiHzbvHSCwWpbQLz54pYhGkVPg29PUXQnuw2Jhlv5+bbb00it4TQ==/_/web/product/big/rainbowtree81_1547.jpg",
-  },
-  {
-    id: 11,
-    status: "DONE",
-    tag: "SUCCESS",
-    title: "문화예술회관 하우스 어셔",
-    company: "하우스",
-    img: null,
-  },
-];
-
 function ApplyList() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const accessToken = getAccessToken();
+  const userId = useSelector((state) => state.userInfo.userId);
+
   const [currentTag, setCurrentTag] = useState(0);
   const [isChecked, setIsChecked] = useState(false);
-  const [filteredData, setFilteredData] = useState(DATA);
+  const [filteredData, setFilteredData] = useState([]);
 
   const handleClickTag = (index) => {
     setCurrentTag(index);
@@ -73,22 +60,49 @@ function ApplyList() {
 
   // 데이터 필터링 함수
   const filterData = (tagIndex, recruitingOnly) => {
-    const arr = DATA.filter((data) => {
-      const matchesTag =
-        tagIndex === 0 || MYPAGE_APPLY_TAG[tagIndex][0] === data.tag; // 전체(All) 혹은 선택된 태그에 맞는 데이터
+    if (filteredData.length == 0) return;
+    const arr = filteredData.filter((data) => {
+      let matchesTag = false;
+
+      // 태그가 "전체"일 경우
+      if (tagIndex === 0) {
+        matchesTag = true;
+      }
+      // 태그가 "지원완료"일 경우
+      else if (tagIndex === 1) {
+        matchesTag =
+          data.isAccepted === true && data.isApplicationClosed === false;
+      }
+      // 태그가 "채용O 완료"일 경우
+      else if (tagIndex === 2) {
+        matchesTag =
+          data.isAccepted === true && data.isApplicationClosed === true;
+      }
+      // 태그가 "다음에(마감+채용X)"일 경우
+      else if (tagIndex === 3) {
+        matchesTag =
+          data.isAccepted === false && data.isApplicationClosed === true;
+      }
+
+      // 구인중 필터링 (isChecked가 true일 경우 구인중인 데이터만 필터링)
       const matchesRecruiting = recruitingOnly
-        ? data.status === "UNDONE"
-        : true; // 구인중 필터 체크 여부
+        ? data.isApplicationClosed === true
+        : true;
+
       return matchesTag && matchesRecruiting;
     });
     setFilteredData(arr);
   };
 
-  // 지원 취소시 데이터 삭제(예시)
-  const handleCancleApply = (id) => {
-    const updatedData = filteredData.filter((data) => data.id !== id);
-    setFilteredData(updatedData);
-  };
+  useEffect(() => {
+    appliedPostListAPI(accessToken, dispatch, userId).then((res) => {
+      if (res.isSuccess) {
+        setFilteredData(res.data);
+      } else {
+        alert(res.message);
+      }
+    });
+  }, []);
 
   return (
     <Container>
@@ -119,12 +133,11 @@ function ApplyList() {
         )}
         <div style={{ fontSize: "14px" }}>구인중인 공고만 보기</div>
       </TagContainer>
-      {filteredData.map((data) => (
+      {filteredData?.map((data) => (
         <ApplyContent
-          key={data.id}
+          key={data.postId}
           content={data}
-          onClick={() => navigate("/post", { state: { id: data.id } })}
-          onCancle={handleCancleApply}
+          onClick={() => navigate(`/post/detail/${data.postId}`)}
         />
       ))}
     </Container>

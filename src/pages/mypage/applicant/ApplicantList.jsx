@@ -62,14 +62,14 @@ function ApplicantList() {
       <BodyContainer>
         <RecruitPost>
           {/**클릭 해당 공고로 이동 */}
-          {state.content.img !== null && (
+          {state.content.imgUrl !== undefined && (
             <div className="post-img">
               <img src={state.content.img} />
             </div>
           )}
           <div>
             <div className="title">{state.content.title}</div>
-            <div className="location">{state.content.location}</div>
+            <div className="location">{state.content.detailAreaName}</div>
           </div>
         </RecruitPost>
         {DATA.map((data) => {
