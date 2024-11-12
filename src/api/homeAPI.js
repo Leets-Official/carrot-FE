@@ -19,7 +19,7 @@ export const postListAPI = async (accessToken, dispatch) => {
     }
   } catch (err) {
     response.isSuccess = false;
-    response.message = err.message;
+    response.message = err.response.data;
   }
   return response;
 };
@@ -42,7 +42,7 @@ export const searchPostListAPI = async (accessToken, dispatch, keyword) => {
     }
   } catch (err) {
     response.isSuccess = false;
-    response.message = err.message;
+    response.message = err.response.data;
   }
 
   return response;
@@ -67,7 +67,7 @@ export const postDetailAPI = async (accessToken, dispatch, id) => {
     }
   } catch (err) {
     response.isSuccess = false;
-    response.message = err.message;
+    response.message = err.response.data;
   }
   return response;
 };
@@ -91,7 +91,7 @@ export const postDetailCEOInfoAPI = async (accessToken, dispatch, ceoId) => {
     }
   } catch (err) {
     response.isSuccess = false;
-    response.message = err.message;
+    response.message = err.response.data;
   }
   return response;
 };
@@ -113,7 +113,7 @@ export const deletePostAPI = async (accessToken, dispatch, postId) => {
     }
   } catch (err) {
     response.isSuccess = false;
-    response.message = err.message;
+    response.message = err.response.data;
   }
   return response;
 };

@@ -3,6 +3,9 @@ import styled from "styled-components";
 import theme from "../../styles/theme/theme";
 import Button from "../Button";
 import { useNavigate } from "react-router-dom";
+import { closePostAPI } from "../../api";
+import { useDispatch } from "react-redux";
+import getAccessToken from "../../utils/getAccessToken";
 
 const RecruitForm = styled.div`
   width: 90%;
@@ -57,6 +60,9 @@ const Content = styled.div`
 
 function RecruitContent({ content }) {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const accessToken = getAccessToken();
+
   const [status, setStatus] = useState(content.isRecruiting);
 
   const viewingApplicants = () => {
@@ -68,9 +74,14 @@ function RecruitContent({ content }) {
   const closeRecruit = () => {
     const result = confirm("해당 공고의 채용을 마감하시겠습니까?");
     if (result) {
-      /*모집 마감 api*/
-      alert("모집이 마감되었습니다");
-      setStatus(false);
+      closePostAPI(accessToken, dispatch, content.postId).then((res) => {
+        if (res.isSuccess) {
+          alert("모집이 마감되었습니다");
+          setStatus(false);
+        } else {
+          alert(res.message);
+        }
+      });
     } else {
       alert("취소되었습니다.");
     }
@@ -90,7 +101,7 @@ function RecruitContent({ content }) {
         </div>
       </Content>
       <Content>
-        {content?.isRecruiting ? (
+        {status ? (
           <>
             <Button
               color={theme.color.carrot}

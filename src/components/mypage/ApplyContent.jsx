@@ -8,13 +8,21 @@ import Button from "../Button";
 import { MYPAGE_APPLY_TAG } from "../../constants";
 
 function ApplyContent({ content, onClick }) {
-  const applyStatus = MYPAGE_APPLY_TAG.filter((tag) => content.tag == tag[0]);
+  const viewStatus = () => {
+    if (!content.isAccepted && !content.isApplicationClosed) {
+      return MYPAGE_APPLY_TAG[1][1];
+    } else if (content.isAccepted) {
+      return MYPAGE_APPLY_TAG[2][1];
+    } else {
+      return MYPAGE_APPLY_TAG[3][1];
+    }
+  };
 
   return (
     <ApplyForm>
       <FormContent>
         <Content>
-          <div className="apply-status">{applyStatus[0][1]}</div>
+          <div className="apply-status">{viewStatus()}</div>
         </Content>
         <Content>
           <div

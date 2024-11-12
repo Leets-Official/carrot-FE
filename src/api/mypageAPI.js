@@ -19,12 +19,7 @@ export const normalProfileAPI = async (accessToken, dispatch) => {
     }
   } catch (err) {
     response.isSuccess = false;
-    response.message =
-      err.status == 404
-        ? "존재하지 않는 유저입니다."
-        : err.status == 400
-        ? "정의되지 않은 유저입니다."
-        : err.message;
+    response.message = err.response.data;
   }
   return response;
 };
@@ -44,12 +39,11 @@ export const appliedPostListAPI = async (accessToken, dispatch, id) => {
     if (result.status == 200) {
       response.isSuccess = true;
       response.message = result.data.message;
-      response.data =
-        result.data.data.length == 0 ? [] : result.data.data.postList;
+      response.data = result.data.data.length == 0 ? [] : result.data.data;
     }
   } catch (err) {
     response.isSuccess = false;
-    response.message = err.message;
+    response.message = err.response.data;
   }
   return response;
 };
@@ -78,7 +72,7 @@ export const writtenPostListAPI = async (accessToken, dispatch, id) => {
     }
   } catch (err) {
     response.isSuccess = false;
-    response.message = err.message;
+    response.message = err.response.data;
   }
   return response;
 };
@@ -102,7 +96,7 @@ export const basicProfileInfoAPI = async (accessToken, dispatch) => {
     }
   } catch (err) {
     response.isSuccess = false;
-    response.message = err.message;
+    response.message = err.response.data;
   }
   return response;
 };
@@ -130,7 +124,7 @@ export const modifyMySelfAPI = async (accessToken, dispatch, selfIntro) => {
     }
   } catch (err) {
     response.isSuccess = false;
-    response.message = err.message;
+    response.message = err.response.data;
   }
   return response;
 };
@@ -153,7 +147,7 @@ export const modifyExtraInfoAPI = async (accessToken, dispatch, info) => {
     }
   } catch (err) {
     response.isSuccess = false;
-    response.message = err.message;
+    response.message = err.response.data;
   }
   return response;
 };
@@ -176,7 +170,7 @@ export const modifyStrengthInfoAPI = async (accessToken, dispatch, info) => {
     }
   } catch (err) {
     response.isSuccess = false;
-    response.message = err.message;
+    response.message = err.response.data;
   }
   return response;
 };
@@ -210,10 +204,7 @@ export const uploadProfileImageAPI = async (
     }
   } catch (err) {
     response.isSuccess = false;
-    response.message =
-      err.status == 400
-        ? "유효하지 않은 파일 형식입니다"
-        : "파일 변환에 실패하였습니다";
+    response.message = err.response.data;
   }
   return response;
 };
@@ -245,7 +236,7 @@ export const updateProfileImageAPI = async (
     }
   } catch (err) {
     response.isSuccess = false;
-    response.message = err.message;
+    response.message = err.response.data;
   }
   return response;
 };
@@ -267,8 +258,7 @@ export const deleteProfileImageAPI = async (accessToken, dispatch) => {
     }
   } catch (err) {
     response.isSuccess = false;
-    response.message =
-      err.status == 500 ? "이미지 삭제에 실패하였습니다" : err.message;
+    response.message = err.response.data;
   }
   return response;
 };
@@ -291,7 +281,7 @@ export const modifyBasicInfoAPI = async (accessToken, dispatch, body) => {
     }
   } catch (err) {
     response.isSuccess = false;
-    response.message = err.message;
+    response.message = err.response.data;
   }
 
   return response;

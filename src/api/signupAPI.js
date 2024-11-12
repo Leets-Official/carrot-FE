@@ -21,8 +21,7 @@ export const duplicateEmailAPI = async (email) => {
     }
   } catch (err) {
     response.isSuccess = false;
-    response.message =
-      err.status == 400 ? "이미 사용중인 이메일입니다." : err.message;
+    response.message = err.response.data;
   }
   return response;
 };
@@ -104,7 +103,7 @@ export const signupUserAPI = async (
     }
   } catch (err) {
     response.isSuccess = false;
-    response.message = err.message;
+    response.message = err.response.data;
   }
   return response;
 };
@@ -143,7 +142,7 @@ export const signupCEOAPI = async (
     }
   } catch (err) {
     response.isSuccess = false;
-    response.message = err.message;
+    response.message = err.response.data;
   }
   return response;
 };
