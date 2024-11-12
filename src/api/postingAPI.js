@@ -14,7 +14,7 @@ export const postJobPosting = async (accessToken, payload) => {
     if (result.status === 200) {
       response.isSuccess = true;
       response.message = result.data.message;
-      response.data = result.data.data; // 필요에 따라 데이터 할당
+      response.data = result.data.data;
     }
   } catch (err) {
     response.isSuccess = false;
@@ -22,7 +22,6 @@ export const postJobPosting = async (accessToken, payload) => {
   
     if (err.response?.status === 401) {
       alert("인증이 필요합니다. 다시 로그인해주세요.");
-      // 여기서 로그아웃 및 재로그인 프로세스를 트리거할 수 있음
     }
   
   }
@@ -40,8 +39,8 @@ export const updateJobPosting = async (accessToken, postId, postData) => {
 
   try {
     const body = {
-      postId, // 백엔드에서 postId가 필요하지 않다고 명시했으나, 요청 형식에 포함
-      userId: 0, // 사용하지 않음
+      postId, 
+      userId,
       storeName: "", // 수정 불가
       workPlaceAddress: "", // 수정 불가
       postData, // 수정 가능한 postData만 포함

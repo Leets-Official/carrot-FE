@@ -19,15 +19,26 @@ const PhoneInput = ({ label, onChange, onValidityChange }) => {
     setPhone(value);
   
     const valid = /^\d{3}-\d{4}-\d{4}$/.test(value); // 올바른 형식인지 확인
-    setIsValid(valid); 
-    onValidityChange && onValidityChange(valid); // 유효성 상태 부모 전달
-    onChange && onChange({ phone: value, noCalls });
-  };  
-
+    setIsValid(valid);
+    onValidityChange && onValidityChange(valid); 
+  
+    if (onChange) {
+      setTimeout(() => {
+        onChange({ phone: value, noCalls });
+      }, 0);
+    }
+  };
+  
   const handleCheckboxChange = () => {
     setNoCalls((prev) => {
       const updatedNoCalls = !prev;
-      onChange && onChange({ phone, noCalls: updatedNoCalls });
+  
+      if (onChange) {
+        setTimeout(() => {
+          onChange({ phone, noCalls: updatedNoCalls });
+        }, 0);
+      }
+  
       return updatedNoCalls;
     });
   };
