@@ -1,4 +1,3 @@
-// utils/formatHelper.js
 export const parseAddress = (address) => {
     const [doName = "", siName = "", detailName = ""] = address.split(" ");
     return { doName, siName, detailName };

@@ -1,4 +1,3 @@
-// utils/validationHelper.js
 export const validateForm = (payload, formData) => {
   const requiredFields = {
     "제목": payload.postData.title,

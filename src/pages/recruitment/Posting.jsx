@@ -12,8 +12,7 @@ import { validateForm } from "../../utils/posting/validationHelper"; // 분리�
 import { parseAddress, convertDays } from "../../utils/posting/formatHelper"; // 분리된 주소 및 요일 변환 함수
 
 const Posting = () => {
-  const state = useSelector((state) => state);
-  const accessToken = getAccessToken(state);
+  const accessToken = getAccessToken();
   const location = useLocation();
   const navigate = useNavigate();
   const userId = useSelector((state) => state.userInfo.userId);
@@ -61,7 +60,6 @@ const Posting = () => {
   // 게시글 수정 useEffect
   useEffect(() => {
     if (mode === "modify" && postId) {
-      // 수정 모드에서 데이터 가져오기
       fetchPostData(postId);
     }
   }, [mode, postId]);
@@ -156,7 +154,6 @@ const Posting = () => {
             styleType="card"
           />
         </div>
-
         {isOptionSelected && (
           <>
             <div className="form-section">
@@ -240,7 +237,6 @@ const Posting = () => {
           </>
         )}
       </ContentContainer>
-
       <FixedButtonContainer>
         <Button
           color="#ff8a3d"

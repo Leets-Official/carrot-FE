@@ -1,4 +1,3 @@
-// utils/payloadHelper.js
 export const createPayload = (formData, postId, userId, parseAddress, convertDays) => {
     const { doName, siName, detailName } = parseAddress(formData.workLocation);
     const workDays = convertDays(formData.workDays);
@@ -28,7 +27,6 @@ export const createPayload = (formData, postId, userId, parseAddress, convertDay
         isShortTermJob: formData.workPeriod === "단기",
         payType: formData.payType,
         isNumberPublic: formData.isNumberPublic,
-        imageList: [""],
         imageUrlList: [""],
       },
     };

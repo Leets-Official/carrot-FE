@@ -38,8 +38,8 @@ export const updateJobPosting = async (accessToken, postId, postData, userId) =>
 
   try {
     const body = {
-      postId,
-      userId,
+      postId:postId,
+      userId:userId,
       storeName: "", // 수정 불가
       workPlaceAddress: "", // 수정 불가
       postData,
