@@ -1,17 +1,34 @@
 import React, { useState, useEffect } from "react";
-import { PageContainer, ContentContainer, FixedButtonContainer } from "../../styles/posting/PostingStyles";
-import { InputField, Tag, Toggle, WeekdayPicker, WorkTimePicker, PayPicker, AddressInput, PhotoUpload, DescriptionInput, PhoneInput, Button } from "../../components";
+import {
+  PageContainer,
+  ContentContainer,
+  FixedButtonContainer,
+} from "../../styles/posting/PostingStyles";
+import {
+  InputField,
+  Tag,
+  Toggle,
+  WeekdayPicker,
+  WorkTimePicker,
+  PayPicker,
+  AddressInput,
+  PhotoUpload,
+  DescriptionInput,
+  PhoneInput,
+  Button,
+} from "../../components";
 import "../../styles/posting/Posting.css";
 import { POSTING_UPMU_TAG } from "../../constants";
 import { postJobPosting, updateJobPosting, getPostById } from "../../api";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import getAccessToken from "../../utils/getAccessToken"; // 일반 함수로 가져와야 오류 안뜸!!
 import { createPayload } from "../../utils/posting/payloadHelper"; // 분리된 payload 생성 함수
 import { validateForm } from "../../utils/posting/validationHelper"; // 분리된 유효성 검증 함수
 import { parseAddress, convertDays } from "../../utils/posting/formatHelper"; // 분리된 주소 및 요일 변환 함수
 
 const Posting = () => {
+  const dispatch = useDispatch();
   const accessToken = getAccessToken();
   const location = useLocation();
   const navigate = useNavigate();
@@ -37,7 +54,8 @@ const Posting = () => {
     applyNumber: "",
     isNumberPublic: true,
     description: "",
-    workPeriod: "1개월 이상"
+    workPeriod: "1개월 이상",
+    imageUrlList: [],
   });
 
   const handleChange = (key, value) => {
@@ -98,7 +116,9 @@ const Posting = () => {
       workTags: [workType],
       workDays,
       workTime: {
-        start: `${workStartHour}:${workStartMinute.toString().padStart(2, "0")}`,
+        start: `${workStartHour}:${workStartMinute
+          .toString()
+          .padStart(2, "0")}`,
         end: `${workEndHour}:${workEndTimeMinute.toString().padStart(2, "0")}`,
       },
       pay,
@@ -110,34 +130,45 @@ const Posting = () => {
     });
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     const allValid = Object.values(validStates).every((isValid) => isValid);
     if (!allValid) {
       alert("모든 필드를 올바르게 입력해주세요.");
       return;
     }
-
-    const payload = createPayload(formData, postId, userId, parseAddress, convertDays);
-    console.log("Payload:", payload);
+    const payload = createPayload(
+      formData,
+      postId,
+      userId,
+      parseAddress,
+      convertDays
+    );
 
     if (!validateForm(payload, formData)) {
-      console.log("Validation failed. Aborting API call.");
       return;
     }
 
     try {
-      const response = mode === "create"
-        ? await postJobPosting(accessToken, payload)
-        : await updateJobPosting(accessToken, postId, payload.postData);
-
-      if (response.isSuccess) {
-        alert(mode === "create" ? "게시글이 성공적으로 등록되었습니다." : "게시글이 성공적으로 수정되었습니다.");
-        navigate("/home");
+      if (mode !== "modify") {
+        postJobPosting(accessToken, dispatch, payload).then((res) => {
+          if (res.isSuccess) {
+            alert("게시글이 성공적으로 등록되었습니다.");
+            navigate("/home");
+          } else {
+            alert(res.message);
+          }
+        });
       } else {
-        alert(`${mode === "create" ? "등록" : "수정"} 실패: ${response.message}`);
+        updateJobPosting(accessToken, postId, postData, userId).then((res) => {
+          if (res.isSuccess) {
+            alert("게시글이 성공적으로 수정되었습니다.");
+            navigate("/home");
+          } else {
+            alert(res.message);
+          }
+        });
       }
     } catch (error) {
-      console.error("Error during submission:", error);
       alert("제출 과정에서 오류가 발생했습니다. 다시 시도해주세요.");
     }
   };
@@ -145,7 +176,9 @@ const Posting = () => {
   return (
     <PageContainer>
       <ContentContainer>
-        <div className="header">{mode === "modify" ? "게시글 수정" : "어떤 알바를 구하고 계신가요?"}</div>
+        <div className="header">
+          {mode === "modify" ? "게시글 수정" : "어떤 알바를 구하고 계신가요?"}
+        </div>
         <div className="toggle-section">
           <Toggle
             options={["업무 목적"]}
@@ -161,7 +194,9 @@ const Posting = () => {
                 label="제목"
                 placeholder="공고 내용을 요약해주세요."
                 onChange={(value) => handleChange("title", value)}
-                onValidityChange={(isValid) => handleValidityChange("title", isValid)}
+                onValidityChange={(isValid) =>
+                  handleValidityChange("title", isValid)
+                }
               />
             </div>
             <div className="form-section">
@@ -192,7 +227,10 @@ const Posting = () => {
               <WorkTimePicker
                 label="일하는 시간"
                 onChange={(timeData) => {
-                  handleChange("workTime", { start: timeData.start, end: timeData.end });
+                  handleChange("workTime", {
+                    start: timeData.start,
+                    end: timeData.end,
+                  });
                   handleChange("isNegotiable", timeData.isNegotiable);
                 }}
               />
@@ -207,13 +245,21 @@ const Posting = () => {
               />
             </div>
             <div className="form-section">
-              <PhotoUpload label="사진" />
+              <PhotoUpload
+                label="사진"
+                selectedPhotos={formData.imageUrlList}
+                setSelectedPhotos={(photos) =>
+                  handleChange("imageUrlList", photos)
+                }
+              />
             </div>
             <div className="form-section">
               <DescriptionInput
                 label="자세한 설명"
                 onChange={(value) => handleChange("description", value)}
-                onValidityChange={(isValid) => handleValidityChange("description", isValid)}
+                onValidityChange={(isValid) =>
+                  handleValidityChange("description", isValid)
+                }
               />
             </div>
             <div className="form-section">
@@ -231,7 +277,9 @@ const Posting = () => {
               <PhoneInput
                 label="연락처"
                 onChange={handlePhoneInputChange}
-                onValidityChange={(isValid) => handleValidityChange("applyNumber", isValid)}
+                onValidityChange={(isValid) =>
+                  handleValidityChange("applyNumber", isValid)
+                }
               />
             </div>
           </>

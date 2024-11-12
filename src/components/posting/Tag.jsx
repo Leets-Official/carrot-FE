@@ -1,21 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { 
-  StyledLabel, 
-  TagContainer, 
-  TagButton, 
-  MoreButton, 
-  AddTagButton, 
-  TagInputWrapper, 
-  TagInputField 
+import {
+  StyledLabel,
+  TagContainer,
+  TagButton,
+  MoreButton,
+  AddTagButton,
+  TagInputWrapper,
+  TagInputField,
 } from "../../styles/posting/TagStyles";
 
-const Tag = ({ 
-  label, 
-  tags = [], 
-  maxSelectable = 1, 
-  selectedTags, 
-  setSelectedTags, 
-  onTagsUpdate 
+const Tag = ({
+  label,
+  tags = [],
+  maxSelectable,
+  selectedTags,
+  setSelectedTags,
+  onTagsUpdate,
 }) => {
   const [internalSelectedTags, setInternalSelectedTags] = useState([]);
   const [showAll, setShowAll] = useState(false);
@@ -27,14 +27,13 @@ const Tag = ({
     onTagsUpdate && onTagsUpdate(allTags); // 태그 변경 시 상위로 업데이트
   }, [allTags, onTagsUpdate]);
 
-  const effectiveSelectedTags = selectedTags ?? internalSelectedTags;
-  const handleSetSelectedTags = setSelectedTags ?? setInternalSelectedTags;
-
   const handleTagClick = (tag) => {
-    if (effectiveSelectedTags.includes(tag)) {
-      handleSetSelectedTags(effectiveSelectedTags.filter((t) => t !== tag));
-    } else if (effectiveSelectedTags.length < maxSelectable) {
-      handleSetSelectedTags([...effectiveSelectedTags, tag]);
+    if (internalSelectedTags.includes(tag)) {
+      setInternalSelectedTags(internalSelectedTags.filter((t) => t !== tag));
+      setSelectedTags(internalSelectedTags.filter((t) => t !== tag));
+    } else if (internalSelectedTags.length < maxSelectable) {
+      setInternalSelectedTags([...internalSelectedTags, tag]);
+      setSelectedTags([...internalSelectedTags, tag]);
     }
   };
 
@@ -55,12 +54,8 @@ const Tag = ({
         {allTags.slice(0, showAll ? allTags.length : 5).map((tag, index) => (
           <TagButton
             key={index}
-            selected={effectiveSelectedTags.includes(tag)}
+            selected={internalSelectedTags.includes(tag)}
             onClick={() => handleTagClick(tag)}
-            disabled={
-              !effectiveSelectedTags.includes(tag) &&
-              effectiveSelectedTags.length >= maxSelectable
-            }
           >
             {tag}
           </TagButton>
@@ -78,7 +73,13 @@ const Tag = ({
               <AddTagButton onClick={handleAddTag}>추가</AddTagButton>
             </TagInputWrapper>
           )}
-          <div style={{ display: "flex", justifyContent: "space-between", marginTop: "8px" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              marginTop: "8px",
+            }}
+          >
             {allTags.length > 5 && (
               <MoreButton onClick={toggleShowAll}>
                 {showAll ? "접기 ▲" : "더보기 ▼"}
