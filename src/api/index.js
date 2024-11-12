@@ -11,6 +11,7 @@ import {
   getPostById,
   uploadPostImageAPI,
 } from "./postingAPI";
+import {
   postListAPI,
   searchPostListAPI,
   postDetailAPI,
