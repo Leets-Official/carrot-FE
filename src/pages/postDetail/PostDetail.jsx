@@ -100,14 +100,14 @@ function PostDetail() {
         )}
       </HeaderContainer>
       <BodyContainer>
-        {postData?.postData.imageUrlList.length !== 0 && (
+        {postData?.postData.imageUrlList !== null && (
           <>
             <ImageContainer
               ref={imageContainerRef}
               onScroll={handleScroll}
               style={{ overflowX: "scroll", scrollSnapType: "x mandatory" }}
             >
-              {postData?.postData.imageUrlList.length !== 0 && (
+              {postData?.postData.imageUrlList !== null && (
                 <ImageList
                   style={{ display: "flex", scrollSnapAlign: "start" }}
                 >

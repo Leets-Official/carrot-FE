@@ -56,27 +56,27 @@ export const appliedPostListAPI = async (accessToken, dispatch, id) => {
 
 // (구인자) 본인이 작성한 구인글 확인
 export const writtenPostListAPI = async (accessToken, dispatch, id) => {
+  const body = {
+    userId: id,
+  };
+
   const response = {
     isSuccess: false,
     message: "",
     data: null,
   };
-  const body = {
-    userId: id,
-  };
 
   try {
     const result = await privateAxios(accessToken, dispatch).get(
-      "/api/v1/post/user/posted",
-      body
+      `/api/v1/post/user/posted`,
+      { params: body }
     );
     if (result.status == 200) {
       response.isSuccess = true;
       response.message = result.data.message;
-      response.data = result.data.data.length == 0 ? [] : result.data.data;
+      response.data = result.data.data.postedPostList;
     }
   } catch (err) {
-    console.log(err);
     response.isSuccess = false;
     response.message = err.message;
   }

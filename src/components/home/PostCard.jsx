@@ -67,7 +67,7 @@ function PostCard({ data, onClick }) {
           <div className="time">{/**추가 예정 */}</div>
         </div>
         <div className="img-box">
-          {data.imageUrl !== "" && <img src={data.imageUrl} />}
+          {data.imageUrl !== null && <img src={data.imageUrl} />}
         </div>
       </Content>
     </CardBox>

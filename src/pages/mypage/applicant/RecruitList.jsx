@@ -7,9 +7,14 @@ import { useSelector, useDispatch } from "react-redux";
 
 const Container = styled.div`
   width: 100%;
+  height: 570px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow-y: scroll;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 function RecruitList() {

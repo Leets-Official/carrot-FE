@@ -24,7 +24,7 @@ const Content = styled.div`
     flex-direction: column;
     gap: 10px;
   }
-  .img-content.exist {
+  .img-content {
     width: 100px;
     height: 100px;
     overflow: hidden;
@@ -60,8 +60,8 @@ function RecruitContent({ content }) {
   const [status, setStatus] = useState(content.isRecruiting);
 
   const viewingApplicants = () => {
-    navigate(`/mypage/applicant/${content.id}`, {
-      state: { content: content, id: content.id },
+    navigate(`/mypage/applicant/${content.postId}`, {
+      state: { content: content, id: content.postId },
     });
   };
 
@@ -79,15 +79,11 @@ function RecruitContent({ content }) {
   return (
     <RecruitForm>
       <Content>
-        <div
-          className={
-            content?.imgUrl !== ""
-              ? "content img-content exist"
-              : "content img-content"
-          }
-        >
-          {content?.imgUrl !== "" && <img src={content?.imgUrl} />}
-        </div>
+        {content?.imgUrl !== undefined && (
+          <div className="content img-content">
+            <img src={content?.imgUrl} />
+          </div>
+        )}
         <div className="content">
           <div className="content-title">{content?.title}</div>
           <div className="content-location">{content?.detailAreaName}</div>
