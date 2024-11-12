@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   PageContainer,
   ContentContainer,
@@ -19,14 +19,28 @@ import {
 } from "../../components";
 import "../../styles/posting/Posting.css";
 import { POSTING_UPMU_TAG } from "../../constants";
+import { postJobPosting, updateJobPosting, getPostById } from "../../api";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import getAccessToken from "../../utils/getAccessToken"; // 일반 함수로 가져와야 오류 안뜸!!
+import { createPayload } from "../../utils/posting/payloadHelper"; // 분리된 payload 생성 함수
+import { validateForm } from "../../utils/posting/validationHelper"; // 분리된 유효성 검증 함수
+import { parseAddress, convertDays } from "../../utils/posting/formatHelper"; // 분리된 주소 및 요일 변환 함수
 
 const Posting = () => {
+  const dispatch = useDispatch();
+  const accessToken = getAccessToken();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const userId = useSelector((state) => state.userInfo.userId);
+  const { mode, postId } = location.state || { mode: "create", postId: null };
+
   const [isOptionSelected, setIsOptionSelected] = useState(false);
-  // 토글 클릭 시 하위 컴포넌트 활성화 시키도록 설정해둠
-  const handleToggleClick = (value) => {
-    handleChange("selectedOption", value);
-    setIsOptionSelected(true);
-  };
+  const [validStates, setValidStates] = useState({
+    title: true,
+    description: true,
+    applyNumber: true,
+  });
 
   const [formData, setFormData] = useState({
     title: "",
@@ -41,27 +55,15 @@ const Posting = () => {
     isNumberPublic: true,
     description: "",
     workPeriod: "1개월 이상",
-  });
-
-  // 값의 길이에 대한 유효성 검증하여 제출을 막아둠
-  const [validStates, setValidStates] = useState({
-    title: true,
-    description: true,
-    applyNumber: true,
+    imageUrlList: [],
   });
 
   const handleChange = (key, value) => {
-    setFormData((prev) => ({
-      ...prev,
-      [key]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [key]: value }));
   };
 
   const handleValidityChange = (key, isValid) => {
-    setValidStates((prev) => ({
-      ...prev,
-      [key]: isValid,
-    }));
+    setValidStates((prev) => ({ ...prev, [key]: isValid }));
   };
 
   const handlePhoneInputChange = ({ phone, noCalls }) => {
@@ -69,79 +71,63 @@ const Posting = () => {
     handleChange("isNumberPublic", !noCalls);
   };
 
-  const parseAddress = (address) => {
-    const [doName = "", siName = "", detailName = ""] = address.split(" ");
-    return { doName, siName, detailName };
+  const handleToggleClick = (value) => {
+    handleChange("selectedOption", value);
+    setIsOptionSelected(true);
   };
-
-  const convertDays = (days) => {
-    const dayMap = {
-      월: "MONDAY",
-      화: "TUESDAY",
-      수: "WEDNESDAY",
-      목: "THURSDAY",
-      금: "FRIDAY",
-      토: "SATURDAY",
-      일: "SUNDAY",
-    };
-    return days.map((day) => dayMap[day]).join(", ");
-  };
-
-  const createPayload = () => {
-    const { doName, siName, detailName } = parseAddress(formData.workLocation);
-    const workDays = convertDays(formData.workDays);
-    const [startHour, startMinute] = formData.workTime.start
-      .split(":")
-      .map(Number);
-    const [endHour, endMinute] = formData.workTime.end.split(":").map(Number);
-
-    return {
-      postId: 0,
-      userId: 1,
-      storeName: formData.storeName,
-      postData: {
-        doName,
-        siName,
-        detailName,
-        workType: formData.workTags[0] || "기타",
-        title: formData.title,
-        content: formData.description,
-        pay: parseInt(formData.pay, 10),
-        workStartHour: startHour,
-        workStartMinute: startMinute,
-        workEndHour: endHour,
-        workEndTimeMinute: endMinute,
-        isNegotiable: formData.isNegotiable || false,
-        applyNumber: formData.applyNumber,
-        workDays,
-        isShortTermJob: formData.workPeriod === "단기",
-        payType: formData.payType,
-        isNumberPublic: formData.isNumberPublic,
-        imageList: [""],
-      },
-    };
-  };
-
-  const validateForm = (payload, formData) => {
-    const requiredFields = {
-      제목: payload.postData.title,
-      "하는 일": payload.postData.workType,
-      "일하는 기간": formData.workPeriod,
-      "일하는 요일": formData.workDays,
-      "일하는 시간": formData.workTime.start && formData.workTime.end,
-      급여: formData.pay,
-      "일하는 장소": formData.workLocation,
-      업체명: payload.storeName,
-      연락처: payload.postData.applyNumber,
-    };
-
-    for (const [label, value] of Object.entries(requiredFields)) {
-      if (!value || (Array.isArray(value) && value.length === 0)) {
-        alert(`${label}을(를) 입력해주세요.`);
-        return false; // 유효성 검사 실패
-      }
+  // 게시글 수정 useEffect
+  useEffect(() => {
+    if (mode === "modify" && postId) {
+      fetchPostData(postId);
     }
-    return true; // 유효성 검사 성공
+  }, [mode, postId]);
+
+  const fetchPostData = async (postId) => {
+    try {
+      const postData = await getPostById(postId, accessToken);
+      populateFormData(postData); // 폼 데이터 초기화
+    } catch (error) {
+      alert("게시글 데이터를 불러오는 데 실패했습니다.");
+    }
+  };
+
+  const populateFormData = (postData) => {
+    const {
+      title,
+      workType,
+      pay,
+      payType,
+      workStartHour,
+      workStartMinute,
+      workEndHour,
+      workEndTimeMinute,
+      isNegotiable,
+      applyNumber,
+      workDays,
+      content,
+      doName,
+      siName,
+      detailName,
+    } = postData.postData;
+
+    setFormData({
+      ...formData,
+      title,
+      workTags: [workType],
+      workDays,
+      workTime: {
+        start: `${workStartHour}:${workStartMinute
+          .toString()
+          .padStart(2, "0")}`,
+        end: `${workEndHour}:${workEndTimeMinute.toString().padStart(2, "0")}`,
+      },
+      pay,
+      payType,
+      isNegotiable,
+      applyNumber,
+      description: content,
+      workLocation: `${doName} ${siName} ${detailName}`, // 주소 결합
+    });
   };
 
   const handleSubmit = () => {
@@ -150,18 +136,49 @@ const Posting = () => {
       alert("모든 필드를 올바르게 입력해주세요.");
       return;
     }
+    const payload = createPayload(
+      formData,
+      postId,
+      userId,
+      parseAddress,
+      convertDays
+    );
 
-    const payload = createPayload(); // payload 생성 로직 분리
-    if (!validateForm(payload, formData)) return; // 유효성 검사 실패 시 중단
-    console.log("Payload:", payload);
-    // API 호출
-    // axios.post('/api/posting', payload).then(...);
+    if (!validateForm(payload, formData)) {
+      return;
+    }
+
+    try {
+      if (mode !== "modify") {
+        postJobPosting(accessToken, dispatch, payload).then((res) => {
+          if (res.isSuccess) {
+            alert("게시글이 성공적으로 등록되었습니다.");
+            navigate("/home");
+          } else {
+            alert(res.message);
+          }
+        });
+      } else {
+        updateJobPosting(accessToken, postId, postData, userId).then((res) => {
+          if (res.isSuccess) {
+            alert("게시글이 성공적으로 수정되었습니다.");
+            navigate("/home");
+          } else {
+            alert(res.message);
+          }
+        });
+      }
+    } catch (error) {
+      alert("제출 과정에서 오류가 발생했습니다. 다시 시도해주세요.");
+    }
   };
 
   return (
     <PageContainer>
       <ContentContainer>
-        <div className="header">어떤 알바를 구하고 계신가요?</div>
+        <div className="header">
+          {mode === "modify" ? "게시글 수정" : "어떤 알바를 구하고 계신가요?"}
+        </div>
         <div className="toggle-section">
           <Toggle
             options={["업무 목적"]}
@@ -170,7 +187,6 @@ const Posting = () => {
             styleType="card"
           />
         </div>
-
         {isOptionSelected && (
           <>
             <div className="form-section">
@@ -183,7 +199,6 @@ const Posting = () => {
                 }
               />
             </div>
-
             <div className="form-section">
               <Tag
                 label="하는 일"
@@ -193,7 +208,6 @@ const Posting = () => {
                 maxSelectable={1}
               />
             </div>
-
             <div className="form-section">
               <Toggle
                 label="일하는 기간"
@@ -203,14 +217,12 @@ const Posting = () => {
                 styleType="tag"
               />
             </div>
-
             <div className="form-section">
               <WeekdayPicker
                 label="요일 선택"
                 onChange={(days) => handleChange("workDays", days)}
               />
             </div>
-
             <div className="form-section">
               <WorkTimePicker
                 label="일하는 시간"
@@ -223,7 +235,6 @@ const Posting = () => {
                 }}
               />
             </div>
-
             <div className="form-section">
               <PayPicker
                 label="급여"
@@ -233,11 +244,15 @@ const Posting = () => {
                 }}
               />
             </div>
-
             <div className="form-section">
-              <PhotoUpload label="사진" />
+              <PhotoUpload
+                label="사진"
+                selectedPhotos={formData.imageUrlList}
+                setSelectedPhotos={(photos) =>
+                  handleChange("imageUrlList", photos)
+                }
+              />
             </div>
-
             <div className="form-section">
               <DescriptionInput
                 label="자세한 설명"
@@ -247,7 +262,6 @@ const Posting = () => {
                 }
               />
             </div>
-
             <div className="form-section">
               <div className="header">업체 정보</div>
               <InputField
@@ -271,7 +285,6 @@ const Posting = () => {
           </>
         )}
       </ContentContainer>
-
       <FixedButtonContainer>
         <Button
           color="#ff8a3d"
@@ -279,7 +292,7 @@ const Posting = () => {
           size="18px"
           onClick={handleSubmit}
         >
-          다음
+          {mode === "create" ? "등록" : "수정"}
         </Button>
       </FixedButtonContainer>
     </PageContainer>
