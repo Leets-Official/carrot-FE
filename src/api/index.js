@@ -5,7 +5,7 @@ import {
   signupCEOAPI,
 } from "./signupAPI";
 import { loginAPI } from "./loginAPI";
-import{ postJobPosting, updateJobPosting } from "./postingAPI";
+import{ postJobPosting, updateJobPosting, getPostById } from "./postingAPI";
 import { postListAPI, searchPostListAPI } from "./homeAPI";
 
 export {
@@ -16,6 +16,7 @@ export {
   loginAPI, // 로그인 API
   postJobPosting, //모집글 작성 API
   updateJobPosting, //모집글 수정 API
+  getPostById, // 모집글 수정시 postData 불러오기 API
   postListAPI, // 알바리스트 불러오기(홈) API
   searchPostListAPI, // 알바리스트 불러오기 (검색) API
 };

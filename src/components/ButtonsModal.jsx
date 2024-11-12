@@ -45,14 +45,14 @@ const ButtonsModal = ({ isMode, setIsMode, postId }) => {
   //게시글 수정
   const modifyPosts = () => {
     if (confirm("해당 게시글을 수정하시겠습니까?")) {
-      navigate(`/modify`, {
+      navigate("/posting", {
         state: {
           postId: postId,
           mode: "modify", // 수정 모드 전달
         },
       });
     }
-  };
+  };  
 
   // 게시글 삭제
   const deletePosts = () => {

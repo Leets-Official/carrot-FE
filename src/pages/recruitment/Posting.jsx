@@ -1,12 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { PageContainer, ContentContainer, FixedButtonContainer } from "../../styles/posting/PostingStyles";
 import { InputField, Tag, Toggle, WeekdayPicker, WorkTimePicker, PayPicker, AddressInput, PhotoUpload, DescriptionInput, PhoneInput, Button } from "../../components";
 import "../../styles/posting/Posting.css";
 import { POSTING_UPMU_TAG } from "../../constants";
-import { postJobPosting, updateJobPosting } from "../../api";
+import { postJobPosting, updateJobPosting, getPostById } from "../../api";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
-import getAccessToken from "../../utils/getAccessToken"; // 일반 함수로 가져오기
+import getAccessToken from "../../utils/getAccessToken"; // 일반 함수로 가져와야 오류 안뜸!!
 import { createPayload } from "../../utils/posting/payloadHelper"; // 분리된 payload 생성 함수
 import { validateForm } from "../../utils/posting/validationHelper"; // 분리된 유효성 검증 함수
 import { parseAddress, convertDays } from "../../utils/posting/formatHelper"; // 분리된 주소 및 요일 변환 함수
@@ -14,6 +14,11 @@ import { parseAddress, convertDays } from "../../utils/posting/formatHelper"; //
 const Posting = () => {
   const state = useSelector((state) => state);
   const accessToken = getAccessToken(state);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const userId = useSelector((state) => state.userInfo.userId);
+  const { mode, postId } = location.state || { mode: "create", postId: null };
+
   const [isOptionSelected, setIsOptionSelected] = useState(false);
   const [validStates, setValidStates] = useState({
     title: true,
@@ -36,12 +41,6 @@ const Posting = () => {
     workPeriod: "1개월 이상"
   });
 
-  const location = useLocation();
-  const navigate = useNavigate();
-  const mode = location.state?.mode || "create";
-  const postId = location.state?.postId || null;
-  const userId = useSelector((state) => state.userInfo.userId);
-
   const handleChange = (key, value) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
   };
@@ -58,6 +57,59 @@ const Posting = () => {
   const handleToggleClick = (value) => {
     handleChange("selectedOption", value);
     setIsOptionSelected(true);
+  };
+  // 게시글 수정 useEffect
+  useEffect(() => {
+    if (mode === "modify" && postId) {
+      // 수정 모드에서 데이터 가져오기
+      fetchPostData(postId);
+    }
+  }, [mode, postId]);
+
+  const fetchPostData = async (postId) => {
+    try {
+      const postData = await getPostById(postId, accessToken);
+      populateFormData(postData); // 폼 데이터 초기화
+    } catch (error) {
+      alert("게시글 데이터를 불러오는 데 실패했습니다.");
+    }
+  };
+
+  const populateFormData = (postData) => {
+    const {
+      title,
+      workType,
+      pay,
+      payType,
+      workStartHour,
+      workStartMinute,
+      workEndHour,
+      workEndTimeMinute,
+      isNegotiable,
+      applyNumber,
+      workDays,
+      content,
+      doName,
+      siName,
+      detailName,
+    } = postData.postData;
+
+    setFormData({
+      ...formData,
+      title,
+      workTags: [workType],
+      workDays,
+      workTime: {
+        start: `${workStartHour}:${workStartMinute.toString().padStart(2, "0")}`,
+        end: `${workEndHour}:${workEndTimeMinute.toString().padStart(2, "0")}`,
+      },
+      pay,
+      payType,
+      isNegotiable,
+      applyNumber,
+      description: content,
+      workLocation: `${doName} ${siName} ${detailName}`, // 주소 결합
+    });
   };
 
   const handleSubmit = async () => {
@@ -95,7 +147,7 @@ const Posting = () => {
   return (
     <PageContainer>
       <ContentContainer>
-        <div className="header">어떤 알바를 구하고 계신가요?</div>
+        <div className="header">{mode === "modify" ? "게시글 수정" : "어떤 알바를 구하고 계신가요?"}</div>
         <div className="toggle-section">
           <Toggle
             options={["업무 목적"]}
