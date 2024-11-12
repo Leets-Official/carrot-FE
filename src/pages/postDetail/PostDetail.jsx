@@ -28,7 +28,7 @@ import MapContainer from "../../components/MapContainer";
 import Button from "../../components/Button";
 import theme from "../../styles/theme/theme";
 import { ButtonsModal } from "../../components/ButtonsModal";
-import { postDetailAPI } from "../../api";
+import { applyPostAPI, postDetailAPI } from "../../api";
 import { useDispatch, useSelector } from "react-redux";
 import getAccessToken from "../../utils/getAccessToken";
 import { DAY_MAPPING } from "../../constants";
@@ -65,8 +65,17 @@ function PostDetail() {
     const result = confirm("해당 알바에 지원하시겠습니까?");
     if (result) {
       // 지원하기 API 호출
-      // 1. 지원완료 2. 이미 지원한 경우
-      alert("지원이 완료되었습니다.");
+      // 1. 지원완료
+      applyPostAPI(accessToken, dispatch, postData.postId, userId).then(
+        (res) => {
+          if (res.isSuccess) {
+            alert("지원이 완료되었습니다.");
+          } else {
+            // 2. 이미 지원한 경우 (그 외 에러)
+            alert(res.message);
+          }
+        }
+      );
     }
   };
 

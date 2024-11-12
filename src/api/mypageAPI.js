@@ -44,8 +44,7 @@ export const appliedPostListAPI = async (accessToken, dispatch, id) => {
     if (result.status == 200) {
       response.isSuccess = true;
       response.message = result.data.message;
-      response.data =
-        result.data.data.length == 0 ? [] : result.data.data.postList;
+      response.data = result.data.data.length == 0 ? [] : result.data.data;
     }
   } catch (err) {
     response.isSuccess = false;

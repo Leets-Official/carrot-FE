@@ -46,22 +46,26 @@ function ApplyList() {
 
   const [currentTag, setCurrentTag] = useState(0);
   const [isChecked, setIsChecked] = useState(false);
-  const [filteredData, setFilteredData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]); // 필터링된 데이터
+  const [allData, setAllData] = useState([]); // 원본 데이터
 
+  // 태그에 맞는 공고만 보기 체크
   const handleClickTag = (index) => {
     setCurrentTag(index);
-    filterData(index, isChecked);
+    filterData(index, isChecked); // 필터링 적용
   };
 
+  // 구인중인 공고만 보기 체크
   const handleRecruitingToggle = () => {
     setIsChecked(!isChecked);
-    filterData(currentTag, !isChecked);
+    filterData(currentTag, !isChecked); // 필터링 적용
   };
 
   // 데이터 필터링 함수
   const filterData = (tagIndex, recruitingOnly) => {
-    if (filteredData.length == 0) return;
-    const arr = filteredData.filter((data) => {
+    if (allData.length === 0) return; // 초기 데이터를 가져오지 않으면 필터링 안함
+
+    const arr = allData.filter((data) => {
       let matchesTag = false;
 
       // 태그가 "전체"일 경우
@@ -71,12 +75,11 @@ function ApplyList() {
       // 태그가 "지원완료"일 경우
       else if (tagIndex === 1) {
         matchesTag =
-          data.isAccepted === true && data.isApplicationClosed === false;
+          data.isAccepted === false && data.isApplicationClosed === false;
       }
       // 태그가 "채용O 완료"일 경우
       else if (tagIndex === 2) {
-        matchesTag =
-          data.isAccepted === true && data.isApplicationClosed === true;
+        matchesTag = data.isAccepted === true;
       }
       // 태그가 "다음에(마감+채용X)"일 경우
       else if (tagIndex === 3) {
@@ -86,23 +89,25 @@ function ApplyList() {
 
       // 구인중 필터링 (isChecked가 true일 경우 구인중인 데이터만 필터링)
       const matchesRecruiting = recruitingOnly
-        ? data.isApplicationClosed === true
+        ? data.isApplicationClosed === false
         : true;
 
       return matchesTag && matchesRecruiting;
     });
+
     setFilteredData(arr);
   };
 
   useEffect(() => {
     appliedPostListAPI(accessToken, dispatch, userId).then((res) => {
       if (res.isSuccess) {
-        setFilteredData(res.data);
+        setAllData(res.data); // 원본 데이터를 저장
+        setFilteredData(res.data); // 초기 로딩 시 필터링된 데이터는 원본 그대로
       } else {
         alert(res.message);
       }
     });
-  }, []);
+  }, [accessToken, dispatch, userId]);
 
   return (
     <Container>
