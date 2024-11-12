@@ -4,6 +4,8 @@ import styled from "styled-components";
 import theme from "../../styles/theme/theme";
 import Button from "../Button";
 import { useNavigate, useParams } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import getAccessToken from "./../../utils/getAccessToken";
 
 const RecruitForm = styled.div`
   width: 90%;
@@ -63,15 +65,18 @@ const Content = styled.div`
 
 function Applicant({ data }) {
   const navigate = useNavigate();
-  const { postId } = useParams();
-  const [status, setStatus] = useState(data.status);
+  const dispatch = useDispatch();
+  const accessToken = getAccessToken();
 
+  const { postId } = useParams();
+  const [status, setStatus] = useState(data.isRecruited);
+
+  // 채용하기
   const hireApplicant = () => {
     const result = confirm("해당 지원자를 채용하시겠습니까?");
     if (result) {
-      /*모집 마감 api*/
       alert("채용하였습니다.");
-      setStatus("COMPLETE");
+      setStatus(true);
     } else {
       alert("취소되었습니다.");
     }
@@ -90,15 +95,15 @@ function Applicant({ data }) {
           {data.img !== null && <img src={data.img} />}
         </div>
         <div className="content">
-          <div className="content-name">{data.name}</div>
-          <div className="content-location">{data.location}</div>
+          <div className="content-name">{data.userNickname}</div>
+          <div className="content-location">{data.detailAreaName}</div>
         </div>
         <IconChevronRight
           onClick={() => navigate(`/mypage/applicant/${postId}/${data.id}`)}
         />
       </Content>
       <Content>
-        {status !== "COMPLETE" ? (
+        {!status ? (
           <>
             <Button color={theme.color.carrot} textcolor="white">
               응답하기

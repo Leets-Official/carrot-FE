@@ -25,7 +25,7 @@ import {
   deleteProfileImageAPI,
   modifyBasicInfoAPI,
 } from "./mypageAPI";
-import { applyPostAPI } from "./applyAPI";
+import { applyPostAPI, applicantListAPI } from "./applyAPI";
 
 export {
   duplicateEmailAPI, // 이메일 인증 API
@@ -50,4 +50,5 @@ export {
   deleteProfileImageAPI, // 마이페이지 기본 정보 프로필 이미지 삭제 API
   modifyBasicInfoAPI, // 마이페이지 (이미지 제외) 기본정보 수정 API
   applyPostAPI, // 지원하기 API
+  applicantListAPI, // 지원자 리스트 확인 API
 };
