@@ -1,11 +1,11 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   IconChevronLeft,
   IconChevronRight,
   IconCoinFilled,
   IconCalendarFilled,
   IconClockHour10Filled,
-  IconUserFilled,
+  IconUserCircle,
 } from "@tabler/icons-react";
 import {
   Container,
@@ -28,44 +28,19 @@ import MapContainer from "../../components/MapContainer";
 import Button from "../../components/Button";
 import theme from "../../styles/theme/theme";
 import { ButtonsModal } from "../../components/ButtonsModal";
-
-// 예시 데이터
-const data = {
-  postId: 1,
-  img: [
-    "https://i.pinimg.com/550x/5f/fd/2a/5ffd2a1c09352f38e65083e163c58cd9.jpg",
-    "https://3.gall-img.com/tdgall/files/attach/images/82/193/178/071/9a2ccc0facd637233f98b0e2b45f7bbf.png",
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdpZi7YXxXv_IeZgkuiuRkRUq95w6AKwKfHUE1vGtV7j6tbS4HYIywWys8GuBe7lk8f3s&usqp=CAU",
-    ,
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStEjLO_r_AFZw9LhXaWs7tJan9d5W0PfuH9iw5vG8F5TDGJhMIulGjW4MassYMvIUxQQ&usqp=CAU",
-  ],
-  tag: ["기타", "청소", "요리"],
-  title: "버섯 수확 아르바이트",
-  company: "이담농원",
-  type: "단기",
-  pay: { type: "시급", money: "10,000" },
-  date: ["241102", "241103"], // "장기의 경우" => 요일로 받아옴,
-  time: "08:00~19:00",
-  time_discussion: true,
-  content:
-    "버섯 수확 단순 아르바이트입니다. 점심 식대 1만원 지급합니다. 밖에서 드시고 오셔도 되고, 도시락 싸오셔도 무방합니다. 냉방기 가동중인 시원한 하우스 안에서만 근무합니다. 감사합니다.",
-  applicant: 3,
-  location: "경기도 시흥시 봉화로 285",
-  ceoInfo: {
-    profile:
-      "https://i.pinimg.com/550x/5f/fd/2a/5ffd2a1c09352f38e65083e163c58cd9.jpg",
-    name: "제임스",
-    number: "2208680034",
-    company: "씨앤코스타",
-    ceoName: "전현배",
-  },
-};
+import { applyPostAPI, postDetailAPI } from "../../api";
+import { useDispatch, useSelector } from "react-redux";
+import getAccessToken from "../../utils/getAccessToken";
+import { DAY_MAPPING } from "../../constants";
 
 function PostDetail() {
-  const userType = "USER";
   const navigate = useNavigate();
   const { id } = useParams();
+  const dispatch = useDispatch();
+  const accessToken = getAccessToken();
+  const { userType, userId } = useSelector((state) => state.userInfo);
 
+  const [postData, setPostData] = useState(null); // 상세조회 데이터
   const [isOpen, setIsOpen] = useState(false); // 사업자 정보 모달
   const [isMode, setIsMode] = useState(false); // 게시글 수정, 삭제 모달창
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -90,81 +65,126 @@ function PostDetail() {
     const result = confirm("해당 알바에 지원하시겠습니까?");
     if (result) {
       // 지원하기 API 호출
-      // 1. 지원완료 2. 이미 지원한 경우
-      alert("지원이 완료되었습니다.");
+      // 1. 지원완료
+      applyPostAPI(accessToken, dispatch, postData.postId, userId).then(
+        (res) => {
+          if (res.isSuccess) {
+            alert("지원이 완료되었습니다.");
+          } else {
+            // 2. 이미 지원한 경우 (그 외 에러)
+            alert(res.message);
+          }
+        }
+      );
     }
   };
+
+  useEffect(() => {
+    postDetailAPI(accessToken, dispatch, id).then((res) => {
+      if (res.isSuccess) {
+        setPostData(res.data);
+      } else {
+        alert(res.message);
+      }
+    });
+  }, []);
 
   return !isOpen ? (
     <Container>
       <HeaderContainer>
         <IconChevronLeft size={30} onClick={() => navigate("/home")} />
         {/**수정/삭제 아이콘은 작성자와 로그인 유저 id가 일치할 경우만 보여줌 */}
-        <IconDotsVertical size={30} onClick={() => setIsMode((pre) => !pre)} />
+        {userId === postData?.userId && (
+          <IconDotsVertical
+            size={30}
+            onClick={() => setIsMode((pre) => !pre)}
+          />
+        )}
         {isMode && (
           <ButtonsModal
             isMode={isMode}
-            postId={data.postId}
+            postId={postData?.postId}
             setIsMode={setIsMode}
           />
         )}
       </HeaderContainer>
       <BodyContainer>
-        <ImageContainer
-          ref={imageContainerRef}
-          onScroll={handleScroll}
-          style={{ overflowX: "scroll", scrollSnapType: "x mandatory" }}
-        >
-          {data.img.length !== 0 && (
-            <ImageList style={{ display: "flex", scrollSnapAlign: "start" }}>
-              {data.img.map((image, index) => (
-                <Image key={index} src={image} />
+        {postData?.postData.imageUrlList !== null && (
+          <>
+            <ImageContainer
+              ref={imageContainerRef}
+              onScroll={handleScroll}
+              style={{ overflowX: "scroll", scrollSnapType: "x mandatory" }}
+            >
+              {postData?.postData.imageUrlList !== null && (
+                <ImageList
+                  style={{ display: "flex", scrollSnapAlign: "start" }}
+                >
+                  {postData?.postData.imageUrlList.map((image, index) => (
+                    <Image key={index} src={image} alt="이미지" />
+                  ))}
+                </ImageList>
+              )}
+            </ImageContainer>
+            <DotsContainer>
+              {postData?.postData.imageUrlList.map((_, index) => (
+                <Dot
+                  key={index}
+                  active={index === currentIndex}
+                  onClick={() => handleDotClick(index)}
+                />
               ))}
-            </ImageList>
-          )}
-        </ImageContainer>
-        <DotsContainer>
-          {data.img.map((_, index) => (
-            <Dot
-              key={index}
-              active={index === currentIndex}
-              onClick={() => handleDotClick(index)}
-            />
-          ))}
-        </DotsContainer>
+            </DotsContainer>
+          </>
+        )}
+
         <TagWrap>
-          {data.tag.map((tag, i) => {
-            return <Tag key={i}>{tag}</Tag>;
-          })}
+          {Array.isArray(postData?.postData.workType) ? (
+            postData?.postData.workType.map((tag, i) => {
+              return <Tag key={i}>{tag}</Tag>;
+            })
+          ) : (
+            <Tag>{postData?.postData.workType}</Tag>
+          )}
         </TagWrap>
         <Content>
-          <div className="title">{data.title}</div>
-          <div className="company">{data.company}</div>
+          <div className="title">{postData?.postData.title}</div>
+          <div className="company">{postData?.storeName}</div>
         </Content>
         <Content>
           <div className="summary">
             <IconCoinFilled />
-            {data.pay.type} {data.pay.money}원
+            {postData?.postData.payType} {postData?.postData.pay}원
           </div>
           <div className="summary">
             <IconCalendarFilled />
-            {data.type == "단기"
-              ? `총 ${data.date.length}일 / ${data.date.map((n) => n)}`
-              : `${data.date.map((n) => n)}`}
+            {postData?.postData.workDays.map((day, index) => (
+              <span key={index}>{DAY_MAPPING[day] || day}</span>
+            ))}
           </div>
           <div className="summary">
             <IconClockHour10Filled />
-            {data.time} {data.time_discussion && "협의"}
+            {`${String(postData?.postData.workStartHour).padStart(
+              2,
+              "0"
+            )}:${String(postData?.postData.workStartMinute).padStart(
+              2,
+              "0"
+            )}~${String(postData?.postData.workEndHour).padStart(
+              2,
+              "0"
+            )}:${String(postData?.postData.workEndTimeMinute).padStart(
+              2,
+              "0"
+            )}`}
+            {postData?.postData.isNegotiable && " 협의"}
           </div>
         </Content>
-        <Content>{data.content}</Content>
+        <Content>{postData?.postData.content}</Content>
         <Content>
-          <div className="applicant">
-            <IconUserFilled /> 지원자 {data.applicant} 명
-          </div>
-        </Content>
-        <Content>
-          <MapContainer location={data.location} />
+          <MapContainer
+            location={`${postData?.postData.doName} ${postData?.postData.siName} ${postData?.postData.detailName}`}
+          />
         </Content>
         <Content>
           <div className="ceoInfo">
@@ -174,14 +194,12 @@ function PostDetail() {
             </div>
           </div>
           <div className="ceoInfo">
-            <div className="img-box">
-              <img src={data.ceoInfo.profile} />
-            </div>
-            {data.ceoInfo.name}
+            <IconUserCircle size={40} color="grey" />
+            {postData?.writerNickname}
           </div>
         </Content>
       </BodyContainer>
-      {userType === "USER" && (
+      {userType === "EMPLOYEE" && (
         <ButtonContainer>
           <Button
             color={theme.color.carrot}
@@ -194,7 +212,7 @@ function PostDetail() {
       )}
     </Container>
   ) : (
-    <CeoInfo isClose={() => setIsOpen(false)} />
+    <CeoInfo ceoId={postData?.userId} isClose={() => setIsOpen(false)} />
   );
 }
 
