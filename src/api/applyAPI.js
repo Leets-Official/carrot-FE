@@ -51,5 +51,38 @@ export const applicantListAPI = async (accessToken, dispatch, postId) => {
 
   return response;
 };
+
 // (사업자) 채용하기 API
+export const hireApplicantAPI = async (
+  accessToken,
+  dispatch,
+  postId,
+  userId
+) => {
+  const body = {
+    postId: postId,
+    userId: userId,
+  };
+
+  const response = {
+    isSuccess: false,
+    message: "",
+  };
+
+  try {
+    const result = await privateAxios(accessToken, dispatch).post(
+      "/api/v1/apply/employ",
+      body
+    );
+    if (result.status === 200) {
+      response.isSuccess = true;
+      response.message = result.data.message;
+    }
+  } catch (err) {
+    response.isSuccess = false;
+    response.message = err.response.data;
+  }
+
+  return response;
+};
 // (사업자) 구인글 마감하기 API

@@ -6,6 +6,7 @@ import Button from "../Button";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import getAccessToken from "./../../utils/getAccessToken";
+import { hireApplicantAPI } from "../../api";
 
 const RecruitForm = styled.div`
   width: 90%;
@@ -75,8 +76,16 @@ function Applicant({ data }) {
   const hireApplicant = () => {
     const result = confirm("해당 지원자를 채용하시겠습니까?");
     if (result) {
-      alert("채용하였습니다.");
-      setStatus(true);
+      hireApplicantAPI(accessToken, dispatch, postId, data.userId).then(
+        (res) => {
+          if (res.isSuccess) {
+            alert("채용하였습니다.");
+            setStatus(true);
+          } else {
+            alert(res.message);
+          }
+        }
+      );
     } else {
       alert("취소되었습니다.");
     }
