@@ -35,7 +35,6 @@ const Posting = () => {
   const userId = useSelector((state) => state.userInfo.userId);
   const { mode, postId } = location.state || { mode: "create", postId: null };
 
-  const [isOptionSelected, setIsOptionSelected] = useState(false);
   const [validStates, setValidStates] = useState({
     title: true,
     description: true,
@@ -71,10 +70,10 @@ const Posting = () => {
     handleChange("isNumberPublic", !noCalls);
   };
 
-  const handleToggleClick = (value) => {
-    handleChange("selectedOption", value);
-    setIsOptionSelected(true);
-  };
+  // const handleToggleClick = (value) => {
+  //   handleChange("selectedOption", value);
+  //   setIsOptionSelected(true);
+  // };
   // 게시글 수정 useEffect
   useEffect(() => {
     if (mode === "modify" && postId) {
@@ -83,15 +82,22 @@ const Posting = () => {
   }, [mode, postId]);
 
   const fetchPostData = async (postId) => {
-    try {
-      const postData = await getPostById(postId, accessToken);
-      populateFormData(postData); // 폼 데이터 초기화
-    } catch (error) {
-      alert("게시글 데이터를 불러오는 데 실패했습니다.");
+    const response = await getPostById(postId, accessToken);
+    console.log("Fetched post data:", response);
+    if (response.isSuccess) {
+      populateFormData(response.data);
+    } else {
+      alert(`데이터 호출 실패: ${response.message}`);
     }
-  };
+  };  
 
   const populateFormData = (postData) => {
+    if (!postData || !postData.data || !postData.data.postData) {
+      console.error("Invalid postData structure:", postData);
+      alert("게시글 데이터를 불러오는 데 실패했습니다.");
+      return; // 함수 실행 중단
+    }
+  
     const {
       title,
       workType,
@@ -108,17 +114,14 @@ const Posting = () => {
       doName,
       siName,
       detailName,
-    } = postData.postData;
-
+    } = postData.data.postData; // 올바른 경로로 수정
+  
     setFormData({
-      ...formData,
       title,
       workTags: [workType],
       workDays,
       workTime: {
-        start: `${workStartHour}:${workStartMinute
-          .toString()
-          .padStart(2, "0")}`,
+        start: `${workStartHour}:${workStartMinute.toString().padStart(2, "0")}`,
         end: `${workEndHour}:${workEndTimeMinute.toString().padStart(2, "0")}`,
       },
       pay,
@@ -126,80 +129,99 @@ const Posting = () => {
       isNegotiable,
       applyNumber,
       description: content,
-      workLocation: `${doName} ${siName} ${detailName}`, // 주소 결합
+      workLocation: `${doName} ${siName} ${detailName}`,
     });
-  };
-
-  const handleSubmit = () => {
+  };  
+  const handleSubmit = async () => {
     const allValid = Object.values(validStates).every((isValid) => isValid);
     if (!allValid) {
       alert("모든 필드를 올바르게 입력해주세요.");
       return;
     }
-    const payload = createPayload(
-      formData,
-      postId,
-      userId,
-      parseAddress,
-      convertDays
-    );
-
+  
+    const payload = createPayload(formData, postId, userId, parseAddress, convertDays);
+  
     if (!validateForm(payload, formData)) {
+      alert("모든 필드를 올바르게 입력해주세요.");
       return;
     }
-
+  
     try {
-      if (mode !== "modify") {
-        postJobPosting(accessToken, dispatch, payload).then((res) => {
-          if (res.isSuccess) {
-            alert("게시글이 성공적으로 등록되었습니다.");
-            navigate("/home");
-          } else {
-            alert(res.message);
-          }
-        });
+      const response = mode === "create"
+      ? await postJobPosting(accessToken, dispatch, payload)
+      : await updateJobPosting(accessToken, postId, payload.postData, userId);
+  
+      if (response.isSuccess) {
+        alert(mode === "create" ? "게시글이 성공적으로 등록되었습니다." : "게시글이 성공적으로 수정되었습니다.");
+        navigate("/home");
       } else {
-        updateJobPosting(accessToken, postId, postData, userId).then((res) => {
-          if (res.isSuccess) {
-            alert("게시글이 성공적으로 수정되었습니다.");
-            navigate("/home");
-          } else {
-            alert(res.message);
-          }
-        });
+        alert(`오류: ${response.message}`);
       }
     } catch (error) {
+      console.error("Submission error:", error);
       alert("제출 과정에서 오류가 발생했습니다. 다시 시도해주세요.");
     }
   };
+  
+  // const handleSubmit = () => {
+  //   const allValid = Object.values(validStates).every((isValid) => isValid);
+  //   if (!allValid) {
+  //     alert("모든 필드를 올바르게 입력해주세요.");
+  //     return;
+  //   }
+  //   const payload = createPayload(
+  //     formData,
+  //     postId,
+  //     userId,
+  //     parseAddress,
+  //     convertDays
+  //   );
 
+  //   if (!validateForm(payload, formData)) {
+  //     return;
+  //   }
+
+  //   try {
+  //     if (mode !== "modify") {
+  //       postJobPosting(accessToken, dispatch, payload).then((res) => {
+  //         if (res.isSuccess) {
+  //           alert("게시글이 성공적으로 등록되었습니다.");
+  //           navigate("/home");
+  //         } else {
+  //           alert(res.message);
+  //         }
+  //       });
+  //     } else {
+  //       updateJobPosting(accessToken, postId, postData, userId).then((res) => {
+  //         if (res.isSuccess) {
+  //           alert("게시글이 성공적으로 수정되었습니다.");
+  //           navigate("/home");
+  //         } else {
+  //           alert(res.message);
+  //         }
+  //       });
+  //     }
+  //   } catch (error) {
+  //     alert("제출 과정에서 오류가 발생했습니다. 다시 시도해주세요.");
+  //   }
+  // };
   return (
     <PageContainer>
       <ContentContainer>
         <div className="header">
           {mode === "modify" ? "게시글 수정" : "어떤 알바를 구하고 계신가요?"}
         </div>
-        <div className="toggle-section">
-          <Toggle
-            options={["업무 목적"]}
-            selectedOption={formData.selectedOption}
-            onChange={handleToggleClick}
-            styleType="card"
-          />
-        </div>
-        {isOptionSelected && (
-          <>
-            <div className="form-section">
-              <InputField
-                label="제목"
-                placeholder="공고 내용을 요약해주세요."
-                onChange={(value) => handleChange("title", value)}
-                onValidityChange={(isValid) =>
-                  handleValidityChange("title", isValid)
-                }
-              />
-            </div>
-            <div className="form-section">
+        <>
+          <div className="form-section">
+            <InputField
+              label="제목"
+              placeholder="공고 내용을 요약해주세요."
+              value={formData.title}
+              onChange={(value) => handleChange("title", value)}
+              onValidityChange={(isValid) => handleValidityChange("title", isValid)}
+            />
+          </div>
+          <div className="form-section">
               <Tag
                 label="하는 일"
                 tags={POSTING_UPMU_TAG}
@@ -244,15 +266,13 @@ const Posting = () => {
                 }}
               />
             </div>
-            <div className="form-section">
-              <PhotoUpload
+            <PhotoUpload
                 label="사진"
                 selectedPhotos={formData.imageUrlList}
                 setSelectedPhotos={(photos) =>
                   handleChange("imageUrlList", photos)
                 }
               />
-            </div>
             <div className="form-section">
               <DescriptionInput
                 label="자세한 설명"
@@ -282,8 +302,8 @@ const Posting = () => {
                 }
               />
             </div>
-          </>
-        )}
+        </>
+
       </ContentContainer>
       <FixedButtonContainer>
         <Button

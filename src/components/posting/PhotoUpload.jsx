@@ -13,7 +13,7 @@ import { uploadPostImageAPI } from "../../api";
 import getAccessToken from "../../utils/getAccessToken";
 import { useDispatch } from "react-redux";
 
-const PhotoUpload = ({ label, selectedPhotos, setSelectedPhotos }) => {
+const PhotoUpload = ({ label, selectedPhotos=[], setSelectedPhotos }) => {
   const accessToken = getAccessToken();
   const dispatch = useDispatch();
 

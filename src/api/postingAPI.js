@@ -58,8 +58,8 @@ export const updateJobPosting = async (
       response.data = result.data.data;
     }
   } catch (err) {
-    response.isSuccess = false;
-    response.message = err.response.data;
+    console.error("Error in updateJobPosting:", err);
+    response.message = err.response?.data?.message || "Unknown error occurred.";
   }
 
   return response;
@@ -73,17 +73,16 @@ export const getPostById = async (postId, accessToken) => {
     data: null,
   };
   try {
-    const result = await privateAxios(accessToken).get(
-      `/api/v1/post/${postId}`
-    );
+    const result = await privateAxios(accessToken).get(`/api/v1/post/${postId}`);
     if (result.status === 200) {
       response.isSuccess = true;
-      response.message = result.data.message;
+      response.message = "Post data fetched successfully.";
       response.data = result.data;
     }
   } catch (error) {
     console.error("Error fetching post data:", error);
-    response.message = error.response.data;
+    response.message =
+      error.response?.data?.message || "Failed to fetch post data.";
   }
   return response;
 };

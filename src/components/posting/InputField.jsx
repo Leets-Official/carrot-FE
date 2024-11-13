@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { InputWrapper, StyledLabel, BasicInput, ErrorMessage } from "../../styles/posting/InputFieldStyles";
 
 const InputField = ({
   label,
+  value,
   placeholder,
   color = "#ffffff",
   textColor = "#333",
@@ -12,14 +13,16 @@ const InputField = ({
   onValidityChange, // 유효성 상태 전달 콜백
   minLength = 6,
 }) => {
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState(value || ""); // 초기값 설정
+  useEffect(() => {
+    setInputValue(value); // 외부에서 value가 변경되면 반영
+  }, [value]);
 
   const isValid = label !== "제목" || (inputValue.length >= minLength && inputValue.length <= 30);
 
   const handleChange = (e) => {
-    const value = e.target.value;
-    setInputValue(value);
-    onChange && onChange(value);
+    setInputValue(e.target.value);
+    onChange && onChange(e.target.value);
     onValidityChange && onValidityChange(isValid); // 유효성 상태 전달
   };
 
