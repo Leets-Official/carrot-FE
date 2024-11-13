@@ -14,11 +14,10 @@ const AddressInput = ({ label, value, onChange }) => {
     }
     new window.daum.Postcode({
       oncomplete: function (data) {
-        onChange(data.address); 
+        onChange(`${data.sido} ${data.sigungu} ${data.bname}`);
       },
     }).open();
   };
-  
 
   return (
     <div>

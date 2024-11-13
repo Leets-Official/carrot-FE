@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IconChevronLeft, IconPencil, IconPlus } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import getAccessToken from "./../../utils/getAccessToken";
 import {
   Container,
   HeaderContainer,
@@ -17,42 +19,25 @@ import Button from "../../components/Button";
 import AddWorked from "../../components/mypage/AddWorked";
 import TextArea from "../../components/TextArea";
 import Worked from "../../components/mypage/Worked";
+import {
+  basicProfileInfoAPI,
+  deleteCareerAPI,
+  modifyExtraInfoAPI,
+  modifyMySelfAPI,
+  modifyStrengthInfoAPI,
+  normalProfileAPI,
+} from "../../api";
 
 function MyPageInfo() {
   const navigate = useNavigate();
-  const userType = "USER"; // "userType(USER,CEO)"은 useSelector를 통해 userInfo reducer에서 가져올 예정
-  // 예시데이터 (변경예정)
-  const [userData, setUserData] = useState({
-    img: "https://pbs.twimg.com/profile_images/1715217368455213056/lrIZCNs5_400x400.jpg",
-    name: "오수빈",
-    phone: "01049412984",
-    sex: "여성",
-    year: 2002,
-    location: "장현동",
-    job: [
-      {
-        title: "타이틀임",
-        script: "정확히하는일이 이럼",
-        year: 2023,
-        time: "3개월 이하",
-      },
-    ],
-    self: "자기소개뭐라뭐라",
-    extra: {
-      비흡연자: 0,
-      장기근무가능: 0,
-      영어가능: 1,
-      군필: 0,
-      조리자격증: 1,
-    },
-    merit: {
-      성실해요: 0,
-      지각안해요: 1,
-      위생에신경써요: 0,
-      집이가까워요: 1,
-      잠이없어요: 1,
-    },
-  });
+  const dispatch = useDispatch();
+  const accessToken = getAccessToken();
+  const userType = useSelector((state) => state.userInfo.userType);
+
+  const [userData, setUserData] = useState(null);
+  const [extraData, setExtraData] = useState({}); // 추가정보 태그
+  const [strengthData, setStrengthData] = useState({}); // 나의 장점 태그
+
   const [isOpenWorked, setIsOpenWorked] = useState(false);
   const [isModifyMode, setIsModifyMode] = useState({
     // 각 Section에 대한 수정모드 on/off
@@ -72,40 +57,112 @@ function MyPageInfo() {
   const handleAddWorked = (newJob) => {
     setUserData((prev) => ({
       ...prev,
-      job: [...prev.job, newJob], // 기존의 job 배열에 새 경력 추가
+      careers: [...prev.careers, newJob], // 기존의 job 배열에 새 경력 추가
     }));
   };
 
-  const handleDeleteWorked = (index) => {
-    setUserData((prev) => ({
-      ...prev,
-      job: prev.job.filter((_, i) => i !== index), // 삭제할 인덱스를 제외한 새로운 배열 생성
-    }));
+  const handleDeleteWorked = (careerId) => {
+    deleteCareerAPI(accessToken, dispatch, careerId).then((res) => {
+      if (res.isSuccess) {
+        setUserData((prev) => ({
+          ...prev,
+          careers: prev.careers.filter(
+            (career, _) => career.careerId !== careerId
+          ), // 삭제할 인덱스를 제외한 새로운 배열 생성
+        }));
+      } else {
+        alert(res.message);
+      }
+    });
   };
 
   /*------------ 3.추가사항,나의 장점[태그] on/off 토글 함수-------------*/
   const handleTag = (key, tag) => {
-    setUserData((pre) => ({
-      ...pre,
-      [key]: {
-        ...pre[key],
-        [tag]: pre[key][tag] === 0 ? 1 : 0, // 0이면 1로, 1이면 0으로 토글
-      },
-    }));
+    if (key === "extra") {
+      setExtraData((pre) => ({
+        ...pre,
+        [tag]: pre[tag] ? false : true,
+      }));
+    } else if (key === "merit") {
+      setStrengthData((pre) => ({
+        ...pre,
+        [tag]: pre[tag] ? false : true,
+      }));
+    }
   };
 
   /*-----------각 Section 수정 API----------- */
   // 경력사항 추가*삭제 API => AddWorked 컴포넌트
   // 자기 소개
   const modifySelf = (tag) => {
+    modifyMySelfAPI(accessToken, dispatch, userData.selfIntro).then((res) => {
+      if (!res.isSuccess) {
+        alert(res.message);
+      }
+    });
     handleMode(tag);
-    // API 추가
   };
   // 추가사항 , 나의 장점
   const modifyTag = (tag) => {
+    if (tag === "extra") {
+      modifyExtraInfoAPI(accessToken, dispatch, extraData).then((res) => {
+        if (!res.isSuccess) {
+          alert(res.message);
+        }
+      });
+    } else if (tag === "merit") {
+      modifyStrengthInfoAPI(accessToken, dispatch, strengthData).then((res) => {
+        if (!res.isSuccess) {
+          alert(res.message);
+        }
+      });
+    }
     handleMode(tag);
-    // API 추가
   };
+
+  /**----- 초기 데이터 세팅 ----- */
+  // 받아온 데이터 중 태그(추가정보, 나의 장점만 별도 추출)
+  function separateTags(data) {
+    const extra = {};
+    const strength = {};
+
+    const extra_keys = Object.keys(MYPAGE_EXTRA_INFO_TAG);
+    const strength_keys = Object.keys(MYPAGE_MERIT_TAG);
+
+    Object.keys(data).forEach((key) => {
+      if (extra_keys.includes(key)) {
+        extra[key] = data[key];
+      } else if (strength_keys.includes(key)) {
+        strength[key] = data[key];
+      }
+    });
+
+    return { extra, strength };
+  }
+  // 수정할 기본 정보 받아오기
+  useEffect(() => {
+    if (userType === "EMPLOYEE") {
+      basicProfileInfoAPI(accessToken, dispatch).then((res) => {
+        if (res.isSuccess) {
+          setUserData(res.data);
+          const { extra, strength } = separateTags(res.data);
+          setExtraData(extra);
+          setStrengthData(strength);
+        } else {
+          alert(res.message);
+        }
+      });
+    } else if (userType === "CEO") {
+      normalProfileAPI(accessToken, dispatch).then((res) => {
+        if (res.isSuccess) {
+          setUserData(res.data);
+        } else {
+          alert(res.message);
+        }
+      });
+    }
+  }, []);
+
   return (
     <Container>
       <HeaderContainer>
@@ -115,19 +172,39 @@ function MyPageInfo() {
             navigate("/mypage");
           }}
         />
-        <span>{userType === "USER" ? "내 지원서 관리" : "내 정보 관리"}</span>
+        <span>
+          {userType === "EMPLOYEE" ? "내 지원서 관리" : "내 정보 관리"}
+        </span>
       </HeaderContainer>
       <BodyContainer>
         <DefaultInfo>
           <div className="profileImgBox">
-            {userData.img !== null && <img src={userData.img} />}
+            {userData?.profileImageUrl !== null && (
+              <img src={userData?.profileImageUrl} />
+            )}
           </div>
           <div className="profileInfoBox">
-            <div>{userData.name}</div>
             <div>
-              {userData.sex} · {userData.year} · {userData.location}
+              {userType === "EMPLOYEE"
+                ? userData?.employeeName
+                : userData?.ceoName}
             </div>
-            <div>{userData.phone}</div>
+            <div>
+              {userData?.gender
+                ? userData?.gender === "MALE"
+                  ? "남성 ·"
+                  : "여성 ·"
+                : ""}{" "}
+              {userData?.birthYear ? `${userData.birthYear} · ` : ""}
+              {userType === "EMPLOYEE"
+                ? userData?.employeeAddress
+                : userData?.ceoAddress}
+            </div>
+            <div>
+              {userType === "EMPLOYEE"
+                ? userData?.phoneNumber
+                : userData?.ceoPhoneNumber}
+            </div>
           </div>
           <IconPencil
             color="gray"
@@ -138,7 +215,7 @@ function MyPageInfo() {
             }
           />
         </DefaultInfo>
-        {userType === "USER" && (
+        {userType === "EMPLOYEE" && (
           <CoverLetter>
             <Section>
               <div className="title">
@@ -151,11 +228,11 @@ function MyPageInfo() {
                 )}
               </div>
               <div className="job">
-                {userData.job.map((job, index) => (
+                {userData?.careers.map((career, index) => (
                   <Worked
                     key={index}
-                    data={job}
-                    onDelete={() => handleDeleteWorked(index)} // 삭제 함수 전달
+                    data={career}
+                    onDelete={(key) => handleDeleteWorked(key)} // 삭제 함수 전달 {carerr.careerId}
                   />
                 ))}
               </div>
@@ -170,11 +247,11 @@ function MyPageInfo() {
               {isModifyMode.self ? (
                 <>
                   <TextArea
-                    value={userData.self}
+                    value={userData?.selfIntro}
                     onChange={(e) => {
                       setUserData((pre) => ({
                         ...pre,
-                        self: e.target.value,
+                        selfIntro: e.target.value,
                       }));
                     }}
                   />
@@ -187,7 +264,7 @@ function MyPageInfo() {
                   </Button>
                 </>
               ) : (
-                <div className="self">{userData.self}</div>
+                <div className="self">{userData?.selfIntro}</div>
               )}
             </Section>
             <Section>
@@ -201,18 +278,18 @@ function MyPageInfo() {
                 )}
               </div>
               <WrapToggle>
-                {MYPAGE_EXTRA_INFO_TAG.map((tag) => (
+                {Object.keys(extraData).map((tag) => (
                   <Tag
                     key={tag}
-                    color={userData.extra[tag] ? "#E3F2FD" : "transparent"}
-                    textcolor={userData.extra[tag] ? "#2196F3" : "gray"}
+                    color={extraData[tag] ? "#E3F2FD" : "transparent"}
+                    textcolor={extraData[tag] ? "#2196F3" : "gray"}
                     onClick={
                       isModifyMode.extra
                         ? () => handleTag("extra", tag)
                         : undefined
                     }
                   >
-                    {tag}
+                    {MYPAGE_EXTRA_INFO_TAG[`${tag}`]}
                   </Tag>
                 ))}
               </WrapToggle>
@@ -237,18 +314,18 @@ function MyPageInfo() {
                 )}
               </div>
               <WrapToggle>
-                {MYPAGE_MERIT_TAG.map((tag) => (
+                {Object.keys(strengthData).map((tag) => (
                   <Tag
                     key={tag}
-                    color={userData.merit[tag] ? "#E3F2FD" : "transparent"}
-                    textcolor={userData.merit[tag] ? "#2196F3" : "gray"}
+                    color={strengthData[tag] ? "#E3F2FD" : "transparent"}
+                    textcolor={strengthData[tag] ? "#2196F3" : "gray"}
                     onClick={
                       isModifyMode.merit
                         ? () => handleTag("merit", tag)
                         : undefined
                     }
                   >
-                    {tag}
+                    {MYPAGE_MERIT_TAG[`${tag}`]}
                   </Tag>
                 ))}
               </WrapToggle>

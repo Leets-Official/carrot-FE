@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   IconUserCircle,
   IconPencilPlus,
@@ -10,75 +10,48 @@ import {
   HeaderMenuContainer,
   BodyContainer,
 } from "../../styles/Home.styles";
+import theme from "../../styles/theme/theme";
 import PostCard from "../../components/home/PostCard";
 import { useNavigate } from "react-router-dom";
+import { postListAPI } from "./../../api/homeAPI";
+import getAccessToken from "./../../utils/getAccessToken";
+import { useDispatch, useSelector } from "react-redux";
+import { BeatLoader } from "react-spinners";
 
 const data = [
-  {
-    postId: 1,
-    title: "GS25 오전알바 구함",
-    storeName: "가천관",
-    location: "태평동",
-    payType: "주급",
-    pay: 12000,
-    postStatus: "recruiting",
-    imageUrl:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4dSWank4KGUIYGGHOc1EMW3fV0slW13l4Tw&s",
-    jobTags: ["편의점", "청소"], // 추가된 필드
-  },
-  {
-    postId: 3,
-    title: "GS25 오후알바 구함",
-    storeName: "가천관",
-    location: "태평동",
-    payType: "주급",
-    pay: 12000,
-    postStatus: "recruiting",
-    imageUrl:
-      "https://blog.kakaocdn.net/dn/DHrrZ/btsHaddtONh/K80ioqQM9oo97C5vGD3sbk/img.png",
-    jobTags: ["편의점", "청소"], // 추가된 필드
-  },
-  {
-    postId: 7,
-    title: "버섯농장",
-    storeName: "농장",
-    location: "태평동",
-    payType: "주급",
-    pay: 12000,
-    postStatus: "done",
-    imageUrl:
-      "https://tvstore-phinf.pstatic.net/20210907_263/1631002069199vDKNA_JPEG/00033.jpg",
-    jobTags: ["수확"], // 추가된 필드
-  },
-  {
-    postId: 4,
-    title: "하우스어셔",
-    storeName: "가천관",
-    location: "태평동",
-    payType: "주급",
-    pay: 12000,
-    postStatus: "recruiting",
-    imageUrl:
-      "https://pbs.twimg.com/profile_images/1688763174714245120/htmgYD32_400x400.jpg",
-    jobTags: ["고객관리", "청소"], // 추가된 필드
-  },
-  {
-    postId: 5,
-    title: "엽기떡볶이",
-    storeName: "가천관",
-    location: "태평동",
-    payType: "주급",
-    pay: 12000,
-    postStatus: "recruiting",
-    imageUrl:
-      "https://tvstore-phinf.pstatic.net/20211015_175/1634272769529b4C9q_JPEG/00031.jpg",
-    jobTags: ["요리", "서빙"], // 추가된 필드
-  },
+  [
+    {
+      postId: 1,
+      title: "GS25 오전알바 구함",
+      storeName: "가천관",
+      location: "태평동",
+      payType: "주급",
+      pay: 12000,
+      postStatus: "recruiting",
+      imageUrl:
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4dSWank4KGUIYGGHOc1EMW3fV0slW13l4Tw&s",
+    },
+  ],
 ];
 
 function Home() {
-  const userType = "CEO";
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const accessToken = getAccessToken(); // 토큰 가져오기
+  const userType = useSelector((state) => state.userInfo.userType); // 유저타입가져오기
+  const [posts, setPosts] = useState([]); // 알바리스트 데이터
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    postListAPI(accessToken, dispatch).then((res) => {
+      if (res.isSuccess) {
+        if (res.data == null) setPosts([]);
+        else setPosts(res.data);
+      }
+    });
+    setLoading(false);
+  }, []);
 
   return (
     <Container>
@@ -88,7 +61,7 @@ function Home() {
           <div className="header-icons">
             <IconUserCircle onClick={() => navigate("/mypage")} />
             {userType === "CEO" && (
-              <IconPencilPlus onClick={() => navigate("/post")} />
+              <IconPencilPlus onClick={() => navigate("/posting")} />
             )}
           </div>
         </HeaderMenuContainer>
@@ -98,15 +71,24 @@ function Home() {
         </div>
       </HeaderContainer>
       <BodyContainer>
-        {data.map((data) => {
-          return (
+        {loading ? (
+          <BeatLoader
+            color={theme.color.carrot}
+            loading={loading}
+            size={20}
+            margin={10}
+          />
+        ) : posts.length === 0 ? (
+          <div>구인 중인 알바 정보가 없습니다</div>
+        ) : (
+          posts.map((data) => (
             <PostCard
               key={data.postId}
               data={data}
               onClick={() => navigate(`/post/detail/${data.postId}`)}
             />
-          );
-        })}
+          ))
+        )}
       </BodyContainer>
     </Container>
   );

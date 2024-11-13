@@ -65,8 +65,9 @@ function InitLocation() {
   }); // 주소 정보 데이터
   const [openPostcode, setOpenPostcode] = useState(false); // 주소 검색 모달창
   const handleOnComplete = (data) => {
+    let address = `${data.sido} ${data.sigungu} ${data.bname}`;
     setLocationData({
-      primaryAddress: data.address,
+      primaryAddress: address,
       subAddress: data.bname,
     }); // address(전체 주소), data.bname(동 주소)
     setOpenPostcode(false);
@@ -79,7 +80,7 @@ function InitLocation() {
       return;
     }
 
-    dispatch(SET_ADDRESS(locationData.subAddress));
+    dispatch(SET_ADDRESS(locationData.primaryAddress));
     // 회원가입 API - 사업자, 일반유저 구분
     if (signupType === "USER") {
       // 일반유저
@@ -88,7 +89,8 @@ function InitLocation() {
         signupPwd,
         signupPhone,
         signupName,
-        locationData.subAddress
+        locationData.subAddress,
+        dispatch
       ).then((response) => {
         if (response.isSuccess) {
           alert("회원가입이 완료되었습니다");
@@ -106,7 +108,8 @@ function InitLocation() {
         signupPhone,
         signupName,
         signupCEO,
-        locationData.subAddress
+        locationData.subAddress,
+        dispatch
       ).then((response) => {
         if (response.isSuccess) {
           alert("회원가입이 완료되었습니다");
@@ -140,8 +143,6 @@ function InitLocation() {
       <LocationStyle.BodyContainer>
         <LocationStyle.BodyTitle>
           서비스 이용을 위한 자신의 동네를 설정해주세요.
-          <br />
-          동네 정보는 가입 이후에도 수정할 수 있어요 !
         </LocationStyle.BodyTitle>
         <LocationForm>
           <div className="location-label">주소</div>

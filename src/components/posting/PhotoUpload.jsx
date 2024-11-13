@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   StyledLabel,
   UploadContainer,
@@ -9,27 +9,42 @@ import {
   PreviewImage,
   RemoveButton,
 } from "../../styles/posting/PhotoUploadStyles";
+import { uploadPostImageAPI } from "../../api";
+import getAccessToken from "../../utils/getAccessToken";
+import { useDispatch } from "react-redux";
 
-const PhotoUpload = ({ label }) => {
-  const [photos, setPhotos] = useState([]);
+const PhotoUpload = ({ label, selectedPhotos, setSelectedPhotos }) => {
+  const accessToken = getAccessToken();
+  const dispatch = useDispatch();
+
   const maxPhotos = 10;
-
   const fileInputRef = useRef(null);
 
+  // 업로드
   const handlePhotoUpload = (e) => {
-    const files = Array.from(e.target.files);
-    const newPhotos = [...photos, ...files].slice(0, maxPhotos);
-    setPhotos(newPhotos);
+    const file = e.target.files[0];
+    if (file) {
+      uploadPostImageAPI(accessToken, dispatch, file).then((res) => {
+        if (res.isSuccess) {
+          const newPhotos = [...selectedPhotos, res.imageUrl.imageUrl];
+          setSelectedPhotos(newPhotos); // 부모로 상태 전달
+        } else {
+          alert(res.message);
+        }
+      });
+    }
   };
 
   const handleUploadClick = () => {
-    if (photos.length < maxPhotos) {
+    if (selectedPhotos.length < maxPhotos) {
       fileInputRef.current.click();
     }
   };
 
+  // 삭제
   const removePhoto = (index) => {
-    setPhotos(photos.filter((_, i) => i !== index));
+    const newPhotos = selectedPhotos.filter((_, i) => i !== index);
+    setSelectedPhotos(newPhotos); // 부모로 상태 전달
   };
 
   return (
@@ -37,19 +52,18 @@ const PhotoUpload = ({ label }) => {
       {label && <StyledLabel>{label} (선택)</StyledLabel>}
       <UploadText>사진이 있으면 더 많은 사람들이 확인해요.</UploadText>
       <UploadContainer>
-        {photos.map((photo, index) => (
+        {selectedPhotos.map((photo, index) => (
           <PreviewContainer key={index}>
-            <PreviewImage src={URL.createObjectURL(photo)} alt={`preview-${index}`} />
+            <PreviewImage src={photo} alt={`preview-${index}`} />
             <RemoveButton onClick={() => removePhoto(index)}>✕</RemoveButton>
           </PreviewContainer>
         ))}
-        {photos.length < maxPhotos && (
+        {selectedPhotos.length < maxPhotos && (
           <UploadBox onClick={handleUploadClick}>
             <UploadIcon>📷</UploadIcon>
-            <span>{`${photos.length}/${maxPhotos}`}</span>
+            <span>{`${selectedPhotos.length}/${maxPhotos}`}</span>
             <input
               type="file"
-              multiple
               accept="image/*"
               onChange={handlePhotoUpload}
               ref={fileInputRef}

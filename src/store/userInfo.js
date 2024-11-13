@@ -14,9 +14,12 @@ const userInfoSlice = createSlice({
       state.userType = action.payload.type;
       state.userId = action.payload.id;
     },
+    RESET_LOGIN() {
+      return initialState;
+    },
   },
 });
 
-export const { USER_LOGIN } = userInfoSlice.actions;
+export const { USER_LOGIN, RESET_LOGIN } = userInfoSlice.actions;
 
 export default userInfoSlice.reducer;
