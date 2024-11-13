@@ -135,7 +135,6 @@ export const deleteCareerAPI = async (accessToken, dispatch, id) => {
     message: "",
   };
 
-  console.log(body);
   try {
     const result = await privateAxios(accessToken, dispatch).delete(
       "/api/v1/user-profiles/delete-career",
