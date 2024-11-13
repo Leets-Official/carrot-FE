@@ -101,7 +101,57 @@ export const basicProfileInfoAPI = async (accessToken, dispatch) => {
   return response;
 };
 
-// 경력 수정 API
+// 경력 수정 API (추가,삭제)
+// 경력 추가 API
+export const addCareerAPI = async (accessToken, dispatch, body) => {
+  const response = {
+    isSuccess: false,
+    message: "",
+  };
+
+  try {
+    const result = await privateAxios(accessToken, dispatch).post(
+      "/api/v1/user-profiles/add-career",
+      body
+    );
+    if (result.status === 200) {
+      response.isSuccess = true;
+      response.message = result.data.message;
+    }
+  } catch (err) {
+    response.message = err.response.data;
+  }
+
+  return response;
+};
+
+// 경력 삭제 API
+export const deleteCareerAPI = async (accessToken, dispatch, id) => {
+  const body = {
+    careerId: id,
+  };
+  const response = {
+    isSuccess: false,
+    message: "",
+  };
+
+  console.log(body);
+  try {
+    const result = await privateAxios(accessToken, dispatch).delete(
+      "/api/v1/user-profiles/delete-career",
+      { data: body }
+    );
+    if (result.status === 200) {
+      response.isSuccess = true;
+      response.message = result.data.message;
+    }
+  } catch (err) {
+    response.message = err.response.data;
+  }
+
+  return response;
+};
+
 // 자기소개 수정 API
 export const modifyMySelfAPI = async (accessToken, dispatch, selfIntro) => {
   const body = {
