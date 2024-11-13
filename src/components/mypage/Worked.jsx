@@ -25,13 +25,17 @@ const Worked = ({ data, onDelete }) => {
   return (
     <WorkedBox>
       <div className="content">
-        <div className="title">{data.title}</div>
+        <div className="title">{data.workplace}</div>
         <div className="date">
-          {data.year} · {data.time}
+          {data.workYear} · {data.workPeriod}
         </div>
-        <div className="script">{data.script}</div>
+        <div className="script">{data.workType}</div>
       </div>
-      <IconCircleMinus size={24} color="gray" onClick={onDelete} />
+      <IconCircleMinus
+        size={24}
+        color="gray"
+        onClick={() => onDelete(data.careerId)}
+      />
     </WorkedBox>
   );
 };

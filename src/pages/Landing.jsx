@@ -14,7 +14,6 @@ import Button from "../components/Button";
 import Logo from "../assets/images/carrot.svg";
 
 const Container = styled.div`
-  border: 1px solid black;
   display: flex;
   flex-direction: column;
   align-items: center;

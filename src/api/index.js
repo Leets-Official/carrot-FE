@@ -23,6 +23,8 @@ import {
   writtenPostListAPI,
   appliedPostListAPI,
   basicProfileInfoAPI,
+  addCareerAPI,
+  deleteCareerAPI,
   modifyMySelfAPI,
   modifyExtraInfoAPI,
   modifyStrengthInfoAPI,
@@ -57,6 +59,8 @@ export {
   writtenPostListAPI, // (사업자) 마이페이지 구인글 불러오기 API
   appliedPostListAPI, // (구직자) 마이페이지 지원글 불러오기 API
   basicProfileInfoAPI, // 마이페이지 수정 글 불러오기 API
+  addCareerAPI, // 마이페이지 경력 추가 API
+  deleteCareerAPI, // 마이페이지 경력 삭제 API
   modifyMySelfAPI, // 마이페이지 자기소개 수정 API
   modifyExtraInfoAPI, // 마이페이지 추가사항 수정 API
   modifyStrengthInfoAPI, // 마이페이지 나의 장점 API

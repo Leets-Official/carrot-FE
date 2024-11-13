@@ -21,6 +21,7 @@ import TextArea from "../../components/TextArea";
 import Worked from "../../components/mypage/Worked";
 import {
   basicProfileInfoAPI,
+  deleteCareerAPI,
   modifyExtraInfoAPI,
   modifyMySelfAPI,
   modifyStrengthInfoAPI,
@@ -56,15 +57,23 @@ function MyPageInfo() {
   const handleAddWorked = (newJob) => {
     setUserData((prev) => ({
       ...prev,
-      job: [...prev.job, newJob], // 기존의 job 배열에 새 경력 추가
+      careers: [...prev.careers, newJob], // 기존의 job 배열에 새 경력 추가
     }));
   };
 
-  const handleDeleteWorked = (index) => {
-    setUserData((prev) => ({
-      ...prev,
-      job: prev.job.filter((_, i) => i !== index), // 삭제할 인덱스를 제외한 새로운 배열 생성
-    }));
+  const handleDeleteWorked = (careerId) => {
+    deleteCareerAPI(accessToken, dispatch, careerId).then((res) => {
+      if (res.isSuccess) {
+        setUserData((prev) => ({
+          ...prev,
+          careers: prev.careers.filter(
+            (career, _) => career.careerId !== careerId
+          ), // 삭제할 인덱스를 제외한 새로운 배열 생성
+        }));
+      } else {
+        alert(res.message);
+      }
+    });
   };
 
   /*------------ 3.추가사항,나의 장점[태그] on/off 토글 함수-------------*/
@@ -86,14 +95,12 @@ function MyPageInfo() {
   // 경력사항 추가*삭제 API => AddWorked 컴포넌트
   // 자기 소개
   const modifySelf = (tag) => {
-    console.log(userData.selfIntro);
     modifyMySelfAPI(accessToken, dispatch, userData.selfIntro).then((res) => {
       if (!res.isSuccess) {
         alert(res.message);
       }
     });
     handleMode(tag);
-    // API 추가
   };
   // 추가사항 , 나의 장점
   const modifyTag = (tag) => {
@@ -210,7 +217,7 @@ function MyPageInfo() {
         </DefaultInfo>
         {userType === "EMPLOYEE" && (
           <CoverLetter>
-            {/*<Section>
+            <Section>
               <div className="title">
                 <span>경력</span>
                 {!isModifyMode.job && (
@@ -221,15 +228,15 @@ function MyPageInfo() {
                 )}
               </div>
               <div className="job">
-                {userData.job.map((job, index) => (
+                {userData?.careers.map((career, index) => (
                   <Worked
                     key={index}
-                    data={job}
-                    onDelete={() => handleDeleteWorked(index)} // 삭제 함수 전달
+                    data={career}
+                    onDelete={(key) => handleDeleteWorked(key)} // 삭제 함수 전달 {carerr.careerId}
                   />
                 ))}
               </div>
-            </Section>*/}
+            </Section>
             <Section>
               <div className="title">
                 <span>자기 소개</span>
