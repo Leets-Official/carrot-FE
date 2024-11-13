@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyledLabel,
   Row,
@@ -13,7 +13,7 @@ import {
   CustomCheckbox,
 } from "../../styles/posting/WorkTimePickerStyles";
 
-const WorkTimePicker = ({ label, showNegotiable = true, onChange }) => {
+const WorkTimePicker = ({ label, startTime = "09:00", endTime = "18:00", negotiable = false, onChange }) => {
   const generateTimeOptions = () => {
     const times = [];
     for (let hour = 0; hour < 24; hour++) {
@@ -25,27 +25,21 @@ const WorkTimePicker = ({ label, showNegotiable = true, onChange }) => {
     return times;
   };
 
-  const [startTime, setStartTime] = useState("09:00");
-  const [endTime, setEndTime] = useState("18:00");
-  const [negotiable, setNegotiable] = useState(false);
+  const [time, setTime] = useState({ start: startTime, end: endTime, isNegotiable: negotiable });
+
+  useEffect(() => {
+    if (startTime && endTime) { // startTime과 endTime이 존재할 때만 업데이트
+      setTime({ start: startTime, end: endTime, isNegotiable: negotiable });
+    }
+  }, [startTime, endTime, negotiable]);
+
+  const handleTimeChange = (key, value) => {
+    const updatedTime = { ...time, [key]: value };
+    setTime(updatedTime);
+    onChange && onChange(updatedTime); // 부모 컴포넌트에 상태 전달
+  };
 
   const timeOptions = generateTimeOptions();
-
-  const handleStartChange = (value) => {
-    setStartTime(value);
-    onChange && onChange({ start: value, end: endTime, isNegotiable: negotiable });
-  };
-
-  const handleEndChange = (value) => {
-    setEndTime(value);
-    onChange && onChange({ start: startTime, end: value, isNegotiable: negotiable });
-  };
-
-  const handleNegotiableChange = () => {
-    const newNegotiable = !negotiable;
-    setNegotiable(newNegotiable);
-    onChange && onChange({ start: startTime, end: endTime, isNegotiable: newNegotiable });
-  };
 
   return (
     <>
@@ -56,7 +50,7 @@ const WorkTimePicker = ({ label, showNegotiable = true, onChange }) => {
       </Row>
       <TimeSelectContainer>
         <TimeSelectWrapper>
-          <TimeSelect value={startTime} onChange={(e) => handleStartChange(e.target.value)}>
+          <TimeSelect value={time.start} onChange={(e) => handleTimeChange("start", e.target.value)}>
             {timeOptions.map((time) => (
               <option key={time} value={time}>
                 {time}
@@ -67,7 +61,7 @@ const WorkTimePicker = ({ label, showNegotiable = true, onChange }) => {
         </TimeSelectWrapper>
         <WaveSymbol>~</WaveSymbol>
         <TimeSelectWrapper>
-          <TimeSelect value={endTime} onChange={(e) => handleEndChange(e.target.value)}>
+          <TimeSelect value={time.end} onChange={(e) => handleTimeChange("end", e.target.value)}>
             {timeOptions.map((time) => (
               <option key={time} value={time}>
                 {time}
@@ -77,12 +71,13 @@ const WorkTimePicker = ({ label, showNegotiable = true, onChange }) => {
           <DropdownIcon>∨</DropdownIcon>
         </TimeSelectWrapper>
       </TimeSelectContainer>
-      {showNegotiable && (
-        <CheckboxContainer>
-          <CustomCheckbox checked={negotiable} onChange={handleNegotiableChange} />
-          <CheckboxLabel>협의 가능</CheckboxLabel>
-        </CheckboxContainer>
-      )}
+      <CheckboxContainer>
+        <CustomCheckbox
+          checked={time.isNegotiable}
+          onChange={(e) => handleTimeChange("isNegotiable", e.target.checked)}
+        />
+        <CheckboxLabel>협의 가능</CheckboxLabel>
+      </CheckboxContainer>
     </>
   );
 };

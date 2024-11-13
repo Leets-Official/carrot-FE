@@ -5,37 +5,40 @@ export const createPayload = (
   parseAddress,
   convertDays
 ) => {
-  const { doName, siName, detailName } = parseAddress(formData.workLocation);
-  const workDays = convertDays(formData.workDays);
-  const [startHour, startMinute] = formData.workTime.start
+  const { doName, siName, detailName } = parseAddress(formData.workLocation || "");
+  const workDays = convertDays(formData.workDays || []);
+  
+  const [startHour, startMinute] = (formData.workTime?.start || "00:00")
     .split(":")
     .map(Number);
-  const [endHour, endMinute] = formData.workTime.end.split(":").map(Number);
+  const [endHour, endMinute] = (formData.workTime?.end || "00:00")
+    .split(":")
+    .map(Number);
 
   return {
     postId: postId || 0,
     userId: userId,
-    storeName: formData.storeName,
-    workPlaceAddress: formData.workLocation,
+    storeName: formData.storeName || "", // 기본값 설정
+    workPlaceAddress: formData.workLocation || NULL, // 기본값 설정
     postData: {
       doName: doName,
       siName: siName,
       detailName: detailName,
-      workType: formData.workTags[0] || "기타",
-      title: formData.title,
-      content: formData.description,
-      pay: parseInt(formData.pay, 10),
+      workType: formData.workType?.[0] || "", 
+      title: formData.title || "", // 기본값 설정
+      content: formData.description || "", // 기본값 설정
+      pay: parseInt(formData.pay, 10) || 0, // 기본값 설정
       workStartHour: startHour,
       workStartMinute: startMinute,
       workEndHour: endHour,
       workEndTimeMinute: endMinute,
-      isNegotiable: formData.isNegotiable || false,
-      applyNumber: formData.applyNumber,
+      isNegotiable: formData.isNegotiable ?? false, // nullish 병합 연산자
+      applyNumber: formData.applyNumber || "", // 기본값 설정
       workDays: workDays,
       isShortTermJob: formData.workPeriod === "단기",
-      payType: formData.payType,
-      isNumberPublic: formData.isNumberPublic,
-      imageUrlList: formData.imageUrlList,
+      payType: formData.payType || "시급", // 기본값 설정
+      isNumberPublic: formData.isNumberPublic ?? true, // 기본값 설정
+      imageUrlList: formData.imageUrlList || [], // 기본값 설정
     },
   };
 };

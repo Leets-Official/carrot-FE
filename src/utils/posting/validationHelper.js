@@ -2,7 +2,6 @@ export const validateForm = (payload, formData) => {
   const requiredFields = {
     "제목": payload.postData.title,
     "하는 일": payload.postData.workType,
-    "일하는 기간": formData.workPeriod,
     "일하는 요일": formData.workDays,
     "일하는 시간": formData.workTime?.start && formData.workTime?.end,
     "급여": formData.pay,

@@ -10,21 +10,27 @@ import {
   ErrorMessage,
 } from "../../styles/posting/PayPickerStyles";
 
-function PayPicker({ label, options = ["시급", "건당", "일급", "월급"], onChange }) {
+function PayPicker({
+  label,
+  options = ["시급", "건당", "일급", "월급"],
+  value = { payType: "시급", pay: "" },
+  onChange,
+}) {
   const year = 2024;
   const minimumWage = 9860;
   const estimatedDailyWage = minimumWage * 9;
 
-  const [selectedPayOption, setSelectedPayOption] = useState(options[0]);
-  const [inputValue, setInputValue] = useState("");
+  const [selectedPayOption, setSelectedPayOption] = useState(value.payType);
+  const [inputValue, setInputValue] = useState(value.pay?.toString() || "");
   const [formattedValue, setFormattedValue] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    setInputValue("");
-    setFormattedValue("");
+    setSelectedPayOption(value.payType);
+    setInputValue(value.pay?.toString() || "");
+    setFormattedValue(formatNumber(value.pay?.toString() || ""));
     setErrorMessage("");
-  }, [selectedPayOption]);
+  }, [value]);
 
   const handleOptionClick = (option) => {
     setSelectedPayOption(option);

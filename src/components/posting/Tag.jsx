@@ -11,37 +11,38 @@ import {
 
 const Tag = ({
   label,
-  tags = [],
-  maxSelectable,
+  tags = [], // 부모로부터 전달받은 전체 태그 목록
   selectedTags,
   setSelectedTags,
+  maxSelectable = 1,
   onTagsUpdate,
 }) => {
   const [internalSelectedTags, setInternalSelectedTags] = useState([]);
   const [showAll, setShowAll] = useState(false);
   const [isAddingTag, setIsAddingTag] = useState(false);
   const [newTag, setNewTag] = useState("");
-  const [allTags, setAllTags] = useState(tags); // 전체 태그 관리
 
   useEffect(() => {
-    onTagsUpdate && onTagsUpdate(allTags); // 태그 변경 시 상위로 업데이트
-  }, [allTags, onTagsUpdate]);
+    setInternalSelectedTags(Array.isArray(selectedTags) ? selectedTags : []);
+  }, [selectedTags]);  
 
   const handleTagClick = (tag) => {
-    if (internalSelectedTags.includes(tag)) {
-      setInternalSelectedTags(internalSelectedTags.filter((t) => t !== tag));
-      setSelectedTags(internalSelectedTags.filter((t) => t !== tag));
-    } else if (internalSelectedTags.length < maxSelectable) {
-      setInternalSelectedTags([...internalSelectedTags, tag]);
-      setSelectedTags([...internalSelectedTags, tag]);
-    }
-  };
+    const updatedSelectedTags = internalSelectedTags.includes(tag)
+      ? internalSelectedTags.filter((t) => t !== tag)
+      : [...internalSelectedTags, tag].slice(0, maxSelectable);
+  
+    setInternalSelectedTags(updatedSelectedTags); // 내부 상태 업데이트
+    setSelectedTags(updatedSelectedTags); // 부모 상태 업데이트
+  };  
 
   const handleAddTag = () => {
-    if (newTag.trim() && !allTags.includes(newTag)) {
-      setAllTags([...allTags, newTag]);
+    if (newTag.trim() && !tags.includes(newTag)) {
+      const updatedTags = [...tags, newTag];
+      onTagsUpdate(updatedTags); // 부모로 전체 태그 목록 업데이트
       setNewTag("");
       setIsAddingTag(false);
+      // 추가된 태그를 자동 선택
+      handleTagClick(newTag);
     }
   };
 
@@ -51,7 +52,7 @@ const Tag = ({
     <div>
       {label && <StyledLabel>{label}</StyledLabel>}
       <TagContainer>
-        {allTags.slice(0, showAll ? allTags.length : 5).map((tag, index) => (
+        {tags.slice(0, showAll ? tags.length : 5).map((tag, index) => (
           <TagButton
             key={index}
             selected={internalSelectedTags.includes(tag)}
@@ -80,7 +81,7 @@ const Tag = ({
               marginTop: "8px",
             }}
           >
-            {allTags.length > 5 && (
+            {tags.length > 5 && (
               <MoreButton onClick={toggleShowAll}>
                 {showAll ? "접기 ▲" : "더보기 ▼"}
               </MoreButton>

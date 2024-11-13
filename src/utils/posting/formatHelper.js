@@ -23,5 +23,6 @@ export const convertDays = (days) => {
     토: "SATURDAY",
     일: "SUNDAY",
   };
-  return days.map((day) => dayMap[day]);
+
+  return days.filter((day) => day).map((day) => dayMap[day] || day);
 };

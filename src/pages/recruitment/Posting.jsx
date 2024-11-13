@@ -18,7 +18,7 @@ import {
   Button,
 } from "../../components";
 import "../../styles/posting/Posting.css";
-import { POSTING_UPMU_TAG } from "../../constants";
+import  { POSTING_UPMU_TAG as INITIAL_TAGS }from "../../constants";
 import { postJobPosting, updateJobPosting, getPostById } from "../../api";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -40,7 +40,6 @@ const Posting = () => {
     description: true,
     applyNumber: true,
   });
-
   const [formData, setFormData] = useState({
     title: "",
     workTags: [],
@@ -55,6 +54,7 @@ const Posting = () => {
     description: "",
     workPeriod: "1개월 이상",
     imageUrlList: [],
+    isNegotiable: false,
   });
 
   const handleChange = (key, value) => {
@@ -69,11 +69,11 @@ const Posting = () => {
     handleChange("applyNumber", phone);
     handleChange("isNumberPublic", !noCalls);
   };
+  const [allTags, setAllTags] = useState(INITIAL_TAGS);
+  const handleTagsUpdate = (updatedTags) => {
+    setAllTags(updatedTags); // 동적 태그 업데이트
+  };
 
-  // const handleToggleClick = (value) => {
-  //   handleChange("selectedOption", value);
-  //   setIsOptionSelected(true);
-  // };
   // 게시글 수정 useEffect
   useEffect(() => {
     if (mode === "modify" && postId) {
@@ -93,7 +93,7 @@ const Posting = () => {
 
   const populateFormData = (postData) => {
     if (!postData || !postData.data || !postData.data.postData) {
-      console.error("Invalid postData structure:", postData);
+      console.error("Invalid postData structure:", JSON.stringify(postData, null, 2));
       alert("게시글 데이터를 불러오는 데 실패했습니다.");
       return; // 함수 실행 중단
     }
@@ -117,21 +117,22 @@ const Posting = () => {
     } = postData.data.postData; // 올바른 경로로 수정
   
     setFormData({
-      title,
-      workTags: [workType],
-      workDays,
+      title: title || "",
+      workTags: Array.isArray(workType) ? workType : [workType],
+      workDays: (workDays || []).filter(Boolean), // undefined 제거
       workTime: {
-        start: `${workStartHour}:${workStartMinute.toString().padStart(2, "0")}`,
-        end: `${workEndHour}:${workEndTimeMinute.toString().padStart(2, "0")}`,
+        start: `${String(workStartHour || "09").padStart(2, "0")}:${String(workStartMinute || "00").padStart(2, "0")}`,
+        end: `${String(workEndHour || "18").padStart(2, "0")}:${String(workEndTimeMinute || "00").padStart(2, "0")}`,
       },
-      pay,
-      payType,
-      isNegotiable,
-      applyNumber,
-      description: content,
-      workLocation: `${doName} ${siName} ${detailName}`,
+      pay: pay || 0,
+      payType: payType || "시급",
+      isNegotiable: isNegotiable || false,
+      applyNumber: applyNumber || "",
+      description: content || "",
+      workLocation: `${doName || ""} ${siName || ""} ${detailName || ""}`.trim(),
     });
-  };  
+  };
+  
   const handleSubmit = async () => {
     const allValid = Object.values(validStates).every((isValid) => isValid);
     if (!allValid) {
@@ -141,6 +142,10 @@ const Posting = () => {
   
     const payload = createPayload(formData, postId, userId, parseAddress, convertDays);
   
+  // 디버깅용 데이터 출력
+  console.log("Payload before sending:", payload);
+  console.log("Current Mode:", mode);
+
     if (!validateForm(payload, formData)) {
       alert("모든 필드를 올바르게 입력해주세요.");
       return;
@@ -222,44 +227,56 @@ const Posting = () => {
             />
           </div>
           <div className="form-section">
-              <Tag
-                label="하는 일"
-                tags={POSTING_UPMU_TAG}
-                selectedTags={formData.workTags}
-                setSelectedTags={(tags) => handleChange("workTags", tags)}
-                maxSelectable={1}
-              />
+          <Tag
+  label="하는 일"
+  tags={allTags} // 동적 태그 목록
+  selectedTags={
+    Array.isArray(formData.workType) ? formData.workType : formData.workType ? [formData.workType] : []
+  } // 선택된 태그
+  setSelectedTags={(tags) => {
+    // console.log("Selected Tags:", tags); // 디버깅
+    handleChange("workType", tags); // 선택된 태그 업데이트
+  }}
+  maxSelectable={1}
+  onTagsUpdate={handleTagsUpdate} // 태그 목록 업데이트
+/>
+
             </div>
             <div className="form-section">
               <Toggle
                 label="일하는 기간"
                 options={["1개월 이상"]}
                 onChange={(value) => handleChange("workPeriod", value)}
-                selectedOption={formData.workPeriod}
+                selectedOption={formData.workPeriod || "1개월 이상"} // 기본값 설정
                 styleType="tag"
               />
             </div>
             <div className="form-section">
               <WeekdayPicker
                 label="요일 선택"
+                selectedDays={formData.workDays}
                 onChange={(days) => handleChange("workDays", days)}
               />
             </div>
             <div className="form-section">
-              <WorkTimePicker
-                label="일하는 시간"
-                onChange={(timeData) => {
-                  handleChange("workTime", {
-                    start: timeData.start,
-                    end: timeData.end,
-                  });
-                  handleChange("isNegotiable", timeData.isNegotiable);
-                }}
-              />
+            <WorkTimePicker
+              label="일하는 시간"
+              startTime={formData.workTime?.start || "09:00"}
+              endTime={formData.workTime?.end || "18:00"}
+              negotiable={formData.isNegotiable}
+              onChange={(timeData) => {
+                handleChange("workTime", {
+                  start: timeData.start,
+                  end: timeData.end,
+                });
+                handleChange("isNegotiable", timeData.isNegotiable);
+              }}
+            />
             </div>
             <div className="form-section">
               <PayPicker
                 label="급여"
+                value={formData}
                 onChange={(payData) => {
                   handleChange("pay", payData.pay);
                   handleChange("payType", payData.payType);
@@ -276,6 +293,7 @@ const Posting = () => {
             <div className="form-section">
               <DescriptionInput
                 label="자세한 설명"
+                value={formData.description}
                 onChange={(value) => handleChange("description", value)}
                 onValidityChange={(isValid) =>
                   handleValidityChange("description", isValid)
@@ -287,6 +305,7 @@ const Posting = () => {
               <InputField
                 label="업체명"
                 placeholder="예) 당근가게"
+                value={formData.storeName}
                 onChange={(value) => handleChange("storeName", value)}
               />
               <AddressInput
@@ -296,6 +315,7 @@ const Posting = () => {
               />
               <PhoneInput
                 label="연락처"
+                value={{ phone: formData.applyNumber, noCalls: !formData.isNumberPublic }}
                 onChange={handlePhoneInputChange}
                 onValidityChange={(isValid) =>
                   handleValidityChange("applyNumber", isValid)
