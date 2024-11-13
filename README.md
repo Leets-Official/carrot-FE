@@ -9,16 +9,20 @@
 
 ## ⚙️ Develop Environment
 
-<div>
+<div align="center">
   <img src="https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=React&logoColor=white"/>
 <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=JavaScript&logoColor=white"/>
 <img src="https://img.shields.io/badge/Redux-3578E5?style=flat-square&logo=Redux&logoColor=white"> <img src="https://img.shields.io/badge/styled components-DB7093?style=flat-square&logo=styled-components&logoColor=white"/>
 </div>
 
 ## 팀원 구성
+
+<div  align="center">
+  
 |<img src="https://avatars.githubusercontent.com/u/91336314?v=4" width="150" height="150"/>|<img src="https://avatars.githubusercontent.com/u/173772422?v=4" width="150" height="150"/>|
 |:-:|:-:|
-|OH SUBIN<br/>[@odukong](https://github.com/odukong)|KIM MINSEO<br/>[@minseoKim](https://github.com/minseoKim-11)|
+|4기<br/>OH SUBIN<br/>[@odukong](https://github.com/odukong)|4기<br/>KIM MINSEO<br/>[@minseoKim](https://github.com/minseoKim-11)|
+</div>
 
 ## Feature
 ### 로그인 / 회원가입
