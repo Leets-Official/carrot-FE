@@ -1,8 +1,8 @@
-# Carrot-FE
+# 🥕Carrot-FE
 
 당근마켓 내 서비스인 당근알바 클론코딩.
 
-## Introduce
+## 📝 Introduce
 
 가천대학교 교내 IT동아리인 Leets 4조에서 진행하는 당근알바 서비스 구축 클론코딩 프로젝트 **FE** 팀 레포지터리입니다. <br/>
 [**🔗Carrot-BE 바로가기**](https://github.com/Leets-Official/Carrot-BE)
@@ -21,10 +21,10 @@
   
 |<img src="https://avatars.githubusercontent.com/u/91336314?v=4" width="150" height="150"/>|<img src="https://avatars.githubusercontent.com/u/173772422?v=4" width="150" height="150"/>|
 |:-:|:-:|
-|4기<br/>OH SUBIN<br/>[@odukong](https://github.com/odukong)|4기<br/>KIM MINSEO<br/>[@minseoKim](https://github.com/minseoKim-11)|
+|✨4기<br/>OH SUBIN<br/>[@odukong](https://github.com/odukong)|✨4기<br/>KIM MINSEO<br/>[@minseoKim](https://github.com/minseoKim-11)|
 </div>
 
-## Feature
+## 📝Feature
 ### 로그인 / 회원가입
 - 사업자(구인자), 일반유저(구직자)로 구분하여 자체 회원가입을 진행하며, <br/>사업자의 경우에는 사업자인증을 진행한 후에 회원가입이 완료된다.
 - 로그인은 이메일과 비밀번호를 통해 자체 로그인을 진행한다.
